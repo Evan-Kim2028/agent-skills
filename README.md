@@ -8,13 +8,14 @@ This started as data/lakehouse work and will accumulate whatever domains I happe
 
 ```
 skills/
-  <skill-name>/
-    SKILL.md      # frontmatter (name + description) and the skill body
+  <category>/
+    <skill-name>/
+      SKILL.md    # frontmatter (name + description) and the skill body
 ```
 
 ## Skills
 
 | Skill | What it's for |
 |-------|---------------|
-| [`apache-lakehouse`](skills/apache-lakehouse/SKILL.md) | Designing, modifying, and debugging Apache Iceberg lakehouses — PyIceberg + Polars/DuckDB medallion writes, catalog choice, maintenance, CDC, branching/WAP, schema evolution. |
+| [`apache-lakehouse`](skills/data/apache-lakehouse/SKILL.md) | Designing, modifying, and debugging Apache Iceberg lakehouses — PyIceberg + Polars/DuckDB medallion writes, catalog choice, maintenance, CDC, branching/WAP, schema evolution. |
 
