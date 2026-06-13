@@ -211,6 +211,86 @@ Rule: rollback first, validate that the world is sane, *then* expire. Never chai
 
 PyIceberg is COW-only — every UPDATE rewrites containing files. Acceptable for hourly/daily CDC, not for sub-minute streaming. For high-frequency CDC, do the source writes via Spark/Flink in MOR mode and let PyIceberg read or perform the summary merge.
 
+## Production recipes
+
+Four patterns that have shown up repeatedly in real Iceberg + PyIceberg deployments. Each is a concrete answer to a failure mode that the architectural principles alone don't tell you how to handle.
+
+### Watermark ↔ snapshot-expiry contract
+
+**Failure mode.** A persisted watermark points at a snapshot. Maintenance runs `expire_snapshots`. The next promote reads the watermark, asks the catalog for the snapshot, and dies with `SnapshotExpiredError` (or an equivalent). The pipeline now fails on every tick until somebody manually re-stamps the watermark.
+
+**The bug is conceptual, not transient.** The watermark and the snapshot-retention window are coupled state; only one of them was being managed.
+
+**Recipe.**
+
+1. **Catch narrowly.** Only catch the specific "snapshot is gone" exception. Do not blanket-catch read errors — a network blip is not the same condition and must not silently re-stamp.
+2. **Fall back to a bounded scan.** Read the source table with a time/sequence predicate covering at least the expiry window (e.g., `event_ts >= now() - 1.5 × expire_window`). This is the "rebuild from history" path the principles say must be explicit — keep it bounded so it can't grow unboundedly.
+3. **Re-stamp atomically.** The replacement watermark is committed with the new data write, just like a normal promote.
+4. **Surface the event.** Log a structured `watermark_self_heal` record (old snapshot id, new high-water mark, scan window used) and increment a counter. The operator must be able to see "this happened" without grepping.
+
+**Coupling rule.** `expire_snapshots` retention window ≥ promote cadence × N (N=3 is a sane default). If you tighten retention, audit every consumer's watermark cadence first.
+
+### Day-chunked bootstrap for watermark migrations
+
+**Failure mode.** Adding a new watermark column to a table that already has years of data. You can't stamp `now()` (you'd skip all historical rows on the first incremental read). You can't stamp `MIN(event_ts)` in one commit (a single bootstrap write spans the whole table and OOMs or blows the commit timeout). You can't add the column and "fix it later" — every consumer downstream is reading a stale or null watermark in the meantime.
+
+**Recipe.** Day-by-day, one commit per day:
+
+1. Read `min(event_ts)::date` and `max(event_ts)::date` from the source.
+2. For each day in `[min, max]`: read that day's rows (partition pruning makes this cheap), compute the per-row watermark, **MERGE INTO** the target keyed on the row identity, commit.
+3. Persist the last successfully committed day to a side table or env file so the bootstrap is restartable. Crash on day 137 → restart from day 137, not from day 0.
+4. Only after the bootstrap loop completes, enable the normal incremental promote.
+
+**Why per-day, not per-week or per-month.** A day is the largest natural unit where a single commit's memory footprint is predictable across most analytics tables. Larger windows OOM; smaller windows just burn metadata commits.
+
+**Principle this satisfies.** "Rebuild from history exists only behind an explicit flag" — the bootstrap is the flag. The normal code path never runs unbounded.
+
+### OCC retry on `CommitFailedException`
+
+**Failure mode.** Two writers commit to the same table concurrently. The catalog CAS sees the same parent metadata pointer from both and lets only one through. The loser raises `CommitFailedException`. This is **the** correctness primitive in Iceberg — but it shows up as a "transient error" in logs, gets caught by an over-broad `except Exception:`, and the retry never happens.
+
+**Recipe.**
+
+```python
+from tenacity import retry, stop_after_attempt, wait_exponential_jitter, retry_if_exception_type
+from pyiceberg.exceptions import CommitFailedException
+
+@retry(
+    retry=retry_if_exception_type(CommitFailedException),
+    wait=wait_exponential_jitter(initial=0.5, max=8),
+    stop=stop_after_attempt(8),
+    reraise=True,
+)
+def commit_promote(catalog, table_name, df, watermark):
+    table = catalog.load_table(table_name)  # MUST refresh per attempt
+    with table.transaction() as tx:
+        tx.append(df)
+        tx.set_properties({"pipeline.watermark": watermark})
+```
+
+**Three rules that are not optional.**
+
+1. **Reload the table inside the retried function.** The whole point of the retry is to read the new HEAD and rebase. Using a `table` captured before the retry decorator is a silent infinite-loop-by-design.
+2. **Catch only `CommitFailedException`.** Any broader catch (e.g., `OSError`, `Exception`) hides real bugs — a schema mismatch is not a retryable race.
+3. **Bounded attempts + jitter.** A retry storm with no jitter is how you turn one slow writer into a thundering-herd outage on the catalog.
+
+**What this is NOT.** A retry is not a substitute for serialization when you have a genuinely non-commutative operation (e.g., "compute a global rank and write the result"). For those, use the admission gate (next recipe), not OCC.
+
+### Heavy-admission gate (canonical replacement for global flock)
+
+**Failure mode.** Multiple pipelines run on the same host. Two of them peak at large RSS at the same time, the box OOMs, systemd kills both, and somebody adds a `flock` around every pipeline entry point. Now an append-only 30-second bronze write blocks behind a 40-minute silver compaction because the lock is at the wrong granularity. One pipeline's failure cascades into skipped runs for unrelated pipelines — the exact red-flag listed above.
+
+**Recipe.** An admission gate that knows two things the flock doesn't: the job's expected resource class, and the lane (independent data domain) it operates on.
+
+1. **Classify each entry point.** `heavy` (compaction, bootstrap rewrites, large MERGE) vs `light` (append, watermark stamp, small upsert). One label per command, decided at design time, asserted at runtime against an RSS budget.
+2. **Heavy jobs take a single ticket.** A semaphore (filesystem lockfile or DB row) with concurrency 1 — at most one heavy job per host at a time. Light jobs **bypass entirely**.
+3. **Lanes get their own light-job concurrency.** Lane A's appends do not block lane B's appends. This is the lane-parallelism that a global flock kills.
+4. **Tickets are time-bounded.** A heavy job that exceeds its declared budget loses its ticket and is killed by the supervisor — no zombie holding the gate forever.
+
+**Migration from global flock.** Don't delete the flock and the gate in the same commit. Phase: (1) add the gate alongside the flock; (2) move heavy jobs through the gate while the flock is still serializing light jobs; (3) move light jobs off the flock once the gate is observed to keep RSS under budget; (4) delete the flock.
+
+**Principle this satisfies.** "Locks are admission control, not magic" — the gate makes the admission policy explicit, observable, and granular enough to leave lane-parallelism intact.
+
 ## Recommended Python-first stack
 
 - **Storage:** S3 / R2 / MinIO. Parquet, 256 MB target files. Conditional writes available since 2024.
