@@ -13,11 +13,12 @@ The shared entry point for building and operating data pipelines. Its job is two
 |---|---|
 | Designing/operating an **Apache Iceberg** lakehouse (bronze/silver/gold, PyIceberg, catalog choice, compaction/expire, WAP, snapshot rollback, single-host bounded-RAM writes) | **apache-lakehouse** |
 | **Consuming** an external HTTP API for ingestion (rate limits, backoff, pagination, auth, response validation) **or serving** gold/analytical data over HTTP (FastAPI + DuckDB, pushdown, keyset pagination, cache invalidation) | **data-api** |
+| Using **DuckDB** as the compute engine — tuning memory/threads, larger-than-memory spilling, Parquet read/write layout, connection lifecycle, EXPLAIN profiling | **duckdb** |
 | Choosing *between* storage formats (Iceberg vs Delta vs plain Parquet vs embedded DuckDB/LanceDB), or the task spans ingest → store → serve | start here, then hand off |
 | Generic interface/contract design unrelated to data movement | `api-and-interface-design` (not a data skill) |
 | Wrapping an API as a live tool Claude calls at runtime | build an **MCP server**, not a skill |
 
-If no specialist fits the storage layer yet (e.g. a DuckDB-only or LanceDB pipeline), apply the principles below directly — they are format-agnostic.
+If no specialist fits the storage layer yet (e.g. a LanceDB pipeline), apply the principles below directly — they are format-agnostic.
 
 ## Cross-cutting principles (shared by every data sub-skill)
 
@@ -70,3 +71,4 @@ Every run records what it consumed and produced — a watermark, a row count, a 
 - **Shared resilience & idempotency code** (retry + jitter, circuit breaker, dead-letter queue, idempotency keys): [`references/resilience-and-idempotency.md`](references/resilience-and-idempotency.md)
 - Specialist: **apache-lakehouse** — the Iceberg-specific expression of these principles (OCC retry, snapshot watermarks, WAP branches, compaction).
 - Specialist: **data-api** — the API-specific expression (rate-limit buckets, pagination-cursor watermarks, response schema fencing; serving with pushdown + keyset pagination + cache invalidation).
+- Specialist: **duckdb** — the embedded-engine expression (memory/thread budgeting, larger-than-memory spilling and its limits, Parquet read/write layout, connection-as-cache).
