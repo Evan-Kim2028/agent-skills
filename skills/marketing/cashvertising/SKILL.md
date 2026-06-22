@@ -29,7 +29,7 @@ When mixing this skill with other marketing skills, cite the source of each conc
 - Diagnosing why a page gets attention but does not convert.
 - Creating opt-in headlines, CTA variants, pricing frames, or proof sections.
 
-If the offer is weak, use `marketing/offers` first. If the message is unclear, use `marketing/storybrand` first.
+If the offer is weak, use `marketing-offers` first. If the message is unclear, use `marketing-storybrand` first.
 
 ## Core rule
 

@@ -27,7 +27,7 @@ Use Kane for platform-native format research, Gold/Silver/Bronze analysis, perfo
 - Turning niche expertise into content with broader appeal.
 - Building an organic content process that can later support paid media or conversion.
 
-If the task is "make this clear to buyers," use `marketing/storybrand`. If the task is "make this worth sharing," use `marketing/contagious`. If the task is "make this work on social platforms and retain attention," use this skill.
+If the task is "make this clear to buyers," use `marketing-storybrand`. If the task is "make this worth sharing," use `marketing-contagious`. If the task is "make this work on social platforms and retain attention," use this skill.
 
 ## Core model
 

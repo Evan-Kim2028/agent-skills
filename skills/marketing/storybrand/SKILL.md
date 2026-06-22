@@ -1,6 +1,6 @@
 ---
 name: marketing-storybrand
-description: Use when clarifying brand, product, landing page, email, ad, sales, or website messaging with a StoryBrand-style customer narrative. Helps turn unclear copy into simple customer-centered messaging, one-liners, calls to action, lead magnets, drip campaigns, testimonials, referral loops, and internal mission narratives. Do not use for generic literary story analysis, fiction writing, or brand voice work that does not involve customer conversion or organizational alignment.
+description: Use when clarifying brand, product, landing page, email, ad, sales, or website messaging with a StoryBrand-style customer narrative. Helps turn unclear copy into simple customer-centered messaging, one-liners, calls to action, lead magnets, drip campaigns, testimonials, and internal mission narratives. Do not use for generic literary story analysis, fiction writing, brand voice work that does not involve customer conversion or organizational alignment, or word-of-mouth/referral mechanics (that's marketing-contagious).
 ---
 
 # Marketing / StoryBrand
