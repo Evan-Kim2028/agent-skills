@@ -5,7 +5,13 @@ description: Use when clarifying brand, product, landing page, email, ad, sales,
 
 # Marketing / StoryBrand
 
-Skill for turning noisy marketing into a clear customer story. Based on the working ideas in Donald Miller's *Building a StoryBrand*, distilled into reusable guidance. Do not quote the book or reproduce its examples at length.
+Skill for turning noisy marketing into a clear customer story.
+
+## Source attribution
+
+Source: Donald Miller, *Building a StoryBrand* (2017, HarperCollins Leadership).
+
+This skill distills Miller's StoryBrand framework into reusable agent guidance. Do not quote the book or reproduce its examples at length.
 
 ## Core rule
 
