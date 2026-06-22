@@ -14,11 +14,11 @@ The shared entry point for building and operating data pipelines. Its job is two
 | Designing/operating an **Apache Iceberg** lakehouse (bronze/silver/gold, PyIceberg, catalog choice, compaction/expire, WAP, snapshot rollback, single-host bounded-RAM writes) | **apache-lakehouse** |
 | **Consuming** an external HTTP API for ingestion (rate limits, backoff, pagination, auth, response validation) **or serving** gold/analytical data over HTTP (FastAPI + DuckDB, pushdown, keyset pagination, cache invalidation) | **data-api** |
 | Using **DuckDB** as the compute engine — tuning memory/threads, larger-than-memory spilling, Parquet read/write layout, connection lifecycle, EXPLAIN profiling | **duckdb** |
-| Choosing *between* storage formats (Iceberg vs Delta vs plain Parquet vs embedded DuckDB/LanceDB), or the task spans ingest → store → serve | start here, then hand off |
+| Choosing *between* storage formats (Iceberg vs Delta vs plain Parquet vs embedded DuckDB), or the task spans ingest → store → serve | start here, then hand off |
 | Generic interface/contract design unrelated to data movement | `api-and-interface-design` (not a data skill) |
 | Wrapping an API as a live tool Claude calls at runtime | build an **MCP server**, not a skill |
 
-If no specialist fits the storage layer yet (e.g. a LanceDB pipeline), apply the principles below directly — they are format-agnostic.
+If no specialist fits the storage layer yet, apply the principles below directly — they are format-agnostic.
 
 ## Cross-cutting principles (shared by every data sub-skill)
 
