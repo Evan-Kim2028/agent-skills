@@ -1,6 +1,6 @@
 ---
 name: data
-description: Hub for data-engineering pipeline work — picking a storage/ingestion/serving approach and applying the cross-cutting discipline (idempotency, incremental-not-full-recompute, schema fencing, resilience, bounded memory) that every data sub-skill shares. Routes to specialists — apache-lakehouse (Apache Iceberg lakehouses), data-api (consuming external APIs and serving data over HTTP), and duckdb (DuckDB as the single-node analytical engine — memory/threads, spilling, Parquet read/write). Use when a task spans ingest → store → serve, when the right specialist isn't obvious yet, or when you need the shared pipeline principles. Don't use for OLTP / relational schema design, one-off pandas or notebook analysis, generic SQL tutoring, ML model training, or BI-tool config — and when a specialist clearly fits (Iceberg → apache-lakehouse, API client/serving → data-api, DuckDB engine tuning → duckdb), skip the hub and go straight there.
+description: Hub for data-engineering pipeline work — picking a storage/ingestion/serving approach and applying the cross-cutting discipline (idempotency, incremental-not-full-recompute, schema fencing, resilience, bounded memory) that every data sub-skill shares. Routes to specialists — data-apache-lakehouse (Apache Iceberg lakehouses), data-api (consuming external APIs and serving data over HTTP), and data-duckdb (DuckDB as the single-node analytical engine — memory/threads, spilling, Parquet read/write). Use when a task spans ingest → store → serve, when the right specialist isn't obvious yet, or when you need the shared pipeline principles. Don't use for OLTP / relational schema design, one-off pandas or notebook analysis, generic SQL tutoring, ML model training, or BI-tool config — and when a specialist clearly fits (Iceberg → data-apache-lakehouse, API client/serving → data-api, DuckDB engine tuning → data-duckdb), skip the hub and go straight there.
 ---
 
 # Data engineering — routing hub
@@ -11,9 +11,9 @@ The shared entry point for building and operating data pipelines. Its job is two
 
 | Your task | Skill |
 |---|---|
-| Designing/operating an **Apache Iceberg** lakehouse (bronze/silver/gold, PyIceberg, catalog choice, compaction/expire, WAP, snapshot rollback, single-host bounded-RAM writes) | **apache-lakehouse** |
+| Designing/operating an **Apache Iceberg** lakehouse (bronze/silver/gold, PyIceberg, catalog choice, compaction/expire, WAP, snapshot rollback, single-host bounded-RAM writes) | **data-apache-lakehouse** |
 | **Consuming** an external HTTP API for ingestion (rate limits, backoff, pagination, auth, response validation) **or serving** gold/analytical data over HTTP (FastAPI + DuckDB, pushdown, keyset pagination, cache invalidation) | **data-api** |
-| Using **DuckDB** as the compute engine — tuning memory/threads, larger-than-memory spilling, Parquet read/write layout, connection lifecycle, EXPLAIN profiling | **duckdb** |
+| Using **DuckDB** as the compute engine — tuning memory/threads, larger-than-memory spilling, Parquet read/write layout, connection lifecycle, EXPLAIN profiling | **data-duckdb** |
 | Choosing *between* storage formats (Iceberg vs Delta vs plain Parquet vs embedded DuckDB), or the task spans ingest → store → serve | start here, then hand off |
 | Generic interface/contract design unrelated to data movement | `api-and-interface-design` (not a data skill) |
 | Wrapping an API as a live tool Claude calls at runtime | build an **MCP server**, not a skill |
@@ -69,6 +69,6 @@ Every run records what it consumed and produced — a watermark, a row count, a 
 ## References
 
 - **Shared resilience & idempotency code** (retry + jitter, circuit breaker, dead-letter queue, idempotency keys): [`references/resilience-and-idempotency.md`](references/resilience-and-idempotency.md)
-- Specialist: **apache-lakehouse** — the Iceberg-specific expression of these principles (OCC retry, snapshot watermarks, WAP branches, compaction).
+- Specialist: **data-apache-lakehouse** — the Iceberg-specific expression of these principles (OCC retry, snapshot watermarks, WAP branches, compaction).
 - Specialist: **data-api** — the API-specific expression (rate-limit buckets, pagination-cursor watermarks, response schema fencing; serving with pushdown + keyset pagination + cache invalidation).
-- Specialist: **duckdb** — the embedded-engine expression (memory/thread budgeting, larger-than-memory spilling and its limits, Parquet read/write layout, connection-as-cache).
+- Specialist: **data-duckdb** — the embedded-engine expression (memory/thread budgeting, larger-than-memory spilling and its limits, Parquet read/write layout, connection-as-cache).

@@ -146,4 +146,4 @@ use `:memory:` for genuinely transient compute. Don't default to `:memory:` by h
 - Serving DuckDB query results over HTTP (one connection per worker, pushdown, keyset pagination,
   publish-token cache): see **data-api** → `references/serving.md`.
 - Querying Iceberg tables (`iceberg_scan`, catalog reads, snapshot-pinned scans): see
-  **apache-lakehouse**. The tuning here (memory/threads/spilling) applies to those scans too.
+  **data-apache-lakehouse**. The tuning here (memory/threads/spilling) applies to those scans too.

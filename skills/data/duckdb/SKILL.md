@@ -1,11 +1,11 @@
 ---
-name: duckdb
-description: Use when building or debugging pipelines that use DuckDB as the embedded analytical engine — tuning memory_limit and threads, handling larger-than-memory queries and disk spilling, reading Parquet/CSV efficiently (predicate & projection pushdown, glob/Hive partitioning, union_by_name), writing Parquet well (PER_THREAD_OUTPUT, ROW_GROUP_SIZE, the partitioned-write temp-blowup trap), connection reuse, and EXPLAIN ANALYZE profiling. Covers DuckDB-over-Parquet and DuckDB-as-query-layer on a single node. Don't use as an OLTP/transactional application database, for cluster-scale work that genuinely exceeds one big node, or for generic SQL tutoring. For querying Iceberg tables (`iceberg_scan`, catalog reads) see apache-lakehouse; for serving DuckDB results over HTTP see data-api.
+name: data-duckdb
+description: Use when building or debugging pipelines that use DuckDB as the embedded analytical engine — tuning memory_limit and threads, handling larger-than-memory queries and disk spilling, reading Parquet/CSV efficiently (predicate & projection pushdown, glob/Hive partitioning, union_by_name), writing Parquet well (PER_THREAD_OUTPUT, ROW_GROUP_SIZE, the partitioned-write temp-blowup trap), connection reuse, and EXPLAIN ANALYZE profiling. Covers DuckDB-over-Parquet and DuckDB-as-query-layer on a single node. Don't use as an OLTP/transactional application database, for cluster-scale work that genuinely exceeds one big node, or for generic SQL tutoring. For querying Iceberg tables (`iceberg_scan`, catalog reads) see data-apache-lakehouse; for serving DuckDB results over HTTP see data-api.
 ---
 
 # DuckDB — embedded analytical engine
 
-DuckDB as the compute layer of a single-node data pipeline: vectorized, columnar, in-process, reading and writing Parquet directly with filter and projection pushdown. This skill is the engine discipline — memory, threads, spilling, file layout, and connection lifecycle. It is the format-agnostic complement to **apache-lakehouse** (Iceberg specifics) and **data-api** (serving), and inherits the cross-cutting principles from the **data** hub.
+DuckDB as the compute layer of a single-node data pipeline: vectorized, columnar, in-process, reading and writing Parquet directly with filter and projection pushdown. This skill is the engine discipline — memory, threads, spilling, file layout, and connection lifecycle. It is the format-agnostic complement to **data-apache-lakehouse** (Iceberg specifics) and **data-api** (serving), and inherits the cross-cutting principles from the **data** hub.
 
 > **Verified:** 2026-06 against DuckDB 1.5.x. Numbers below (memory-per-thread, thread multipliers,
 > ROW_GROUP_SIZE defaults) are guidance from the DuckDB performance docs and are version-sensitive —
@@ -87,4 +87,4 @@ A persistent `.duckdb` file has compression on by default (often ~8× smaller, a
 - Tuning workloads: <https://duckdb.org/docs/current/guides/performance/how_to_tune_workloads>
 - Parquet tips: <https://duckdb.org/docs/current/data/parquet/tips>
 - Out-of-memory guide: <https://duckdb.org/docs/current/guides/performance/oom>
-- Querying Iceberg from DuckDB → **apache-lakehouse**; serving DuckDB results over HTTP → **data-api**; shared pipeline principles → **data** hub.
+- Querying Iceberg from DuckDB → **data-apache-lakehouse**; serving DuckDB results over HTTP → **data-api**; shared pipeline principles → **data** hub.

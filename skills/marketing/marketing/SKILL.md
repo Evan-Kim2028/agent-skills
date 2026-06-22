@@ -1,6 +1,6 @@
 ---
 name: marketing
-description: Use when creating, reviewing, or clarifying marketing assets: positioning, offers, landing pages, websites, emails, ads, sales copy, lead magnets, testimonials, referral loops, launches, word-of-mouth, social content, or internal mission messaging. Choose a more specific marketing sub-skill when one fits, such as marketing/offers, marketing/storybrand, marketing/cashvertising, marketing/contagious, or marketing/going-viral.
+description: Use when creating, reviewing, or clarifying marketing assets: positioning, offers, landing pages, websites, emails, ads, sales copy, lead magnets, testimonials, referral loops, launches, word-of-mouth, social content, or internal mission messaging. Choose a more specific marketing sub-skill when one fits, such as marketing-offers, marketing-storybrand, marketing-cashvertising, marketing-contagious, or marketing-going-viral.
 ---
 
 # Marketing
