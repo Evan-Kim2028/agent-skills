@@ -55,6 +55,8 @@ Every layer-to-layer promote carries a persisted high-water mark on its time/seq
 
 PyIceberg has no `incrementalAppendScan` yet (Java does). A watermark column committed atomically with the data is the substitute, and it lines up with Iceberg's own model: each commit bumps `last-sequence-number`; your watermark carries equivalent semantics at the row level.
 
+**Concrete implementation — the watermark is a table property committed *with* the data.** Store the last-consumed source position (max `event_ts`/`sequence_id`, or the source snapshot id) as a property on the *target* table, e.g. `wm.<source>.<kind>`. The clean form is one transaction — `with target.transaction() as tx: tx.append(batch); tx.set_properties({"wm.sales.silver": str(new_wm)})` — so data and watermark land in a single atomic commit and can never disagree. A two-commit form (data, then a separate property bump) is acceptable **only** when every write is an idempotent upsert/partition-overwrite, so a crash between the two commits merely re-processes the last window. It's metadata-only, free to read at planning time, and needs no extra sidecar table. Full recipe: [`references/single-host-operations.md`](references/single-host-operations.md).
+
 **Test:** if the upstream table grew 10× tomorrow, would this transform's runtime grow 10×? If yes, it lacks a watermark.
 
 ### Every aggregate has a declared shape
@@ -78,6 +80,8 @@ There are now three legitimate ways to own maintenance — pick one explicitly, 
 1. **External engine** — Spark procedures or Trino `EXECUTE optimize` on a schedule. Most control; you operate the cluster.
 2. **Managed / zero-ops storage** `[2025]` — the catalog or storage layer runs policy-driven compaction, snapshot expiration, **and** orphan-file removal on the backend, decoupled from your Python pipeline. Examples: Amazon S3 Tables (continuous compaction + expiration since 2025), Cloudflare R2 Data Catalog, Polaris-managed maintenance. This is the only option where expiry *and* physical GC both happen without you wiring a second job.
 3. **Hybrid** — PyIceberg `expire_snapshots` for metadata hygiene from your pipeline, plus a scheduled external/managed job for the physical `remove_orphan_files` + compaction it cannot do.
+
+On a single host with no cluster, the "external engine" is usually a `systemd` timer (or cron) that runs PyIceberg `expire_snapshots` plus a scheduled DuckDB/Spark compaction + orphan-removal step — a legitimate option 1, just hand-wired (see [`references/single-host-operations.md`](references/single-host-operations.md)).
 
 **Test:** name the person/service, the cadence, and the command (or backend policy) that maintains this table — **and** confirm physical file GC is covered, not just metadata expiry. If any of those is "I'll figure it out," the maintenance does not exist.
 
@@ -115,7 +119,7 @@ The REST Catalog spec is the standardized interface, and every serious catalog s
 - **Hive Metastore** — only worth it if you already run one and intend to keep it. Not worth standing up new.
 - **Hadoop / file-system catalog** — local dev only. Unsafe on S3 without a DynamoDB sidecar (no atomic rename).
 - **`tabulario/iceberg-rest`** — REST reference implementation. Prototype only.
-- **SQLite / in-memory** — local dev only.
+- **SQLite (`SqlCatalog`)** — local dev, *and* a legitimate **single-host / single-writer production** catalog (one VPS, one writer process per table): the commit pointer is a local `.db` file, so there's no network round-trip per commit. It has **no cross-host CAS** — never point multiple hosts or writers at it. In-memory: tests only. Config recipe (with an S3-compatible store like SeaweedFS/MinIO) in [`references/single-host-operations.md`](references/single-host-operations.md).
 
 **Catalog migration is a pointer move, not a data copy.** Use the `iceberg-catalog-migrator` CLI (lives in the Project Nessie repo) to move tables between any of the above. Prefer `migrate` (transfers ownership, removes source) over `register` (leaves both pointing at the same data) — concurrent writes through two catalogs to the same table is silent corruption.
 
@@ -150,6 +154,38 @@ When you see one of these, stop and audit — the table tells you which principl
 | `COUNT DISTINCT` SLA assumed via puffin files | PyIceberg doesn't read/write puffin; design around it |
 | Schema evolution mid-CDC cycle | Changelog views span schema boundaries and break; pause CDC during evolution |
 | `register` used (not `migrate`) for catalog cutover with writers still active on old catalog | Two writers, no shared CAS — corruption path |
+
+## Running on a single host (bounded RAM, no cluster)
+
+Much of this skill assumes you *can* reach for Spark/Trino. Plenty of real Iceberg lakehouses run on one box — a single VPS, one writer process per table, a few GB of RAM. The format supports this fine; the discipline is keeping peak memory bounded and *proving* it. Code for everything below: [`references/single-host-operations.md`](references/single-host-operations.md).
+
+### Peak memory is bounded by one batch, not one table
+
+A PyIceberg `append`/`overwrite` of a 5 GB Arrow table needs 5 GB resident. The fix is to never hold the whole result set: stream a `pyarrow.RecordBatchReader` and append one batch per snapshot, so peak RAM is one batch regardless of total size. Use Polars `scan_parquet(...).sink_*` for transforms and `scan_parquet(p).limit(0).collect().to_arrow().schema` to get a schema without materializing. The cost is more snapshots — compact them on the maintenance pass.
+
+**Test:** does this write's peak RSS depend on total row count, or on batch size? If it scales with the table, it isn't streaming.
+
+### Batch size adapts to the budget; it isn't a constant
+
+A hardcoded `max_files=50` either OOMs on a busy day or wastes RAM on a quiet one. Read the actual budget — cgroup v2 `memory.current` vs `memory.max`, or a `*_MEMORY_MAX_GB` env — and scale the decode/write batch between a floor and a cap by current headroom. Defer the heavy gold rebuild when RSS is already near budget rather than letting the OOM killer arbitrate.
+
+**Test:** if you halve the host's RAM, does the pipeline shrink its batches and survive, or OOM unchanged?
+
+### Heavy stages run in their own process
+
+A single long-lived promote accretes RSS across decode → curate → silver → gold and rarely returns freed heap to the OS. Run memory-heavy or leaky stages as a `subprocess` (optionally `systemd-run --scope -p MemoryMax=NG -p MemorySwapMax=0` for a hard cap), so the OS reclaims every byte at exit before the next stage starts. This is also per-stage OOM enforcement without containers.
+
+**Test:** after the analytics stage finishes, has the parent's RSS returned to its pre-stage level? If not, isolate the stage.
+
+## Operational resilience
+
+The properties that keep an unattended single-writer pipeline from corrupting state or wedging on an upstream outage. Code in [`references/single-host-operations.md`](references/single-host-operations.md).
+
+- **OCC retry is the exactly-once primitive — implement it, don't hope.** Wrap every commit in retry-on-`CommitFailedException` with exponential backoff + jitter (≈5 attempts). Two writers racing the same table is normal; the loser retries against the new snapshot. Without this, concurrent commits surface as hard failures.
+- **Fail fast on a dead dependency; don't retry into a wall.** A circuit breaker per external dependency (catalog, object store, each upstream API) trips OPEN after N consecutive failures and short-circuits until a HALF-OPEN probe succeeds — so one outage degrades one lane instead of hanging every retry loop on the host.
+- **Failed records go to a dead-letter queue, not the void.** Serialize un-processable items to a `.dead_letters/` path with enough context to replay. A swallowed exception in an unattended loop is data loss you discover a week later.
+- **Schema is fenced at every layer boundary.** `validate_bronze` / `validate_silver` / `validate_gold` assert column presence, types, and null fractions before the write commits, with a strict mode (`QUALITY_STRICT=1`) that turns warnings into hard failures in production. The fence's job is to give a downstream consumer a clear error *at the boundary*, not a cryptic Arrow cast error three stages later.
+- **Two-commit watermarks are safe only because writes are idempotent.** When the data write and the watermark advance are separate commits, a crash between them re-processes the last window — harmless precisely because every write is an idempotent upsert/partition-overwrite. If your writes aren't idempotent, co-commit the watermark in the same transaction (see *Forward motion is a watermark*).
 
 ## PyIceberg metadata inspection (your production diagnostic toolkit)
 
@@ -267,6 +303,7 @@ PyIceberg. Headline as of `[v0.11.1 · 2026-05]`: `expire_snapshots` is metadata
 - Iceberg spec: <https://iceberg.apache.org/docs/latest/>
 - PyIceberg docs: <https://py.iceberg.apache.org/>
 - PyIceberg source (read this when behavior is undocumented or you suspect a version gap): <https://github.com/apache/iceberg-python>
+- **Single-host operations** — bounded-RAM streaming writes, adaptive batch sizing, subprocess isolation, table-property watermarks, `SqlCatalog` + S3-compatible config, systemd-timer maintenance, OCC retry, circuit-breaker/DLQ, schema guards: [`references/single-host-operations.md`](references/single-host-operations.md)
 - *Apache Iceberg: The Definitive Guide* — Shiran, Hughes, Merced (O'Reilly, 2024). Source for the internals, metadata-table, branching, and rollback material in this skill. Note: written before Polaris and Lakekeeper, and predates much of PyIceberg's branching API — treat its Spark/SQL examples as concept references, not recipes.
 - Polaris: <https://polaris.apache.org/>
 - Lakekeeper: <https://lakekeeper.io/>
