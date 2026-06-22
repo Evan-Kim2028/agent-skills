@@ -8,10 +8,11 @@ description: Use when designing, modifying, or debugging Apache Iceberg lakehous
 Domain skill for building and operating Python-first Apache Iceberg lakehouses: PyIceberg + Polars/DuckDB medallion writes, REST/Glue catalog choice, and the architectural discipline that keeps incremental jobs incremental.
 
 > **Verified:** 2026-05-28 against PyIceberg 0.11.1, pyiceberg-core 0.8.0, Iceberg spec V2/V3.
-> Claims tagged `[v0.11]` and the **PyIceberg capability matrix** are version-sensitive — re-check
-> against your installed version (`pip show pyiceberg`) before trusting them; the matrix lists how to
-> verify each in seconds. Everything else (Iceberg internals, the architectural principles) is
-> format/architecture-level and ages slowly.
+> Claims tagged `[v0.11]` and the **PyIceberg capability matrix** (in
+> [`references/pyiceberg-capabilities.md`](references/pyiceberg-capabilities.md)) are
+> version-sensitive — re-check against your installed version (`pip show pyiceberg`) before trusting
+> them; the matrix lists how to verify each in seconds. Everything else (Iceberg internals, the
+> architectural principles) is format/architecture-level and ages slowly.
 
 ## When to invoke this skill
 
@@ -237,23 +238,14 @@ Before writing a new transform, derived table, gold aggregate, or maintenance jo
 
 ## PyIceberg capability matrix (version-sensitive)
 
-These are the claims most likely to age as PyIceberg releases. Status is pinned to a single version + date so you re-check **one table**, not scattered prose. The "Verify by" column turns "is this still true?" into a few seconds of grep/doc-check against your installed version.
-
-| Capability | Status `[v0.11.1 · 2026-05]` | Verify by |
-|---|---|---|
-| `expire_snapshots` | ✅ exists, but **metadata-only — does NOT physically delete orphaned data files** | `pyiceberg/table/maintenance.py`; the builder's `_commit` emits only `RemoveSnapshotsUpdate`, no `io.delete_file` |
-| `remove_orphan_files` | ❌ absent — physical file GC still needs Spark/Trino/managed | `rg remove_orphan <site-packages>/pyiceberg` returns nothing |
-| `rewrite_data_files` / compaction | ❌ not in PyIceberg | docs / `rg rewrite_data_files` |
-| `rewrite_manifests` | ❌ not in PyIceberg | same |
-| Equality delete read **or** write | ❌ unreliable — use COW upsert from Python, or a Spark/Flink hop for MOR | release notes; do not assume the Rust core changed this |
-| Position delete read (MOR) | ⚠️ applied on read, but compact mixed-engine MOR before PyIceberg consumes | docs |
-| `incrementalAppendScan` | ❌ Java-only; use a watermark column from Python | docs |
-| Bucket / Truncate partition **write** | ❌ — do initial layout via Spark/Trino | docs |
-| Branches & tags (`manage_snapshots`) | ✅ since 0.8 | `pyiceberg/table/__init__.py` |
-| Puffin / Theta-sketch read/write | ❌ — don't pin a `COUNT DISTINCT` SLA to it | docs |
-| `pyiceberg-core` (Rust) | ✅ dependency (0.8.0, pinned `<0.9`) — accelerates Parquet/Avro/metadata parsing under the hood; **does not** add delete-vector authoring or change the equality-delete limits above | `pip show pyiceberg-core`; `Requires-Dist` in pyiceberg METADATA |
-
-When any of these changes in a future release, update this one table and the **Verified** header date — the prose elsewhere points back here rather than restating versions.
+The claims most likely to age as PyIceberg releases live in a single table in
+[`references/pyiceberg-capabilities.md`](references/pyiceberg-capabilities.md) — pinned to one
+version + date, with a "Verify by" column that turns "is this still true?" into a few seconds of
+grep/doc-check. Read it before relying on any `expire_snapshots` / `remove_orphan_files` /
+equality-delete / compaction claim, and update that one table (not scattered prose) when you bump
+PyIceberg. Headline as of `[v0.11.1 · 2026-05]`: `expire_snapshots` is metadata-only, and
+`remove_orphan_files` / `rewrite_data_files` / `rewrite_manifests` / equality deletes are all
+**absent** from PyIceberg — physical GC and compaction still need Spark/Trino/managed.
 
 ## PyIceberg gotchas worth memorizing
 
@@ -284,4 +276,6 @@ When any of these changes in a future release, update this one table and the **V
 - Amazon S3 Tables — managed Iceberg storage with policy-driven maintenance `[2025]`: <https://docs.aws.amazon.com/AmazonS3/latest/userguide/s3-tables-maintenance.html>
 - Cloudflare R2 Data Catalog (managed Iceberg) `[2025]`: <https://developers.cloudflare.com/r2/data-catalog/>
 
-**Re-verifying version-sensitive claims:** the fastest check is grepping the installed package — e.g. `rg 'def expire_snapshot|remove_orphan' "$(python -c 'import pyiceberg,os;print(os.path.dirname(pyiceberg.__file__))')"`. That is exactly how the capability matrix above was confirmed; redo it and update the **Verified** header date when you bump PyIceberg.
+> Version-sensitive capability claims and how to re-verify them live in
+> [`references/pyiceberg-capabilities.md`](references/pyiceberg-capabilities.md). Update that table and
+> its **Verified** date when you bump PyIceberg.
