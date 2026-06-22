@@ -14,6 +14,8 @@ Domain skill for building and operating Python-first Apache Iceberg lakehouses: 
 > them; the matrix lists how to verify each in seconds. Everything else (Iceberg internals, the
 > architectural principles) is format/architecture-level and ages slowly.
 
+> **Part of the `data` skill family.** The cross-cutting pipeline principles (idempotency, watermarks, schema fencing, resilience, bounded memory) are stated generally in the **data** hub; this skill is their Apache Iceberg expression. For consuming or serving APIs around the lakehouse, see **data-api**.
+
 ## When to invoke this skill
 
 - Designing a new pipeline, layer, or transform in a bronze/silver/gold lakehouse.
