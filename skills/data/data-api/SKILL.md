@@ -78,6 +78,18 @@ Cache query results keyed by a publish/version token (a `.publish_token`, or the
 
 **Test:** after a gold rebuild, does the API serve the new data on the next request? If it serves stale until a TTL expires, the cache isn't tied to the publish.
 
+### Caches are bounded types; executors wait on exit
+
+A cache is a type whose constructor requires a max size — never a bare module-level `dict` that only
+checks TTL on read; that shape grows monotonically to OOM under real traffic (measured). If a per-key
+lock registry sits alongside the cache, it must be bounded too. A shared `ThreadPoolExecutor`
+(replacing a scoped `with ThreadPoolExecutor()`) drops the implicit wait-on-exception the `with` form
+gives you — wait for every submitted future in `finally`, or a caller's cleanup can run while futures
+are still using resources it just closed.
+
+**Test:** can the cache be constructed without a size? Does an exception inside one submitted future
+let the caller's cleanup proceed before every future finishes? Either "yes" is the bug.
+
 ### One read-only connection per worker; factory the routers
 
 Open one read-only DuckDB connection per worker with a `memory_limit`, not one per request. For many similar gold tables, generate list/by-key/top-N/summary endpoints from a spec dict (a new table = a ~10-line registration), with a `safe_where` helper that `DESCRIBE`s the table so one router tolerates slightly different column sets. Whitelist sort/filter fields against an allowlist; emit pydantic response models so FastAPI publishes a correct OpenAPI contract.
@@ -87,5 +99,5 @@ Open one read-only DuckDB connection per worker with a `memory_limit`, not one p
 ## References
 
 - **Consuming external APIs** — rate limiting, backoff, pagination, auth, response validation, caching, `polite_get`: [`references/client-ingestion.md`](references/client-ingestion.md)
-- **Serving data over HTTP** — pushdown, keyset pagination, cache invalidation, factory routers, connection management: [`references/serving.md`](references/serving.md)
+- **Serving data over HTTP** — pushdown, keyset pagination, cache invalidation, bounded/thread-safe caches, executor lifecycle, factory routers, connection management: [`references/serving.md`](references/serving.md)
 - **Shared resilience & idempotency** (hub): [`../data/references/resilience-and-idempotency.md`](../data/references/resilience-and-idempotency.md)

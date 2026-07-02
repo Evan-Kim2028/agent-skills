@@ -136,6 +136,78 @@ def cached_query(conn, warehouse: str, sql: str, params: dict) -> list[dict]:
 
 In production replace `_store` with Redis so token-flip invalidation broadcasts across all workers.
 
+**The `_store` dict above is unbounded — don't ship it as-is.** A module-level `dict` keyed by
+`(id, window)` with TTL checked only on read never evicts on its own; measured failure: exactly this
+shape (checked-on-read-only TTL, no size bound) grew monotonically to OOM under real traffic. See
+**Bounded, thread-safe caches** below before this pattern reaches production.
+
+## Bounded, thread-safe caches — don't let a serving cache grow to OOM
+
+A production cache needs three properties the `_store` dict above has none of: a **bounded type**
+whose constructor requires a max size (misuse-resistant — you cannot construct an unbounded one),
+**thread safety** under concurrent request handlers, and — if a per-key lock registry sits alongside
+the cache (e.g. to serialize recomputation per key) — that registry must be bounded too, or it's the
+same unbounded-growth leak one level down.
+
+```python
+import threading
+from cachetools import TTLCache   # any maxsize+ttl cache works; the point is the type, not the library
+
+class BoundedCache:
+    def __init__(self, maxsize: int, ttl_s: float):
+        if maxsize <= 0:
+            raise ValueError("maxsize must be > 0 — a BoundedCache cannot be unbounded")
+        self._c = TTLCache(maxsize=maxsize, ttl=ttl_s)
+        self._lock = threading.Lock()
+
+    def get_or_set(self, key, compute):
+        with self._lock:
+            if key in self._c:
+                return self._c[key]
+        value = compute()
+        with self._lock:
+            self._c[key] = value
+        return value
+
+_query_cache = BoundedCache(maxsize=10_000, ttl_s=300.0)   # ctor forces a size — can't skip it
+```
+
+**Test:** try to construct the cache with no size argument — does it raise, or silently default to
+unbounded? If it defaults, someone eventually will, and the process OOMs weeks later under real
+traffic, not in testing.
+
+## Executor lifecycle — don't drop wait-on-exception
+
+`with ThreadPoolExecutor() as pool: ...` waits for every submitted future on exit, *including* when
+the `with` block raises — that implicit wait is part of the context manager's contract. Replacing it
+with a shared, module-level executor (to avoid spinning up threads per request) silently drops that
+guarantee: on an exception, the handler returns or re-raises immediately while its submitted futures
+are still running against resources (a DB cursor, a file handle) that the caller's own cleanup just
+closed.
+
+```python
+from concurrent.futures import ThreadPoolExecutor, wait
+
+# Bad: shared executor, no wait — futures can outlive the resources they're using
+_executor = ThreadPoolExecutor(max_workers=8)
+
+def handle(conn, queries):
+    futures = [_executor.submit(query, conn, q) for q in queries]
+    return [f.result() for f in futures]   # if one raises, the rest keep running against `conn`
+
+# Good: still shared (avoid per-request thread spin-up), but wait for all futures in `finally`
+def handle_safe(conn, queries):
+    futures = [_executor.submit(query, conn, q) for q in queries]
+    try:
+        return [f.result() for f in futures]
+    finally:
+        wait(futures)   # every future is done before `conn` (or anything else) is released
+```
+
+**Test:** raise inside one submitted task while others are still running. Does the caller's cleanup
+(closing `conn`, releasing a lock) happen before or after every future finishes? If before, a future
+can touch a resource that's already been closed underneath it.
+
 ## Factory router for many similar gold tables
 
 One spec dict generates list / by-key / top-N / summary endpoints. A new gold table is a ~10-line
