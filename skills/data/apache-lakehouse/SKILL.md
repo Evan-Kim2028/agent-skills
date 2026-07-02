@@ -299,6 +299,9 @@ PyIceberg. Headline as of `[v0.11.1 · 2026-05]`: `expire_snapshots` is metadata
 - **`HadoopCatalog` on S3 is unsafe under concurrent writers.** No atomic rename. Use REST/Glue/Nessie/JDBC for any multi-writer S3 deployment.
 - **Puffin files** `[v0.11]` — PyIceberg doesn't read or write them. Don't depend on Theta-sketch-backed COUNT DISTINCT if PyIceberg is in the loop.
 - **Cherry-pick is single-snapshot.** A multi-commit ETL job on a branch can't be cherry-picked atomically — collapse it first, or use Nessie branch merge.
+- **Incremental diffs must bound to the promoted watermark, never `current_snapshot()`.** Nightly compaction creates new snapshots that list every rewritten file as ADDED; diffing against `current_snapshot()` re-processes everything compaction touched, every run. Bound `to_snap` to the last watermark your pipeline actually promoted, not the table's live head.
+- **A dropped table can resurrect itself.** `drop_table` is metadata-only, and any `get_or_create_table`-style helper still called on a schedule will silently recreate a "dropped" table on its next write. See **data-table-lifecycle** for the stop-writers → drop → record-prefixes → physical-cleanup sequence that makes a drop actually durable.
+- Additional production-verified gotchas (`all_files()` OOM/ArrowInvalid, `dynamic_partition_overwrite` ValueError, compaction's `operation=overwrite` stamp) live in the capability matrix's **Additional gotchas — verified 2026-07-02** section.
 
 ## References
 

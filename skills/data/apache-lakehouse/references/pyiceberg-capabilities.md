@@ -28,3 +28,19 @@ above — the prose in `SKILL.md` points back here rather than restating version
 **Re-verifying version-sensitive claims:** the fastest check is grepping the installed package — e.g.
 `rg 'def expire_snapshot|remove_orphan' "$(python -c 'import pyiceberg,os;print(os.path.dirname(pyiceberg.__file__))')"`.
 That is exactly how the matrix above was confirmed; redo it and update the **Verified** date when you bump PyIceberg.
+
+## Additional gotchas — verified 2026-07-02, live production, PyIceberg 0.11.1
+
+Found and reproduced during a production stabilization engagement, separate from the table above (that
+table's own **Verified: 2026-05-28** stands for its own rows — these are additions, not a re-check of it).
+
+| Capability / behavior | Status `[v0.11.1, live-verified 2026-07-02]` | Workaround / verify by |
+|---|---|---|
+| `table.inspect.all_files()` on high-snapshot-count tables | ⚠️ materializes stats columns across **all snapshots**, not just current — OOM'd a 3G cgroup on a 3,300-snapshot table | Stream file paths per **unique manifest** instead (manifests dedupe across snapshots: 331 manifests vs 3,300 snapshots in the measured table). Peak dropped from 3.0G+1G swap to 124–151MB (~24x headroom). Match `discard_deleted=True` semantics if replacing `all_files()` exactly. |
+| `table.inspect.all_files()` on zero-manifest tables | ❌ raises pyarrow `ArrowInvalid: Must pass at least one table` | A zero-row `append()` creates a snapshot with 0 manifests. Guard the call, or catch `ArrowInvalid` and treat as an empty result. |
+| `Table.dynamic_partition_overwrite` on non-identity transforms | ❌ raises `ValueError` on e.g. `MonthTransform` partitions | Use `table.overwrite(overwrite_filter=<row-predicate>)` scoped to the partition boundary (e.g. month-scoped read-merge-overwrite) instead — idempotent and safe at month boundaries. |
+| Compaction via `UpdateSnapshot.overwrite()` | ⚠️ stamps `operation=overwrite`, **not** `operation=replace` | Snapshot-diff / data-only filters that must exclude compaction noise need to key on the rewrite-strategy summary marker, not bare `operation`. Foreign engines (Spark) expect `operation=replace` for compaction — the mismatch breaks cross-engine diff tooling that assumes it. |
+
+**Verify by:** reproduce directly — `all_files()` OOM and the zero-manifest `ArrowInvalid` are both a
+few lines against any table with the stated snapshot/manifest shape; the `dynamic_partition_overwrite`
+`ValueError` reproduces on any table partitioned by a non-identity transform.
