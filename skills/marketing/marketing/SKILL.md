@@ -29,7 +29,8 @@ Load at most **1–3** specialists. Do not spray every book skill on one asset.
 | Ads, email promo, opt-in, CTA/psychology, cart recovery | **marketing-cashvertising** | Message clear; response weak |
 | Referral, PR, shareability, STEPPS | **marketing-contagious** | Need talk/share, not just clarity |
 | Social hooks, formats, Gold/Silver/Bronze, retention | **marketing-going-viral** | Social content strategy |
-| Brand voice / long-form author voice | **writer-style** if installed | Voice pack, not offer design |
+| Brand voice / long-form author voice | **writing** → **writer-style** | Named voice pack |
+| Less AI / tighter house prose | **writing** → **writing-prose** | After framework draft |
 | Product app UI density/mobile | **product-design** | Not a landing-page problem |
 | Unclear multi-step marketing | **start here** | Default |
 

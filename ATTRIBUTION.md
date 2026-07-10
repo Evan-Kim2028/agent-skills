@@ -14,7 +14,7 @@ into your install. Distilled book guidance must not quote long passages.
 
 | Skill | Credit |
 |-------|--------|
-| `data`, `product-design`, `frontend-design`, `marketing`, `quality-check` | Evan-Kim2028/agent-skills — routing synthesis |
+| `data`, `product-design`, `frontend-design`, `marketing`, `writing`, `quality-check` | Evan-Kim2028/agent-skills — routing synthesis |
 
 ---
 
@@ -44,6 +44,18 @@ into your install. Distilled book guidance must not quote long passages.
 | Skill | External lineage |
 |-------|------------------|
 | data-apache-lakehouse, data-duckdb, data-api, data-pipeline-operations, data-table-lifecycle, data-semantic-quality | Production lakehouse practice (measured cases in skill text); Iceberg/DuckDB/PyIceberg docs concepts — original synthesis, not a third-party skill copy |
+
+---
+
+## Writing (this pack)
+
+| Skill | Credit | Bundled? |
+|-------|--------|----------|
+| **writer-style** | [solanabr/writer-style-skill](https://github.com/solanabr/writer-style-skill) — Superteam Brazil / Kaue (MIT). Two-layer voice engine, naturalness/deslop/facts-first rules, kaue pack, tools. | **Yes** — full skill under `skills/writing/writer-style/` with upstream `LICENSE` |
+| **writing-prose** | House floor adapted from the same naturalness/deslop/facts-first principles for **non-persona** writing | Original synthesis; cites solanabr pack |
+| **writing** (hub) | Evan-Kim2028/agent-skills router | Original |
+
+Do not strip the MIT copyright notice from `skills/writing/writer-style/LICENSE`.
 
 ---
 

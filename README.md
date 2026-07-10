@@ -6,23 +6,26 @@ Portable agent skills for Claude Code, Grok Build, Cursor, and similar tools.
 
 ---
 
-## Start here: five hubs
+## Start here: six hubs
 
 **Remember only these.** Say the hub name (or describe the job). The agent should load the hub first, then one specialist.
 
 | Hub | Use for |
 |-----|---------|
 | **`data`** | Pipelines / lakehouse / APIs / ops / row quality |
-| **`product-design`** | Product UI/UX craft — density, mobile chrome, tokens, a11y, explore (owns craft specialists) |
+| **`product-design`** | Product UI/UX craft — density, mobile chrome, tokens, a11y, explore |
 | **`frontend-design`** | Implement product UI in code (perf, SPA build path) |
-| **`marketing`** | Offers / messaging / ads / viral |
+| **`marketing`** | Offers / messaging / ads / viral (frameworks) |
+| **`writing`** | Human voice, anti-slop, facts-first prose (tone ≠ offer design) |
 | **`quality-check`** | Prove it — TDD, e2e, review, ship, regressions |
 
-### Craft vs build vs prove
+### Craft vs build vs prove vs write
 
 ```
 product-design   →  craft / mobile UX / “feels off”
 frontend-design  →  implement the feature in code
+marketing        →  offer / story / ads frameworks
+writing          →  sound like a human; named voice or house prose
 quality-check    →  prove it before “done”
 ```
 
@@ -49,6 +52,7 @@ install_skill "data/data" "data"
 install_skill "frontend/product-design" "product-design"   # craft hub
 install_skill "frontend/frontend-design" "frontend-design" # implement hub
 install_skill "marketing/marketing" "marketing"
+install_skill "writing/writing" "writing"
 install_skill "qa/quality-check" "quality-check"
 
 # --- data specialists (hub routes here) ---
@@ -89,6 +93,10 @@ for pair in \
   "marketing/contagious:marketing-contagious" \
   "marketing/going-viral:marketing-going-viral"
 do install_skill "${pair%%:*}" "${pair##*:}"; done
+
+# --- writing (voice + house prose) ---
+install_skill "writing/writing-prose" "writing-prose"
+install_skill "writing/writer-style" "writer-style"   # vendored solanabr/writer-style-skill (MIT)
 ```
 
 Re-run install after `git pull` if you use **copies** (they do not auto-update).  
@@ -105,6 +113,7 @@ Re-run install after `git pull` if you use **copies** (they do not auto-update).
 | **data** | hub + lakehouse, api, duckdb, pipeline-ops, table-lifecycle, semantic-quality |
 | **frontend** | **product-design** + **frontend-design** hubs + design-system, craft, web-quality, react-performance, mobile, mockup-implement, **ui-explore**, **browser-verify** (+ thin aliases) |
 | **marketing** | hub + offers, storybrand, cashvertising, contagious, going-viral |
+| **writing** | **writing** hub + **writing-prose** + **writer-style** (vendored [solanabr/writer-style-skill](https://github.com/solanabr/writer-style-skill), MIT) |
 | **qa** | **quality-check** hub (+ install docs for optional external companions) |
 
 ### Merged specialists (use the new names)
@@ -146,6 +155,10 @@ same craft specialists + **`react-performance`** · full implement pipeline · h
 
 `marketing-offers` · `marketing-storybrand` · `marketing-cashvertising` · `marketing-contagious` · `marketing-going-viral`
 
+### writing →
+
+`writer-style` (named voice / Kaue pack) · `writing-prose` (house human + opinion floor) · hand off conversion frameworks to **marketing**
+
 ### quality-check →
 
 `tdd` · `diagnose` · `browser-verify` · `web-quality` · `check-work` · `review` · … (see hub) · `data-semantic-quality` · hand off **frontend-design** for build phase
@@ -157,8 +170,9 @@ same craft specialists + **`react-performance`** · full implement pipeline · h
 ```
 skills/
   data/           # hub + specialists
-  frontend/       # hub + specialists (browser-verify, ui-explore, …)
+  frontend/       # product-design + frontend-design hubs + specialists
   marketing/      # hub + specialists
+  writing/        # writing hub + writer-style + writing-prose
   qa/             # quality-check hub
   design/         # html-design alias only
 ```
