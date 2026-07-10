@@ -182,7 +182,8 @@ Do not invent a fake skill name. Run the fallback, then note the gap.
 | Prove / regression / e2e / ship checklist | **quality-check** (this hub) |
 | Full feature | **frontend-design** while implementing → **this hub** before done |
 
-Attribution for specialists: [`references/sources.md`](references/sources.md).
+Attribution / install: [`references/companion-install.md`](references/companion-install.md),
+[`references/sources.md`](references/sources.md).
 
 ## Done criteria
 

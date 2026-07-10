@@ -70,7 +70,7 @@ skills/
 | [`mobile-product-ux`](skills/frontend/mobile-product-ux/SKILL.md) | Sticky chrome, sheets, safe areas, gestures, one-thumb product flows. |
 | [`mockup-implement`](skills/frontend/mockup-implement/SKILL.md) | Port signed-off HTML/Figma/mockups into production with fidelity (no freestyle redesign). |
 | [`html-design`](skills/design/html-design/SKILL.md) | Standalone HTML product-design iteration: before/after A/B compare pages, multi-variant switchers, floating picker bars — explore before production UI. |
-| [`quality-check`](skills/qa/quality-check/SKILL.md) | **QA routing hub** (`/quality-check`) — route to TDD, diagnose, browser/visual verify, web-quality, doubt-driven, check-work, review, ship; L3 race-matrix for debounce×URL. Prefer specialists when the path is already clear. |
+| [`quality-check`](skills/qa/quality-check/SKILL.md) | **QA routing hub** (`/quality-check`) — route to TDD, diagnose, browser/visual verify, web-quality, doubt-driven, check-work, review, ship; L3 race-matrix. Portable hub + [companion install](skills/qa/quality-check/references/companion-install.md) with credit to [mattpocock/skills](https://github.com/mattpocock/skills), [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills), and this pack. |
 
 ## Install
 
@@ -118,14 +118,23 @@ done
 
 # QA router — real copy into ~/.grok/skills/quality-check
 install_skill "qa/quality-check" "quality-check"
-# Specialists the hub routes to (install from their packs if not already present):
-#   tdd, diagnose, doubt-driven-development, check-work, review,
-#   visual-verify, browser-testing-with-devtools, web-quality, qa (issue filing),
-#   implement-until-green, shipping-and-launch, security-and-hardening,
-#   data-semantic-quality, ship-feature
+
+# Recommended companions (Matt Pocock + Addy Osmani + FE specialists from this pack).
+# Credits and tiers: skills/qa/quality-check/references/companion-install.md
+bash skills/qa/quality-check/scripts/install-companions.sh        # minimum tier
+# bash skills/qa/quality-check/scripts/install-companions.sh --full
 ```
 
-Re-copy after pulling agent-skills updates (copies do not auto-update).
+Re-copy after pulling updates (copies do not auto-update).
+
+### Companion packs (attribution)
+
+| Pack | Credit | Repo |
+|------|--------|------|
+| This pack | Evan-Kim2028 | https://github.com/Evan-Kim2028/agent-skills |
+| Engineering / TDD / diagnose / qa | Matt Pocock | https://github.com/mattpocock/skills |
+| Browser DevTools, doubt, ship, security | Addy Osmani | https://github.com/addyosmani/agent-skills |
+| check-work | Grok Build (bundled) | Product install |
 
 The `name:` field in each `SKILL.md` is the skill's identifier; the directory is organizational and need not match it (e.g. `skills/data/duckdb/` → `name: data-duckdb`).
 

@@ -1,18 +1,43 @@
-# Specialist sources (attribution)
+# Specialist sources & credit
 
-Specialists synthesize public practice; they are not copies of third-party repos.
+Third-party skill **bodies are not re-hosted** in this pack. Install from upstream
+and keep their licenses. Full paths, tiers, and a one-shot installer:
 
-| Skill | Primary sources |
-|-------|-----------------|
-| **visual-verify** | Playwright; webapp-testing skill lineage |
-| **browser-testing-with-devtools** | Chrome DevTools MCP / live-browser practice |
-| **web-quality** | Vercel Web Interface Guidelines; WCAG |
-| **tdd** | Classic TDD; Prove-It for bugs |
-| **diagnose** | Reproduce → minimize → instrument loops |
-| **doubt-driven-development** | Fresh-context adversarial review |
-| **check-work** | Session verifier subagent pattern |
-| **data-semantic-quality** | Write-time quality attributes; golden packs |
-| **quality-check** (this hub) | Routing + consumer interaction-race lessons (Evan-Kim2028/agent-skills) |
+→ **[`companion-install.md`](companion-install.md)**  
+→ **[`../scripts/install-companions.sh`](../scripts/install-companions.sh)**
 
-Optional external packs (gap-fill only, not a second router): e.g. petrkindlmann/qa-skills.
-Prefer **quality-check** for progressive disclosure; pull one external specialist only when a clear gap remains.
+## Packs
+
+| Pack | Author | Repository | Role for quality-check |
+|------|--------|------------|------------------------|
+| **agent-skills** | [Evan-Kim2028](https://github.com/Evan-Kim2028) | [github.com/Evan-Kim2028/agent-skills](https://github.com/Evan-Kim2028/agent-skills) | Hub (`quality-check`), FE specialists (`frontend-design`, `visual-verify`, `web-quality`, …), `data-semantic-quality` |
+| **agent-skills** | [Addy Osmani](https://addyosmani.com/) | [github.com/addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) | `browser-testing-with-devtools`, `doubt-driven-development`, `shipping-and-launch`, `security-and-hardening`, `code-review-and-quality`, `debugging-and-error-recovery`, `test-driven-development`, … |
+| **skills** | [Matt Pocock](https://www.mattpocock.com/) / AI Hero | [github.com/mattpocock/skills](https://github.com/mattpocock/skills) | `tdd`, `diagnose`, `review`, `qa`, `triage`, `to-issues`, `setup-matt-pocock-skills` |
+| **check-work** | Grok Build (xAI) | Product-bundled | Session self-verify; hub fallback if missing |
+
+## Default routing → credit (quick)
+
+| Hub default | Credit |
+|-------------|--------|
+| tdd | Matt Pocock — mattpocock/skills |
+| diagnose | Matt Pocock — mattpocock/skills |
+| review | Matt Pocock — mattpocock/skills |
+| qa | Matt Pocock — mattpocock/skills |
+| browser-testing-with-devtools | Addy Osmani — addyosmani/agent-skills |
+| doubt-driven-development | Addy Osmani — addyosmani/agent-skills |
+| shipping-and-launch | Addy Osmani — addyosmani/agent-skills |
+| security-and-hardening | Addy Osmani — addyosmani/agent-skills |
+| visual-verify, web-quality, frontend-design | Evan-Kim2028/agent-skills |
+| data-semantic-quality | Evan-Kim2028/agent-skills |
+| check-work | Grok Build bundled |
+| quality-check (this hub) | Evan-Kim2028/agent-skills — routing + interaction-race gotchas |
+
+## Lineage notes (non-code)
+
+- **visual-verify** — Playwright; webapp-testing skill lineage (Anthropic/OpenAI-style patterns).  
+- **web-quality** — Vercel Web Interface Guidelines / WCAG practical checks.  
+- **browser-testing-with-devtools** — Chrome DevTools MCP / live-browser practice (Addy Osmani pack).  
+- **doubt-driven-development** — fresh-context adversarial review (Addy Osmani pack).  
+- **tdd / diagnose** — real-engineering workflows (Matt Pocock pack).  
+
+Optional community QA libraries (e.g. petrkindlmann/qa-skills) are **not** required; do not treat as a second router over **quality-check**.
