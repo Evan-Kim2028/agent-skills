@@ -4,8 +4,8 @@ description: >
   Throwaway design exploration before production — standalone HTML A/B pickers,
   in-app multi-variant UI prototypes, or tiny terminal logic prototypes. Use when
   the user wants design options, compare A vs B, "prototype this", "try a few
-  designs", or /html-design. Prefer frontend-design when multi-step product UI
-  is unclear (it routes here for explore). Not for production ports
+  designs", or /html-design. Prefer product-design when multi-step product UX
+  craft is unclear; frontend-design for full FE builds. Not for production ports
   (mockup-implement after pick), charts (tufte), marketing copy, or ship proof
   (quality-check / browser-verify). Aliases: html-design, prototype.
 ---

@@ -4,9 +4,10 @@ description: >
   Audit and fix interaction quality — a11y, focus, forms, touch targets,
   semantics, motion preferences. Use only when the task is an a11y/guidelines
   pass or form/dialog interaction fix. Prefer quality-check when the goal is
-  ship/verify/regression; prefer frontend-design when building or redesigning
-  product UI (it routes here). Not for visual brand redesign, React performance
-  alone (react-performance), or Playwright/e2e proof loops (browser-verify).
+  ship/verify/regression; prefer product-design when multi-step product UX craft
+  is unclear; frontend-design for full FE builds. Not for visual brand redesign,
+  React performance alone (react-performance), or Playwright/e2e proof loops
+  (browser-verify).
 ---
 
 # Web quality (a11y + interaction)
