@@ -1,7 +1,13 @@
 # Chrome DevTools MCP — live browser mode
 
 > Loaded from **browser-verify** when mode B (live DevTools) is needed.
-> Attribution: condensed from the Addy Osmani *browser-testing-with-devtools* skill lineage.
+>
+> **Attribution:** Condensed security rules and workflows from the
+> **browser-testing-with-devtools** skill in
+> [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills)
+> (Addy Osmani). This is a short original synthesis for progressive disclosure —
+> **not** a verbatim copy of the upstream skill. Prefer upstream for full text;
+> keep their license if you install that skill separately.
 
 ## Setup
 

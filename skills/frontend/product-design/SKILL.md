@@ -41,6 +41,24 @@ product-design (this hub)
 | Explore options | A/B product chrome before committing production |
 | Product charts | KPI tiles, series charts that must stay honest (**tufte**) |
 
+## Primary ownership (vs frontend-design)
+
+These specialists **belong here first** (product UX). **frontend-design** only
+pulls them in as steps inside a full implement pipeline:
+
+| Primary under **product-design** | Why |
+|----------------------------------|-----|
+| **design-system** | Product visual law |
+| **product-ui-craft** | Density / hierarchy craft |
+| **mobile-product-ux** | Mobile product chrome |
+| **web-quality** | Interaction UX / a11y craft |
+| **ui-explore** | Explore before build |
+| **mockup-implement** | Fidelity after sign-off (craft path) |
+| **tufte** | Product chart judgment |
+
+**frontend-design** owns primarily: **react-performance**, SPA/feature structure,
+“build the page” orchestration.
+
 ## Routing table
 
 | Your task | Skill | Load when |
@@ -138,21 +156,23 @@ Sticky, overflow, gesture, density → **browser-verify** (or **quality-check** 
 
 **Test:** Have you opened the real viewport, or only reasoned about CSS?
 
-## Sources & ecosystem (what we route to, not re-host)
+## Sources (attribution)
 
-| Specialist / idea | Role | Notes |
-|-------------------|------|--------|
-| **product-ui-craft** | Micro-craft (Impeccable / “make interfaces feel better” lineage) | In this pack |
-| **mobile-product-ux** | Mobile product chrome | In this pack |
-| **design-system** | Tokens / kit as law; DESIGN.md in-repo (Vercel-style product memory) | In this pack |
-| **web-quality** | A11y + interaction guidelines (Vercel Web Interface Guidelines / WCAG) | In this pack |
-| **ui-explore** | HTML A/B + throwaway prototypes | In this pack |
-| **mockup-implement** | Fidelity ports | In this pack |
-| **tufte** | Data viz craft | Optional install; route when present |
-| **browser-verify** | Playwright + DevTools proof | In this pack |
-| External “UI/UX pro” mega-skills | Generic aesthetic rules | Prefer **this hub + design-system** over fighting brand |
+Full pack table: [ATTRIBUTION.md](../../../ATTRIBUTION.md).
 
-Do **not** install multiple competing aesthetic mega-skills alongside this hub — they fight your design system.
+| Specialist | Lineage (summary) |
+|------------|-------------------|
+| **product-ui-craft** | Impeccable / make-interfaces-feel-better craft principles — original synthesis |
+| **mobile-product-ux** | iOS HIG / Material density practice — original synthesis |
+| **design-system** | Project DESIGN.md law; Anthropic constraint-before-code idea |
+| **web-quality** | Vercel Web Interface Guidelines + WCAG practical AA |
+| **ui-explore** | Unreasonable effectiveness of HTML + throwaway prototype branches |
+| **mockup-implement** | Design-to-code fidelity lineage |
+| **tufte** | Edward Tufte — optional install; we route only |
+| **browser-verify** | Playwright + condensed Addy Osmani DevTools MCP lineage |
+
+Do **not** install competing aesthetic mega-skills (“UI/UX Pro Max” style) alongside
+this hub — they fight your design system. Prefer **design-system + craft**.
 
 ## Anti-patterns
 

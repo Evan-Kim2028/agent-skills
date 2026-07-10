@@ -13,7 +13,13 @@ description: >
 # UI explore
 
 **Throwaway artifacts that answer a design or logic question** before committing
-production. One skill, three shapes:
+production. One skill, three shapes.
+
+## Sources (attribution)
+
+- **HTML A/B:** Anthropic *The unreasonable effectiveness of HTML*; local design-picker patterns (`?design=`, floating switchers).  
+- **In-app / logic prototypes:** throwaway prototype branch pattern (UI variants + terminal state machines) — original synthesis; templates in-repo.  
+- Full pack credits: [ATTRIBUTION.md](../../../ATTRIBUTION.md).
 
 | Shape | Question | Detail |
 |-------|----------|--------|

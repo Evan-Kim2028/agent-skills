@@ -1,93 +1,128 @@
 ---
 name: marketing
-description: Use when creating, reviewing, or clarifying marketing assets: positioning, offers, landing pages, websites, emails, ads, sales copy, lead magnets, testimonials, referral loops, launches, word-of-mouth, social content, or internal mission messaging. Choose a more specific marketing sub-skill when one fits, such as marketing-offers, marketing-storybrand, marketing-cashvertising, marketing-contagious, or marketing-going-viral.
+description: >
+  Routing hub for marketing — offers, StoryBrand messaging, direct-response ads,
+  word-of-mouth, and social virality. Use when creating or reviewing landing pages,
+  pricing, emails, ads, lead magnets, launches, referral loops, or social content,
+  or when the right marketing skill is unclear. Routes to marketing-offers,
+  marketing-storybrand, marketing-cashvertising, marketing-contagious,
+  marketing-going-viral. Prefer product-design for product app UI craft; quality-check
+  for ship/e2e; data for pipelines. Prefer this hub over loading all marketing
+  specialists at once.
+metadata:
+  short-description: "Marketing hub — offers, message, ads, WOM, social"
 ---
 
-# Marketing
+# Marketing — routing hub
 
-Skill for practical marketing work: making offers clear, customer-centered, and easy to act on.
+**Clear offer + customer story + action.** Route first, then open **one** framework
+specialist (or two when stacking offer → message → conversion).
 
-## When to invoke this skill
+Load at most **1–3** specialists. Do not spray every book skill on one asset.
 
-- Writing or reviewing homepage, landing page, pricing page, ad, email, sales deck, onboarding, or launch copy.
-- Clarifying a business, product, feature, or consulting offer.
-- Auditing whether customers can quickly tell what is offered, why it matters, and what to do next.
-- Designing a lead magnet, nurture sequence, testimonial format, or referral request.
-- Aligning internal communication around a customer-centered mission.
+## Routing table
 
-## Skill selection
+| Your task | Skill | When |
+|-----------|--------|------|
+| Package, pricing, bonuses, guarantee, value equation | **marketing-offers** | Offer is weak or unclear |
+| One-liner, website story, CTA, lead magnet narrative | **marketing-storybrand** | Company-centric or confusing copy |
+| Ads, email promo, opt-in, CTA/psychology, cart recovery | **marketing-cashvertising** | Message clear; response weak |
+| Referral, PR, shareability, STEPPS | **marketing-contagious** | Need talk/share, not just clarity |
+| Social hooks, formats, Gold/Silver/Bronze, retention | **marketing-going-viral** | Social content strategy |
+| Brand voice / long-form author voice | **writer-style** if installed | Voice pack, not offer design |
+| Product app UI density/mobile | **product-design** | Not a landing-page problem |
+| Unclear multi-step marketing | **start here** | Default |
 
-Before drafting, decide whether a more specific marketing skill applies.
+### Default pipeline (most assets)
 
-Use [../storybrand/SKILL.md](../storybrand/SKILL.md) when the task involves customer-story messaging from Donald Miller's *Building a StoryBrand*, especially:
+```
+1. marketing-offers     → is the offer valuable enough?
+2. marketing-storybrand → is the customer story clear?
+3. marketing-cashvertising → will the ad/email/page get response?
+4. marketing-contagious and/or marketing-going-viral → share/social if needed
+```
 
-- Message maps.
-- One-liners.
-- Website clarity audits.
-- Direct and transitional calls to action.
-- Lead generators and email sequences.
-- Transformation-focused testimonials.
-- Internal mission narratives.
+Skip steps that already pass. Do **not** start with viral hooks if the offer is mud.
 
-Start there when the copy mostly talks about the company, its history, its process, its values, or its features before the customer's problem is clear.
+### Landing page mini-pipeline
 
-Use [../offers/SKILL.md](../offers/SKILL.md) when the task involves Alex Hormozi's *$100M Offers* and offer architecture, especially:
+1. **offers** — value, guarantee, price frame  
+2. **storybrand** — hero problem, guide, plan, CTA  
+3. **cashvertising** — headline/proof/CTA friction  
+4. **product-design** only for *app* chrome on marketing site if needed  
 
-- Package design.
-- Value proposition and value equation.
-- Pricing and price-to-value contrast.
-- Bonuses.
-- Guarantees.
-- Scarcity and urgency.
-- Offer naming.
+## General workflow (when no specialist fits)
 
-Start there when the copy is clear but prospects still do not feel enough value, certainty, speed, ease, or risk reduction to buy.
-
-Use [../cashvertising/SKILL.md](../cashvertising/SKILL.md) when the task involves Drew Eric Whitman's *Cashvertising Online* and direct-response buyer psychology, especially:
-
-- Online ads.
-- Email promotions.
-- Opt-in pages.
-- CTAs.
-- Credibility and social proof.
-- Pricing psychology.
-- Cart recovery and conversion friction.
-
-Use this after the offer and core message are clear, when the goal is better response.
-
-Use [../contagious/SKILL.md](../contagious/SKILL.md) when the task involves Jonah Berger's *Contagious* and word-of-mouth/shareability strategy, especially:
-
-- Referral or sharing mechanics.
-- PR and earned-media angles.
-- Product or campaign ideas people might talk about.
-- STEPPS audits: Social Currency, Triggers, Emotion, Public, Practical Value, Stories.
-- Valuable virality checks where the brand must remain integral to the story.
-
-Use [../going-viral/SKILL.md](../going-viral/SKILL.md) when the task involves Brendan Kane's *The Guide to Going Viral*, Alex Hormozi's *$100M Playbook: Hooks*, and social platform content, especially:
-
-- Social video strategy.
-- Hook, title, thumbnail, or script review.
-- Viral format selection.
-- Gold/Silver/Bronze content research.
-- Performance-driver hypotheses.
-- Retention and post-performance diagnosis.
-
-If no specific sub-skill fits, use the general marketing workflow below.
-
-## General marketing workflow
-
-1. Identify the audience, the offer, and the action the asset should drive.
-2. State the customer problem in the customer's language.
-3. Connect features to outcomes. Cut features that do not change a buyer's decision.
-4. Choose one primary CTA.
-5. Draft the asset in plain language.
-6. Review for clarity, credibility, and next-step friction.
+1. Audience, offer, single desired action.  
+2. Problem in the customer’s language.  
+3. Features → outcomes; cut vanity features.  
+4. One primary CTA.  
+5. Draft plain language.  
+6. Review: clarity, proof, friction.  
 
 ## General review checks
 
-- Can a buyer tell what is offered without decoding jargon?
-- Is the audience specific enough?
-- Is the value proposition concrete?
-- Is the CTA visible and low-confusion?
-- Does proof support the claim being made?
-- Is there one main idea, or is the asset trying to do too much?
+- Can a buyer tell what is offered without jargon?  
+- Audience specific enough?  
+- Value concrete?  
+- One CTA?  
+- Proof matches the claim?  
+- One main idea?  
+
+## Sources (attribution) — this pack
+
+| Skill | Primary source |
+|-------|----------------|
+| **marketing-offers** | Alex Hormozi, *$100M Offers* (2021) |
+| **marketing-storybrand** | Donald Miller, *Building a StoryBrand* (2017) |
+| **marketing-cashvertising** | Drew Eric Whitman, *Cashvertising Online* (2023) |
+| **marketing-contagious** | Jonah Berger, *Contagious* (2013) |
+| **marketing-going-viral** | Brendan Kane, *Guide to Going Viral* (2024); Hormozi *Hooks* playbook |
+| **This hub** | Evan-Kim2028/agent-skills router |
+
+Do not quote books at length. Cite which framework each claim uses when stacking skills.
+
+Full index: [ATTRIBUTION.md](../../../ATTRIBUTION.md).
+
+## Gaps & optional external packs (install, don’t re-host)
+
+This pack is strong on **framework marketing** (offer, story, psych, WOM, social).
+It is **not** a 160-skill SEO/ads-ops library. For those, install upstream and keep
+their licenses:
+
+| Need | Example external packs | Rule |
+|------|------------------------|------|
+| SEO / content page types / channel playbooks | [kostja94/marketing-skills](https://github.com/kostja94/marketing-skills) and similar open “marketing skills” lists | Install optionally; do not replace StoryBrand/Offers specialists |
+| Paid ads ops (Google/Meta account structure) | Community Claude marketing skill lists (Composio / roundups) | Prefer live data + your account SOPs over generic prompts |
+| Long-form voice | **writer-style** (if installed on Grok) | Not a substitute for offer clarity |
+
+**Do not** bulk-merge huge SEO packs into this repo — discovery noise and license
+surface. Route: hub → framework specialist → optional external skill for channel ops.
+
+### Worth adding later (only if you use them weekly)
+
+| Candidate | Why | Prefer |
+|-----------|-----|--------|
+| Thin **marketing-seo** specialist | Keyword/intent/on-page checklist | Or external SEO pack |
+| Thin **marketing-email-nurture** | Sequence beyond StoryBrand lead magnet | StoryBrand first |
+| **marketing-landing-structure** | Section order without full Cashvertising | StoryBrand + Cashvertising already cover most |
+
+Ship a new specialist only after the same framework appears in real work 3+ times
+(same bar as data-semantic-quality).
+
+## When *not* to use this hub
+
+| Task | Use instead |
+|------|-------------|
+| Product app UI craft | **product-design** |
+| Implement SPA feature | **frontend-design** |
+| Prove / e2e / ship | **quality-check** |
+| Data pipelines | **data** |
+
+## Done criteria
+
+- [ ] Correct framework specialist(s) opened  
+- [ ] Offer and customer problem stated  
+- [ ] Single primary CTA  
+- [ ] Proof present for the main claim  
+- [ ] External SEO/ads packs only if channel work actually needs them  

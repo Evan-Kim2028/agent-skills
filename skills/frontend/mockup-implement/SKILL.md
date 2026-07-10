@@ -3,8 +3,8 @@ name: mockup-implement
 description: >
   Port a signed-off mockup (HTML picker winner, Figma, screenshot) into
   production with fidelity — no freestyle redesign. Use only when a design is
-  already chosen and the task is "match this." Prefer frontend-design when the
-  overall FE path is unclear. Not for open-ended exploration (ui-explore first)
+  already chosen and the task is "match this." Prefer product-design when craft/explore path is unclear;
+  frontend-design for full FE feature implementation. Not for open-ended exploration (ui-explore first)
   or inventing new visual systems (design-system / craft).
 ---
 

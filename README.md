@@ -2,7 +2,7 @@
 
 Portable agent skills for Claude Code, Grok Build, Cursor, and similar tools.
 
-**Clone this repo → you get every skill under `skills/`.** Nothing else is required for the hubs and their specialists in this pack. You do **not** need to clone Addy Osmani, Matt Pocock, or other repos first. Optional external packs only fill *non-bundled* QA companions (e.g. `tdd`, `diagnose`) — see `skills/qa/quality-check/references/companion-install.md`.
+**Clone this repo → you get every skill under `skills/`.** Nothing else is required for the hubs and their specialists in this pack. You do **not** need to clone Addy Osmani, Matt Pocock, or other repos first. Optional external packs only fill *non-bundled* QA companions (e.g. `tdd`, `diagnose`) or large SEO/ads libraries — see `skills/qa/quality-check/references/companion-install.md` and **[ATTRIBUTION.md](ATTRIBUTION.md)**.
 
 ---
 
@@ -13,8 +13,8 @@ Portable agent skills for Claude Code, Grok Build, Cursor, and similar tools.
 | Hub | Use for |
 |-----|---------|
 | **`data`** | Pipelines / lakehouse / APIs / ops / row quality |
-| **`product-design`** | Product UI/UX craft — density, mobile chrome, tokens, a11y, explore |
-| **`frontend-design`** | Build / implement product UI (full FE path, incl. perf) |
+| **`product-design`** | Product UI/UX craft — density, mobile chrome, tokens, a11y, explore (owns craft specialists) |
+| **`frontend-design`** | Implement product UI in code (perf, SPA build path) |
 | **`marketing`** | Offers / messaging / ads / viral |
 | **`quality-check`** | Prove it — TDD, e2e, review, ship, regressions |
 
@@ -46,8 +46,8 @@ install_skill() {
 
 # --- hubs ---
 install_skill "data/data" "data"
-install_skill "frontend/product-design" "product-design"
-install_skill "frontend/frontend-design" "frontend-design"
+install_skill "frontend/product-design" "product-design"   # craft hub
+install_skill "frontend/frontend-design" "frontend-design" # implement hub
 install_skill "marketing/marketing" "marketing"
 install_skill "qa/quality-check" "quality-check"
 
@@ -134,9 +134,13 @@ You do **not** need those optionals for data / marketing / core FE craft.
 
 `data-apache-lakehouse` · `data-api` · `data-duckdb` · `data-pipeline-operations` · `data-table-lifecycle` · `data-semantic-quality`
 
+### product-design →
+
+`design-system` · `product-ui-craft` · `mobile-product-ux` · `web-quality` · `ui-explore` · `mockup-implement` · `browser-verify` · (`tufte` if installed)
+
 ### frontend-design →
 
-`design-system` · `product-ui-craft` · `mobile-product-ux` · `mockup-implement` · `ui-explore` · `web-quality` · `react-performance` · `browser-verify` · (`tufte` if installed)
+same craft specialists + **`react-performance`** · full implement pipeline · hand off craft-only asks to **product-design**
 
 ### marketing →
 
