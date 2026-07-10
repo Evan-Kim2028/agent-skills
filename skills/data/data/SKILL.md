@@ -1,6 +1,6 @@
 ---
 name: data
-description: Hub for data-engineering pipeline work — picking a storage/ingestion/serving approach and applying the cross-cutting discipline (idempotency, incremental-not-full-recompute, schema fencing, resilience, bounded memory, layered enforcement) that every data sub-skill shares. Routes to specialists — data-apache-lakehouse (Apache Iceberg lakehouses), data-api (consuming external APIs and serving data over HTTP), data-duckdb (DuckDB as the single-node analytical engine — memory/threads, spilling, Parquet read/write), data-pipeline-operations (running multiple pipelines on shared host infrastructure — admission control, capacity budgets), and data-table-lifecycle (whether a table should still exist, and how to retire it safely). Use when a task spans ingest → store → serve, when the right specialist isn't obvious yet, or when you need the shared pipeline principles. Don't use for OLTP / relational schema design, one-off pandas or notebook analysis, generic SQL tutoring, ML model training, or BI-tool config — and when a specialist clearly fits (Iceberg → data-apache-lakehouse, API client/serving → data-api, DuckDB engine tuning → data-duckdb, multi-pipeline capacity → data-pipeline-operations, table retirement → data-table-lifecycle), skip the hub and go straight there.
+description: Hub for data-engineering pipeline work — picking a storage/ingestion/serving approach and applying the cross-cutting discipline (idempotency, incremental-not-full-recompute, schema fencing, resilience, bounded memory, layered enforcement) that every data sub-skill shares. Routes to specialists — data-apache-lakehouse (Apache Iceberg lakehouses), data-api (consuming external APIs and serving data over HTTP), data-duckdb (DuckDB as the single-node analytical engine — memory/threads, spilling, Parquet read/write), data-pipeline-operations (running multiple pipelines on shared host infrastructure — admission control, capacity budgets), data-table-lifecycle (whether a table should still exist, and how to retire it safely), and data-semantic-quality (row-truth quality attributes, trust ladders, cohort fences, golden packs — not schema-only fences). Use when a task spans ingest → store → serve, when the right specialist isn't obvious yet, or when you need the shared pipeline principles. Don't use for OLTP / relational schema design, one-off pandas or notebook analysis, generic SQL tutoring, ML model training, or BI-tool config — and when a specialist clearly fits (Iceberg → data-apache-lakehouse, API client/serving → data-api, DuckDB engine tuning → data-duckdb, multi-pipeline capacity → data-pipeline-operations, table retirement → data-table-lifecycle, semantic row quality → data-semantic-quality), skip the hub and go straight there.
 ---
 
 # Data engineering — routing hub
@@ -16,6 +16,7 @@ The shared entry point for building and operating data pipelines. Its job is two
 | Using **DuckDB** as the compute engine — tuning memory/threads, larger-than-memory spilling, Parquet read/write layout, connection lifecycle, EXPLAIN profiling | **data-duckdb** |
 | Running **multiple pipelines** on shared single-host infrastructure — memory admission control, concurrency caps, capacity ratchets, OOM kills that only appear when individually-fine pipelines coexist | **data-pipeline-operations** |
 | Deciding whether a **table/artifact should still exist** — consumer audits, safe drops, maintenance coverage | **data-table-lifecycle** |
+| **Semantic row truth** — quality flags, outlier/anomaly rules, entity-resolution confidence, trust ladders, golden packs, split-brain lake vs API quality | **data-semantic-quality** |
 | Choosing *between* storage formats (Iceberg vs Delta vs plain Parquet vs embedded DuckDB), or the task spans ingest → store → serve | start here, then hand off |
 | Generic interface/contract design unrelated to data movement | `api-and-interface-design` (not a data skill) |
 | Wrapping an API as a live tool Claude calls at runtime | build an **MCP server**, not a skill |
@@ -53,6 +54,8 @@ rebuild from day 1.
 ### 3. Fence schema at every boundary
 
 Validate columns, types, and null fractions at each layer/stage edge, and fail *loud at the boundary*. A malformed upstream payload should error at ingestion with a clear message — not surface as a cryptic cast error three stages downstream. Keep a strict mode that turns warnings into hard failures in production.
+
+This is **mechanical** validation. **Semantic** correctness (right entity, right attributes for the consumer use — quality flags, trust ladders, cohort fences) is a separate concern: use **data-semantic-quality**. Schema fences alone do not make rows trustworthy for product aggregates.
 
 **Test:** if an upstream adds a column or flips a type, which stage fails, and is its error message actionable? If the failure is far from the cause, the fence is missing.
 
@@ -108,3 +111,4 @@ not enforcement, and the runtime guard or CI gate layer is missing.
 - Specialist: **data-duckdb** — the embedded-engine expression (memory/thread budgeting, larger-than-memory spilling and its limits, Parquet read/write layout, connection-as-cache).
 - Specialist: **data-pipeline-operations** — the multi-pipeline coexistence expression (claims-based admission control, capacity pools, the capacity ratchet loop, subprocess-scope accounting).
 - Specialist: **data-table-lifecycle** — the artifact-retirement expression (consumers-or-deprecate, drop durability, catalog-generated maintenance coverage).
+- Specialist: **data-semantic-quality** — row-truth methodology (write-time quality attributes, entity-scoped rules, trust ladders, golden packs); domain thresholds stay in the product repo.

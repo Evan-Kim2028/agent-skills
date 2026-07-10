@@ -22,12 +22,13 @@ skills/
 
 | Skill | What it's for |
 |-------|---------------|
-| [`data`](skills/data/data/SKILL.md) | Routing hub for data-engineering pipelines + the shared cross-cutting principles (idempotency, watermarks, schema fencing, resilience, bounded memory, layered enforcement). Routes to `data-apache-lakehouse`, `data-api`, `data-duckdb`, `data-pipeline-operations`, and `data-table-lifecycle`. |
+| [`data`](skills/data/data/SKILL.md) | Routing hub for data-engineering pipelines + the shared cross-cutting principles (idempotency, watermarks, schema fencing, resilience, bounded memory, layered enforcement). Routes to `data-apache-lakehouse`, `data-api`, `data-duckdb`, `data-pipeline-operations`, `data-table-lifecycle`, and `data-semantic-quality`. |
 | [`data-apache-lakehouse`](skills/data/apache-lakehouse/SKILL.md) | Designing, modifying, and debugging Apache Iceberg lakehouses — PyIceberg + Polars/DuckDB medallion writes, catalog choice, maintenance, CDC, branching/WAP, schema evolution. Includes single-host operations (bounded-RAM writes, adaptive batching, systemd-timer maintenance, OCC retry, circuit-breaker/DLQ) and version-sensitive PyIceberg capabilities as bundled `references/`. |
-| [`data-api`](skills/data/data-api/SKILL.md) | Consuming external APIs for ingestion (rate limits, backoff, pagination, response validation, idempotent landing) and serving gold data over HTTP (FastAPI + DuckDB, pushdown, keyset pagination, cache invalidation, bounded/thread-safe caches, factory routers). |
+| [`data-api`](skills/data/data-api/SKILL.md) | Consuming external APIs for ingestion (rate limits, backoff, pagination, response validation, idempotent landing) and serving gold data over HTTP (FastAPI + DuckDB, pushdown, keyset pagination, cache invalidation, honor of write-time quality attributes, publish-coupled serving sidecars, bounded/thread-safe caches, factory routers). |
 | [`data-duckdb`](skills/data/duckdb/SKILL.md) | DuckDB as a single-node analytical engine — memory/thread tuning, larger-than-memory spilling and its limits, Parquet read/write layout (pushdown, PER_THREAD_OUTPUT, row groups, the partitioned-write trap), connection-as-cache, EXPLAIN ANALYZE. |
 | [`data-pipeline-operations`](skills/data/pipeline-operations/SKILL.md) | Running multiple pipelines on shared single-host infrastructure — claims-based memory admission control, capacity pools, queue-not-skip with bounded wait, subprocess/systemd-run scope accounting, and the capacity ratchet loop (observe → cap generously → tighten on evidence). |
 | [`data-table-lifecycle`](skills/data/table-lifecycle/SKILL.md) | The consumers-or-deprecate discipline for table/artifact retirement — adversarial consumer sweeps, the drop-durability (auto-resurrection) trap, metadata-vs-physical drop cleanup, and catalog-generated maintenance coverage. |
+| [`data-semantic-quality`](skills/data/semantic-quality/SKILL.md) | Portable **semantic** (row-truth) data quality methodology — write-time quality attributes, single-sourced scoring, entity-scoped rules, provenance trust ladders, cohort-relative fences, golden packs with dual error budgets. Domain thresholds stay in product-repo skills. |
 | [`marketing`](skills/marketing/marketing/SKILL.md) | General marketing skill for positioning, websites, email, ads, sales copy, lead magnets, testimonials, referral loops, launches, and internal mission messaging. Routes to more specific marketing skills when they fit. |
 | [`marketing-offers`](skills/marketing/offers/SKILL.md) | Source: Alex Hormozi, *$100M Offers*. Offer architecture for value proposition, pricing, bonuses, guarantees, scarcity, urgency, and naming. |
 | [`marketing-storybrand`](skills/marketing/storybrand/SKILL.md) | Source: Donald Miller, *Building a StoryBrand*. Customer-narrative messaging for clarifying offers, one-liners, landing pages, CTAs, lead magnets, email sequences, testimonials, and internal mission narratives. |
@@ -52,8 +53,20 @@ Symlink (or copy) any skill directory into your agent's skills folder. For Claud
 git clone https://github.com/Evan-Kim2028/agent-skills.git
 cd agent-skills
 
-# Data (family-prefixed names match SKILL.md `name:`)
-ln -s "$PWD/skills/data/apache-lakehouse" ~/.claude/skills/data-apache-lakehouse
+# Data pack (family-prefixed names match SKILL.md `name:`; dirs need not match)
+for pair in \
+  "data/data:data" \
+  "data/apache-lakehouse:data-apache-lakehouse" \
+  "data/data-api:data-api" \
+  "data/duckdb:data-duckdb" \
+  "data/pipeline-operations:data-pipeline-operations" \
+  "data/table-lifecycle:data-table-lifecycle" \
+  "data/semantic-quality:data-semantic-quality"
+do
+  src="${pair%%:*}"; name="${pair##*:}"
+  ln -sfn "$PWD/skills/$src" ~/.claude/skills/"$name"
+  ln -sfn "$PWD/skills/$src" ~/.grok/skills/"$name"
+done
 
 # Frontend pack (router + specialists) — Claude Code + Grok Build
 for s in frontend-design design-system product-ui-craft web-quality \

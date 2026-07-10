@@ -141,6 +141,53 @@ In production replace `_store` with Redis so token-flip invalidation broadcasts 
 shape (checked-on-read-only TTL, no size bound) grew monotonically to OOM under real traffic. See
 **Bounded, thread-safe caches** below before this pattern reaches production.
 
+## Honor persisted quality attributes
+
+When the fact table carries write-time quality attributes (flags, reason lists, confidence), default
+serving paths **filter or label from those columns**. Do not re-score cohorts in the request handler
+as the long-term design — that recreates split-brain with the lake. Rule definition lives in
+**data-semantic-quality**; serving only implements the consumption contract.
+
+```python
+# Good: trust stored attribute
+sql = """
+  SELECT sale_id, entity_id, amount, sold_at
+  FROM gold_facts
+  WHERE entity_id = $id
+    AND coalesce(quality_exclude, false) = false
+  ORDER BY sold_at DESC
+  LIMIT $limit
+"""
+
+# Bad long-term: re-derive "junk" only in the API while the table stays unflagged
+```
+
+Document which endpoints honor which attributes in OpenAPI or route docs. Deploy smoke: known-bad
+pack members must not appear on default product paths.
+
+## Publish-coupled serving sidecars
+
+A sidecar (sorted Parquet, per-entity cursor file, pre-aggregate) is a **derived projection** for
+latency — not a second system of record.
+
+Constraints:
+
+1. Rebuild after successful source publish; pass the source snapshot id / version-hint into the builder.
+2. API cache keys include that source version (same as publish-token discipline above).
+3. Sidecar schema is contractual; missing columns fail smoke.
+4. Apply quality-attribute filters when **building** from source when possible.
+5. Never treat the sidecar as authoritative if it disagrees with a fresh source read for correctness audits.
+
+```text
+publish gold facts (version V)
+    → rebuild sidecar(s) bound to V
+    → flip publish_token / version-hint to V
+    → API caches miss and rebuild under V
+```
+
+If publish succeeds but sidecar rebuild fails, either fail the unit or serve degraded with an
+explicit stale signal — do not silently pin users to V-1 under a V token.
+
 ## Bounded, thread-safe caches — don't let a serving cache grow to OOM
 
 A production cache needs three properties the `_store` dict above has none of: a **bounded type**

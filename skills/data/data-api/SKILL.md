@@ -1,6 +1,6 @@
 ---
 name: data-api
-description: Use when consuming external HTTP APIs for data ingestion (rate limiting, exponential backoff, pagination/cursors, auth, response schema validation, caching, idempotent landing) or when serving gold/analytical data over HTTP (FastAPI + DuckDB, pushing filters down to the engine, keyset pagination, cache invalidation on publish, factory routers over many gold tables). Covers blockchain-indexer / marketplace / price-feed ingestion and lakehouse gold-serving APIs. Don't use for generic REST/GraphQL interface and contract design unrelated to data movement (that's api-and-interface-design), for wrapping an API as a live tool Claude calls at runtime (build an MCP server instead), or for OLTP/CRUD application backends.
+description: Use when consuming external HTTP APIs for data ingestion (rate limiting, exponential backoff, pagination/cursors, auth, response schema validation, caching, idempotent landing) or when serving gold/analytical data over HTTP (FastAPI + DuckDB, pushing filters down to the engine, keyset pagination, cache invalidation on publish, factory routers over many gold tables). Also use when defining serving contracts that honor persisted quality attributes, freshness SLIs, publish-token invalidation, or publish-coupled serving sidecars (derived projections rebuilt on source snapshot — not a second quality system). Covers blockchain-indexer / marketplace / price-feed ingestion and lakehouse gold-serving APIs. Don't use for defining semantic quality rules or thresholds (that's data-semantic-quality), generic REST/GraphQL interface design unrelated to data movement (api-and-interface-design), wrapping an API as a live MCP tool, or OLTP/CRUD application backends.
 ---
 
 # Data APIs — consuming & serving
@@ -78,6 +78,24 @@ Cache query results keyed by a publish/version token (a `.publish_token`, or the
 
 **Test:** after a gold rebuild, does the API serve the new data on the next request? If it serves stale until a TTL expires, the cache isn't tied to the publish.
 
+### Honor write-time quality attributes; do not re-derive them
+
+Serving filters, labels, and default views consume **persisted** quality attributes (flags, reasons, confidence) from the published table. Do not re-implement cohort outlier logic or trust ladders in the request path except during a documented dual-read cutover. Defining those rules is **data-semantic-quality**; this skill is consumption-time contract.
+
+**Test:** with all client-side junk filters disabled, do default endpoints still exclude rows the publish path flagged? If known-bad pack members appear, serving invented a second quality truth (or attributes were never stored).
+
+### Publish-coupled serving sidecars (derived projections only)
+
+When interactive latency cannot meet SLOs on the catalog table, a **sidecar** (sorted Parquet, cursor file, pre-agg) is allowed only as a **derived serving projection**:
+
+1. Rebuild is hooked to successful source publish (same snapshot / version-hint / publish token).
+2. Cache and cursor keys include the **source** version, not wall-clock alone.
+3. Sidecar schema is part of the serving contract; missing columns fail deploy smoke.
+4. Prefer applying quality-attribute filters **when building** the sidecar from source, not inventing new fences in the projection.
+5. The sidecar is never a second fact table or system of record.
+
+**Test:** publish source without rebuilding the sidecar (or with a stale version key). Does smoke or a version check fail, or does the API quietly serve yesterday's projection as current?
+
 ### Caches are bounded types; executors wait on exit
 
 A cache is a type whose constructor requires a max size — never a bare module-level `dict` that only
@@ -99,5 +117,6 @@ Open one read-only DuckDB connection per worker with a `memory_limit`, not one p
 ## References
 
 - **Consuming external APIs** — rate limiting, backoff, pagination, auth, response validation, caching, `polite_get`: [`references/client-ingestion.md`](references/client-ingestion.md)
-- **Serving data over HTTP** — pushdown, keyset pagination, cache invalidation, bounded/thread-safe caches, executor lifecycle, factory routers, connection management: [`references/serving.md`](references/serving.md)
+- **Serving data over HTTP** — pushdown, keyset pagination, cache invalidation, quality-attribute honor, publish-coupled sidecars, bounded/thread-safe caches, executor lifecycle, factory routers, connection management: [`references/serving.md`](references/serving.md)
 - **Shared resilience & idempotency** (hub): [`../data/references/resilience-and-idempotency.md`](../data/references/resilience-and-idempotency.md)
+- **Semantic quality rules** (define attributes, not serve them): **data-semantic-quality**
