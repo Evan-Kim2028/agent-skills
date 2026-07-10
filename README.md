@@ -16,7 +16,7 @@ Portable agent skills for Claude Code, Grok Build, Cursor, and similar tools.
 | **`product-design`** | Product UI/UX craft — density, mobile chrome, tokens, a11y, explore |
 | **`frontend-design`** | Implement product UI in code (perf, SPA build path) |
 | **`marketing`** | Offers / messaging / ads / viral (frameworks) |
-| **`writing`** | Human voice, anti-slop, facts-first prose (tone ≠ offer design) |
+| **`writing`** | Human voice, Evan default pack, technical form, pure docs (tone ≠ offer design) |
 | **`quality-check`** | Prove it — TDD, e2e, review, ship, regressions |
 
 ### Craft vs build vs prove vs write
@@ -25,7 +25,7 @@ Portable agent skills for Claude Code, Grok Build, Cursor, and similar tools.
 product-design   →  craft / mobile UX / “feels off”
 frontend-design  →  implement the feature in code
 marketing        →  offer / story / ads frameworks
-writing          →  sound like a human; named voice or house prose
+writing          →  sound like a human; Evan voice / technical form / pure docs
 quality-check    →  prove it before “done”
 ```
 
@@ -94,9 +94,11 @@ for pair in \
   "marketing/going-viral:marketing-going-viral"
 do install_skill "${pair%%:*}" "${pair##*:}"; done
 
-# --- writing (voice + house prose) ---
+# --- writing (Evan voice + form specialists) ---
 install_skill "writing/writing-prose" "writing-prose"
-install_skill "writing/writer-style" "writer-style"   # vendored solanabr/writer-style-skill (MIT)
+install_skill "writing/writing-docs" "writing-docs"
+install_skill "writing/writing-technical" "writing-technical"
+install_skill "writing/writer-style" "writer-style"   # engine + evan pack + kaue pack (MIT engine)
 ```
 
 Re-run install after `git pull` if you use **copies** (they do not auto-update).  
@@ -113,7 +115,7 @@ Re-run install after `git pull` if you use **copies** (they do not auto-update).
 | **data** | hub + lakehouse, api, duckdb, pipeline-ops, table-lifecycle, semantic-quality |
 | **frontend** | **product-design** + **frontend-design** hubs + design-system, craft, web-quality, react-performance, mobile, mockup-implement, **ui-explore**, **browser-verify** (+ thin aliases) |
 | **marketing** | hub + offers, storybrand, cashvertising, contagious, going-viral |
-| **writing** | **writing** hub + **writing-prose** + **writer-style** (vendored [solanabr/writer-style-skill](https://github.com/solanabr/writer-style-skill), MIT) |
+| **writing** | **writing** hub + **writing-prose** + **writing-docs** + **writing-technical** + **writer-style** (vendored [solanabr/writer-style-skill](https://github.com/solanabr/writer-style-skill) MIT engine; **default pack `evan`** from [evan_writings](https://github.com/Evan-Kim2028/evan_writings); kaue pack retained) |
 | **qa** | **quality-check** hub (+ install docs for optional external companions) |
 
 ### Merged specialists (use the new names)
@@ -157,7 +159,7 @@ same craft specialists + **`react-performance`** · full implement pipeline · h
 
 ### writing →
 
-`writer-style` (named voice / Kaue pack) · `writing-prose` (house human + opinion floor) · hand off conversion frameworks to **marketing**
+`writer-style` (**default pack: evan**; kaue optional) · `writing-technical` (research / build-log form) · `writing-docs` (runbooks / reference) · `writing-prose` (house human, no persona) · hand off conversion frameworks to **marketing**
 
 ### quality-check →
 
@@ -172,7 +174,7 @@ skills/
   data/           # hub + specialists
   frontend/       # product-design + frontend-design hubs + specialists
   marketing/      # hub + specialists
-  writing/        # writing hub + writer-style + writing-prose
+  writing/        # hub + writer-style (evan/kaue) + prose/docs/technical
   qa/             # quality-check hub
   design/         # html-design alias only
 ```

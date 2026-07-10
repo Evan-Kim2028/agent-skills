@@ -1,0 +1,66 @@
+voice: evan
+role: primary
+register: builder-research-technical
+persona_ref: evan.md
+exemplars_ref: exemplars/evan/
+themes_ref: themes.md
+
+# Calibrated from evan_writings public corpus (~37k prose words, 2022–2026).
+# Median sentence ~19w, mean ~21w, pstdev ~13.4; short≤8 ~9%; long≥30 ~16%.
+dials:
+  sentence_length: { median: 19, short_punch_floor: 6, long_reach: 32, burstiness_min: 8 }
+  readability_grade: { min: 11, max: 16 }   # technical audience; not dumbed down
+  lexical_density: high
+  hedge_boost_lean: { value: 0, why: "confident on measured claims; open on unproven hypotheses" }
+  person_perspective: { first: 15, second: 10, third: 75 }  # sparse I/we; mostly third
+  example_density: { value: high, why: "tables, SQL, RSS peaks, dual-source validation" }
+  definition_density: { enum: just-in-time, per_1k: 1.2 }
+  code_density: medium
+  rhetorical_question_rate: low
+
+favor:
+  connectives: ["The fix.", "The problem.", "The lesson.", "That is why", "In practice,",
+                "Conversely,", "Specifically,", "Over a", "At startup", "Before the fixes"]
+  moves:
+    - "numbers-with-units in the first screen (GB, RAM, %, SOL, slots, multiples)"
+    - "TL;DR / findings bullets for empirical pieces"
+    - "problem → fix → lesson (or production scar) structure"
+    - "comparative tooling with measured latency or resource cost"
+    - "economic/incentive flip of a moral framing"
+    - "schema/registry/contract vocabulary for multi-source systems"
+    - "open question left open when proof is missing"
+    - "appendix SQL/code when methods must be reproducible"
+    - "chart/table as evidence, not decoration"
+
+avoid:
+  words: [delve, utilize, "a testament to", "in today's fast-paced", "navigate the landscape",
+          "it is important to note", "game-changer", "leverage" # when used as empty verb]
+  connectives: ["Moreover,", "Furthermore,", "Additionally,", "In conclusion,",
+                "First and foremost,", "In today's"]
+
+ai_tells:
+  - { id: uniform-cadence, min: 8 }
+  - { id: delve-class, cap: 0 }
+  - { id: em-dash-overuse, max: 6, kind: guardrail }
+  - { id: conclusion-restate, rule: "Conclusion must add implication or next experiment, not soft-restatement of TLDR" }
+  - { id: empty-moreover, cap: 0 }
+
+markers:
+  - id: measured-constraint
+    class: seam
+    patterns: ["GB", "RAM", "writer cap", "RSS", "OOM", "memory cap"]
+    cap: 4
+    per_words: 800
+    fallback: "name the bottleneck with a unit"
+  - id: tldr-findings
+    class: structure
+    patterns: ["TL;DR", "TLDR", "TL; DR"]
+    cap: 1
+    per_words: 0
+    fallback: "open with findings bullets or constraint stack"
+  - id: production-scar
+    class: seam
+    patterns: ["killed", "mid-tick", "peak", "before the fixes", "scar"]
+    cap: 2
+    per_words: 1200
+    fallback: "name a failed run with a measured peak"

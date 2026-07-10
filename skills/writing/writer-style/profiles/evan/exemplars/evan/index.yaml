@@ -1,0 +1,13 @@
+exemplars:
+  - id: 01-constraint-opener
+    file: 01-constraint-opener.md
+    moves: [numbers-first, constraint, operator]
+  - id: 02-tldr-empirical
+    file: 02-tldr-empirical.md
+    moves: [tldr, units, incentive-flip]
+  - id: 03-problem-fix-lesson
+    file: 03-problem-fix-lesson.md
+    moves: [scar, problem-fix-lesson, bounded-deltas]
+  - id: 04-paper-takeaways
+    file: 04-paper-takeaways.md
+    moves: [numbered-claims, open-question, paper-notes]

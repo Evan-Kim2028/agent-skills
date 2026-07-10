@@ -5,17 +5,19 @@ description: >
   structure without persona cosplay or LLM word-soup. Use when drafting or
   editing posts, docs, essays, threads, READMEs, or technical explainers that
   should sound like a sharp human, not generic AI, and no named voice pack is
-  required. Prefer writer-style when the user wants a specific author's voice.
-  Prefer marketing for offer/story/ad frameworks. Prefer writing hub when the
-  writing path is unclear.
+  required. Prefer writer-style (default pack: evan) for a named voice.
+  Prefer writing-technical for research/build-log form; writing-docs for pure
+  procedures. Prefer marketing for offer/story/ad frameworks. Prefer writing
+  hub when the writing path is unclear.
 ---
 
 # Writing prose — human, opinionated, coherent
 
 **Job:** Kill default LLM prose. Keep the take sharp and the logic tight.
 
-This is **not** a celebrity voice pack. For “sound like Kaue / person X” use
-**writer-style**. This skill is the **house floor** when no persona is loaded.
+This is **not** a celebrity voice pack. For “sound like Evan / Kaue / person X”
+use **writer-style** (this install defaults to the **evan** pack). This skill is
+the **house floor** when no persona is loaded.
 
 Lineage: naturalness + deslop + facts-first principles from
 [solanabr/writer-style-skill](https://github.com/solanabr/writer-style-skill)
@@ -116,7 +118,9 @@ Default shorter than the model wants. If a section doesn’t change the reader�
 
 | Need | Skill |
 |------|--------|
-| Named author voice pack | **writer-style** |
+| Named author voice (default: Evan) | **writer-style** |
+| Research / empirical / build-log form | **writing-technical** |
+| Runbook / API reference / how-to | **writing-docs** |
 | Offers / StoryBrand / ads | **marketing** |
 | Product UI microcopy | **product-design** |
 | Validate voice markers / tools | **writer-style** tools (`validate_voice.py`) |
