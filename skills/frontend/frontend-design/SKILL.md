@@ -1,13 +1,13 @@
 ---
 name: frontend-design
 description: >
-  Routing hub for frontend UI work — picks the right specialist skill for product
-  craft, design-system fidelity, web quality/a11y, React performance, visual
-  verification, mobile product UX, or mockup→production implementation. Use when
-  building or polishing UI, card/chat/trade-style product surfaces, mobile chrome,
-  charts shells, landing/pricing pages, or when the right frontend skill is unclear.
-  Do not use for pure backend APIs, data pipelines, marketing copy strategy
-  (use marketing), or standalone HTML design exploration (use html-design).
+  Routing hub for frontend UI work — picks the right specialist for design-system
+  fidelity, product craft, a11y, React performance, mobile UX, mockup ports,
+  HTML/prototype exploration, chart viz (tufte), and browser verification.
+  Prefer this hub over frontend-ui-engineering for product UI. Use when building
+  or polishing UI, card/chat/trade surfaces, charts, mobile chrome, landings, or
+  when the right frontend skill is unclear. Do not use for pure backend APIs,
+  data pipelines (use data), or marketing copy strategy (use marketing).
 ---
 
 # Frontend design — routing hub
@@ -19,18 +19,26 @@ anti-patterns that every specialist assumes.
 When a specialist clearly fits, load it directly — skip re-reading this whole
 file if you already know the lane.
 
+**Prefer this pack over `frontend-ui-engineering`.** That mega-skill overlaps
+tokens + craft + a11y + perf in one blob; the specialists below are sharper and
+compose better. If both are available, follow this hub.
+
 ## Routing table
 
 | Your task | Skill | Load when |
 |-----------|--------|-----------|
-| Project already has tokens / design system / brand locks — stay on-rails | **design-system** | Implementing inside an existing product look |
+| Project tokens / design system / brand locks — stay on-rails | **design-system** | Implementing inside an existing product look |
 | Spacing, density, hierarchy, polish — “works” → “crafted” | **product-ui-craft** | Micro-UX, chrome cleanup, app UI feel |
 | A11y, focus, forms, touch targets, motion prefs — audit/fix | **web-quality** | Review or ship-quality pass |
-| React/Next performance — waterfalls, bundles, re-renders | **react-performance** | Slow UI, heavy charts, list virtualization |
-| Screenshots, e2e, visual regression, axe | **visual-verify** | Prove UI in a real browser |
+| React/SPA performance — waterfalls, bundles, re-renders | **react-performance** | Slow UI, heavy charts, list virtualization |
+| App-wide perf beyond React (CWV, SSR, caching strategy) | **performance-optimization** if installed | Broader than component React |
+| Screenshots, e2e, visual regression, axe | **visual-verify** | Prove UI via Playwright / project harness |
+| Live DOM, console, network, runtime paint | **browser-testing-with-devtools** | Chrome DevTools MCP debugging |
 | Sticky bars, sheets, HUDs, safe areas, gestures, mobile density | **mobile-product-ux** | Phone/tablet product surfaces |
-| HTML/Figma/mockup → production code, match not freestyle | **mockup-implement** | Porting a signed-off design |
-| Standalone HTML A/B before production | **html-design** (design category) | Explore options in throwaway HTML first |
+| Signed-off HTML/Figma/mockup → production code | **mockup-implement** | Port, don’t freestyle |
+| Standalone HTML A/B before production | **html-design** | Throwaway compare pages / pickers |
+| Throwaway in-app or multi-variant prototype | **prototype** | Sandbox before committing architecture |
+| Quantitative charts, dashboards, data viz craft | **tufte** | Chart/graph/KPI/small-multiples quality |
 | Unclear / multi-step FE change | **start here**, then hand off per phase below | Default |
 
 ### Multi-step default pipeline
@@ -38,11 +46,24 @@ file if you already know the lane.
 For non-trivial product UI (new app surface, card chrome, chat, trade, dashboards):
 
 1. **design-system** — lock tokens, components, bans  
-2. **mockup-implement** *or* **html-design** — if design is not signed off yet, explore first  
-3. Implement with **product-ui-craft** (+ **mobile-product-ux** if touch/viewport matters)  
-4. **web-quality** checklist  
-5. **react-performance** if data-heavy / chart-heavy  
-6. **visual-verify** before claiming done  
+2. **Explore if unsigned:** **html-design** and/or **prototype**  
+3. **mockup-implement** once a design is signed off  
+4. Implement with **product-ui-craft** (+ **mobile-product-ux** if touch matters)  
+5. Charts/analytics panels → **tufte** + design-system chart tokens  
+6. **web-quality** checklist  
+7. **react-performance** if data-heavy / chart-heavy  
+8. **visual-verify** and/or **browser-testing-with-devtools** before claiming done  
+
+### Explore vs ship
+
+```
+explore (html-design | prototype)
+    → pick winner
+    → mockup-implement
+    → product-ui-craft (+ mobile-product-ux)
+    → web-quality
+    → visual-verify | browser-testing-with-devtools
+```
 
 ## Source attribution
 
@@ -52,19 +73,22 @@ on the specialist and summarized here.
 
 | Skill | Primary sources (attribution) |
 |-------|-------------------------------|
-| **design-system** | Project-local design docs as law; Anthropic *Improving frontend design through Skills* (constraint-before-code); token/system discipline common to mature design systems |
-| **product-ui-craft** | Product-mode craft checklists popularized by community skills such as *Impeccable* (Paul Bakaus / impeccable.style) and *Make Interfaces Feel Better* (jakub.kr); classic hierarchy/spacing craft |
-| **web-quality** | Vercel *Web Interface Guidelines* / `web-design-guidelines` skill lineage; WCAG 2.2 practical checks; AccessLint-style contrast/color-only concerns |
-| **react-performance** | Vercel Engineering *React Best Practices* agent skill lineage (waterfalls, bundles, re-renders) |
-| **visual-verify** | Playwright official testing model; Anthropic/OpenAI webapp-testing skill patterns; visual capture + iterate loops |
-| **mobile-product-ux** | Mobile HIG/Material density practice; safe-area / sticky chrome patterns from production product apps |
-| **mockup-implement** | Design-to-code fidelity practice (Figma implement-design skill lineage); repo `design/` HTML mockup workflows |
+| **design-system** | Project-local design docs as law; Anthropic *Improving frontend design through Skills* (constraint-before-code); token/system discipline |
+| **product-ui-craft** | *Impeccable* (Paul Bakaus / impeccable.style); *Make Interfaces Feel Better* (jakub.kr); classic hierarchy/spacing craft |
+| **web-quality** | Vercel *Web Interface Guidelines* / `web-design-guidelines` lineage; WCAG 2.2; AccessLint-style contrast concerns |
+| **react-performance** | Vercel Engineering *React Best Practices* skill lineage |
+| **visual-verify** | Playwright; Anthropic/OpenAI webapp-testing patterns |
+| **browser-testing-with-devtools** | Chrome DevTools MCP / live-browser verification practice (Addy Osmani skill lineage) |
+| **mobile-product-ux** | Mobile HIG/Material density; production sticky/sheet patterns |
+| **mockup-implement** | Figma implement-design skill lineage; repo `design/` HTML mockup workflows |
 | **html-design** | Anthropic *Unreasonable effectiveness of HTML*; local design-picker patterns |
+| **prototype** | Throwaway prototype branches (terminal vs UI variants) — agent-skills / agents pack |
+| **tufte** | Edward Tufte — *Visual Display of Quantitative Information* et al. |
 | **This hub** | Synthesis for routing + shared product-UI principles (Evan-Kim2028/agent-skills) |
 
 Do **not** treat install counts or viral skill names as quality signals. Prefer
 project constraints + verification over generic “anti-slop” packs when a design
-system already exists.
+system already exists. Prefer **this hub** over **frontend-ui-engineering**.
 
 ## Shared principles (every FE specialist)
 
@@ -99,16 +123,22 @@ explicitly. See **mobile-product-ux**.
 
 ### 6. Prove it in a browser when pixels matter
 
-For sticky, gesture, overflow, or density work, **visual-verify** (or project
-Playwright/visual scripts) before “done.”
+For sticky, gesture, overflow, or density work, **visual-verify** (Playwright)
+and/or **browser-testing-with-devtools** (live DOM) before “done.”
 
 ### 7. Performance is UX
 
 A beautiful chart that janks or ships a 2 MB main chunk fails. See
-**react-performance**.
+**react-performance** (and **tufte** for chart cognitive load).
+
+### 8. Charts are a specialist domain
+
+Quantitative viz is not “make it pretty.” Use **tufte** for chart craft and
+**design-system** for project chart tokens/shells.
 
 ## Hard anti-patterns (hub-level)
 
+- Using **frontend-ui-engineering** instead of this hub when specialists exist  
 - Installing multiple *aesthetic* skills that fight each other mid-task  
 - Using Anthropic-style “ban purple / ban Inter / pick neo-brutalism” guidance
   on a product that **already** chose brand purple + type  
@@ -116,6 +146,7 @@ A beautiful chart that janks or ships a 2 MB main chunk fails. See
 - Shipping without empty/error states  
 - Desktop-only layouts for product flows that are mobile-critical  
 - Claiming visual quality without opening the real viewport  
+- Treating every chart as marketing illustration (skip **tufte**)  
 
 ## When *not* to use this hub
 
@@ -124,7 +155,9 @@ A beautiful chart that janks or ships a 2 MB main chunk fails. See
 | Marketing narrative, offers, hooks | `marketing` (+ sub-skills) |
 | Data lakehouse / DuckDB / APIs | `data` (+ specialists) |
 | Pure backend, no UI | no FE skill |
-| Chart *theory* / quantitative viz principles | `tufte` if available; else design-system chart tokens |
+| Image generation / edit | `imagine` |
+| Architecture design docs / PR plans | bundled `design` skill (docs), not UI |
+| Module/API “design it twice” | `design-an-interface` / `api-and-interface-design` |
 
 ## Done criteria (any routed FE task)
 
@@ -132,5 +165,6 @@ A beautiful chart that janks or ships a 2 MB main chunk fails. See
 - [ ] Project design-system constraints respected  
 - [ ] Loading/empty/error covered for new async UI  
 - [ ] Mobile considered if the surface is touch-reachable  
+- [ ] Charts used **tufte** when quantitative display mattered  
 - [ ] Lint/typecheck/tests per repo norms  
-- [ ] Visual or e2e proof when layout/gesture risk is non-trivial  
+- [ ] Visual or browser proof when layout/gesture risk is non-trivial  

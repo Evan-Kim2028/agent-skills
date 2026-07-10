@@ -34,7 +34,7 @@ skills/
 | [`marketing-cashvertising`](skills/marketing/cashvertising/SKILL.md) | Source: Drew Eric Whitman, *Cashvertising Online*. Buyer-psychology and direct-response checks for ads, CTAs, opt-ins, credibility, pricing, and conversion pages. |
 | [`marketing-contagious`](skills/marketing/contagious/SKILL.md) | Source: Jonah Berger, *Contagious*. STEPPS-based word-of-mouth, sharing, referral, PR, campaign, and valuable-virality strategy. |
 | [`marketing-going-viral`](skills/marketing/going-viral/SKILL.md) | Sources: Brendan Kane, *The Guide to Going Viral*; Alex Hormozi, *$100M Playbook: Hooks*. Social content strategy using viral formats, Gold/Silver/Bronze research, hooks, retention, and performance-driver iteration. |
-| [`frontend-design`](skills/frontend/frontend-design/SKILL.md) | Routing hub for frontend UI work — source attribution + shared product-UI principles; routes to design-system, product-ui-craft, web-quality, react-performance, visual-verify, mobile-product-ux, mockup-implement. |
+| [`frontend-design`](skills/frontend/frontend-design/SKILL.md) | Routing hub for frontend UI — design-system, product-ui-craft, web-quality, react-performance, visual-verify, mobile-product-ux, mockup-implement; also routes to html-design, prototype, tufte, browser-testing-with-devtools. Prefer over frontend-ui-engineering. |
 | [`design-system`](skills/frontend/design-system/SKILL.md) | Stay on project tokens, typography, components, and brand locks; prefer over generic aesthetic skills when a design system exists. |
 | [`product-ui-craft`](skills/frontend/product-ui-craft/SKILL.md) | Product micro-craft: spacing, hierarchy, density, states, restrained motion (Impeccable / make-interfaces-feel-better lineage). |
 | [`web-quality`](skills/frontend/web-quality/SKILL.md) | A11y and interaction quality audits (Vercel web-interface-guidelines / WCAG practical checks). |
@@ -60,8 +60,11 @@ for s in frontend-design design-system product-ui-craft web-quality \
   ln -sfn "$PWD/skills/frontend/$s" ~/.claude/skills/$s
   ln -sfn "$PWD/skills/frontend/$s" ~/.grok/skills/$s
 done
+
+# Also route from frontend-design (install separately if present on machine):
+#   html-design, tufte, prototype, browser-testing-with-devtools
 ```
 
 The `name:` field in each `SKILL.md` is the skill's identifier; the directory is organizational and need not match it (e.g. `skills/data/duckdb/` → `name: data-duckdb`).
 
-Install **frontend-design** alone if you only want the router (agents still need specialist dirs available to open). For product apps with an existing brand, prefer **design-system** as the default specialist over generic public “anti-slop” frontend skills.
+Install **frontend-design** alone if you only want the router (agents still need specialist dirs available to open). Prefer this hub over **frontend-ui-engineering**. For product apps with an existing brand, prefer **design-system** as the default specialist over generic public “anti-slop” frontend skills.
