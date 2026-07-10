@@ -1,7 +1,8 @@
 # Interaction races — local input × debounce × external state
 
-Load when implementing or reviewing search boxes, filter chips, URL-synced
-forms, or any "type locally, publish later" pattern.
+**Load when:** implementing or reviewing search boxes, filter chips, URL-synced
+forms, or any "type locally, publish later" pattern. Triggered from
+**quality-check** principle §2.
 
 ## The failure mode
 
