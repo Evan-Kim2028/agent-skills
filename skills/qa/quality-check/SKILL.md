@@ -1,24 +1,23 @@
 ---
-name: quality
+name: quality-check
 description: >
-  QA routing hub for quality work — picks the right specialist for unit/TDD,
-  hard-bug diagnosis, browser/e2e/visual proof, a11y/web quality, adversarial
-  doubt review, self-verify, PR review, ship checklists, conversational bug
-  filing, data semantic quality, and CI-until-green. Prefer this hub when the
-  right QA skill is unclear, when shipping consumer-facing UI, or when fixing
-  regressions (search, filters, sticky chrome, state sync). Use on "QA",
-  "quality", "verify", "regression", "smoke", "e2e", "flaky", "prove it",
-  "check work", or "don't ship bugs". Do not use for pure product design
-  exploration (frontend-design), marketing copy (marketing), or lakehouse
-  design without quality intent (data).
+  Use this skill when the right QA/verification path is unclear, when shipping
+  or fixing consumer-facing UI regressions (search, filters, sticky chrome,
+  URL/debounce state), or when choosing among TDD, diagnose, browser proof,
+  review, and ship checklists. Route first, then load one specialist. Prefer
+  specialists directly when the task is already clear (only check-work, only
+  visual-verify, only tdd). Triggers: quality-check, QA, verify, regression,
+  smoke, e2e, flaky, prove it, don't ship bugs. Do not use for pure product
+  design (frontend-design), marketing copy (marketing), conversational issue
+  filing alone (qa), or lakehouse design without a verification intent (data).
 metadata:
   short-description: "QA hub — route TDD, diagnose, browser verify, review, ship"
 ---
 
-# Quality — QA routing hub
+# Quality-check — QA routing hub
 
-Single entry point for **quality / QA / verification**. **Route first**, then
-load the specialist. This hub carries shared principles (especially
+Single entry point for **quality-check / QA / verification**. **Route first**,
+then load the specialist. This hub carries shared principles (especially
 consumer-facing interaction races) that every specialist assumes.
 
 When a specialist clearly fits, load it directly — skip re-reading this whole
@@ -198,14 +197,14 @@ you only have a checklist, put it in this hub's done criteria and in PR template
 | **doubt-driven-development** | Fresh-context adversarial review |
 | **check-work** | Session verifier subagent pattern |
 | **data-semantic-quality** | Write-time quality attributes; golden packs |
-| **This hub** | Synthesis for routing + Silph-style consumer race lessons (Evan-Kim2028/agent-skills) |
+| **This hub (`quality-check`)** | Synthesis for routing + Silph-style consumer race lessons (Evan-Kim2028/agent-skills) |
 
 External packs (optional install, not required by this hub): community QA skill packs
 (e.g. petrkindlmann/qa-skills Playwright/strategy skills) — use as references, not as a
 second competing router. **Prefer this hub** for progressive disclosure; pull one
 external specialist only when a gap is clear.
 
-## Done criteria (any routed quality task)
+## Done criteria (any routed quality-check task)
 
 - [ ] Correct specialist(s) loaded (or deliberate general path)  
 - [ ] Failure mode has an automated oracle when user-visible  

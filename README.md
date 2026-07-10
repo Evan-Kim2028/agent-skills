@@ -44,7 +44,7 @@ skills/
 | [`mobile-product-ux`](skills/frontend/mobile-product-ux/SKILL.md) | Sticky chrome, sheets, safe areas, gestures, one-thumb product flows. |
 | [`mockup-implement`](skills/frontend/mockup-implement/SKILL.md) | Port signed-off HTML/Figma/mockups into production with fidelity (no freestyle redesign). |
 | [`html-design`](skills/design/html-design/SKILL.md) | Standalone HTML product-design iteration: before/after A/B compare pages, multi-variant switchers, floating picker bars — explore before production UI. |
-| [`quality`](skills/qa/quality/SKILL.md) | **QA routing hub** — progressive disclosure into TDD, diagnose, browser/visual verify, web-quality, doubt-driven review, check-work, PR review, ship checklists, conversational issue filing (`qa`), data-semantic-quality. Shared principles for consumer interaction races (debounce × URL). |
+| [`quality-check`](skills/qa/quality-check/SKILL.md) | **QA routing hub** — progressive disclosure into TDD, diagnose, browser/visual verify, web-quality, doubt-driven review, check-work, PR review, ship checklists, conversational issue filing (`qa`), data-semantic-quality. Shared principles for consumer interaction races (debounce × URL). |
 
 ## Install
 
@@ -79,9 +79,9 @@ done
 # Also route from frontend-design (install separately if present on machine):
 #   html-design, tufte, prototype, browser-testing-with-devtools
 
-# QA / quality pack (router only in this repo — specialists often live elsewhere)
-ln -sfn "$PWD/skills/qa/quality" ~/.claude/skills/quality
-ln -sfn "$PWD/skills/qa/quality" ~/.grok/skills/quality
+# QA / quality-check pack (router only in this repo — specialists often live elsewhere)
+ln -sfn "$PWD/skills/qa/quality-check" ~/.claude/skills/quality-check
+ln -sfn "$PWD/skills/qa/quality-check" ~/.grok/skills/quality-check
 # Specialists the hub routes to (install if not already present):
 #   tdd, diagnose, doubt-driven-development, check-work, review,
 #   visual-verify, browser-testing-with-devtools, web-quality, qa (issue filing),
@@ -93,4 +93,4 @@ The `name:` field in each `SKILL.md` is the skill's identifier; the directory is
 
 Install **frontend-design** alone if you only want the FE router (agents still need specialist dirs available to open). Prefer this hub over **frontend-ui-engineering**. For product apps with an existing brand, prefer **design-system** as the default specialist over generic public “anti-slop” frontend skills.
 
-Install **quality** alone if you want the QA router. Invoke with `/quality` or natural language (“QA this”, “verify before ship”, “regression”). The hub only routes — specialists must be installed separately (same model as frontend-design → visual-verify).
+Install **quality-check** alone if you want the QA router. Invoke with `/quality-check` or natural language (“QA this”, “verify before ship”, “regression”). The hub only routes — specialists must be installed separately (same model as frontend-design → visual-verify).
