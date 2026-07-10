@@ -13,7 +13,8 @@ description: >
   admission or OOM (data-pipeline-operations), table retirement
   (data-table-lifecycle), DuckDB engine tuning (data-duckdb), or domain-specific
   business thresholds and product rule books (keep those in the product repo's
-  own skills — not this pack).
+  own skills — not this pack). Prefer the data hub when the right data skill is unclear or the task spans ingest→store→serve.
+
 ---
 
 # Semantic data quality — row truth, not just schema

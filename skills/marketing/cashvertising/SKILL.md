@@ -1,6 +1,7 @@
 ---
 name: marketing-cashvertising
-description: Use when writing, reviewing, or improving online ads, email promotions, opt-in pages, website conversion sections, CTAs, headlines, pricing frames, credibility proof, social proof, cart recovery, or buyer-psychology tactics using Drew Eric Whitman's Cashvertising Online. Best for direct-response conversion improvements after the offer and message are clear.
+description: Use when writing, reviewing, or improving online ads, email promotions, opt-in pages, website conversion sections, CTAs, headlines, pricing frames, credibility proof, social proof, cart recovery, or buyer-psychology tactics using Drew Eric Whitman's Cashvertising Online. Best for direct-response conversion improvements after the offer and message are clear. Prefer the marketing hub when the marketing path is unclear; use this skill only for its specific framework.
+
 ---
 
 # Marketing / Cashvertising

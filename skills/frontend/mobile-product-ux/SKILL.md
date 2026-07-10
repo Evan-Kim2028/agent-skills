@@ -1,12 +1,12 @@
 ---
 name: mobile-product-ux
 description: >
-  Design and implement mobile product UX — sticky chrome, bottom bars, sheets,
-  safe areas, touch targets, gesture conflicts, density, and one-thumb flows.
-  Use when building phone layouts for card detail, chat, trade, filters, HUDs,
-  nav bars, or share sheets; when sticky/fixed elements misbehave; or when
-  desktop UI is being adapted to mobile. Not for responsive marketing landings
-  only or pure desktop dashboards.
+  Mobile product UX — sticky chrome, bottom bars, sheets, safe areas, gesture
+  conflicts, one-thumb density. Use only when phone/tablet chrome is the focus
+  (sticky misbehaving, sheet vs keyboard, adapting desktop product UI to mobile).
+  Prefer frontend-design when multi-step product UI or the right FE skill is
+  unclear. Not for marketing landings only, pure desktop dashboards, general
+  polish (product-ui-craft), or browser proof loops (visual-verify / quality-check).
 ---
 
 # Mobile product UX

@@ -1,11 +1,11 @@
 ---
 name: react-performance
 description: >
-  Apply React and SPA performance patterns — eliminate request waterfalls,
-  shrink bundles, control re-renders, and keep charts/lists smooth. Use when
-  optimizing frontend load time, fixing jank, code-splitting heavy libs
-  (e.g. echarts), reviewing React Query/data fetching, or hitting performance
-  budgets. Not for pure CSS aesthetics or a11y-only reviews.
+  React/SPA performance — request waterfalls, bundles, re-renders, chart/list
+  jank, code-splitting heavy libs. Use only when load time, jank, or a
+  performance budget is the stated problem. Prefer frontend-design when the
+  task is general UI build/polish (it routes here if needed). Not for pure CSS
+  aesthetics, a11y-only reviews (web-quality), or chart cognitive design (tufte).
 ---
 
 # React performance

@@ -1,12 +1,11 @@
 ---
 name: mockup-implement
 description: >
-  Port signed-off mockups (HTML design pickers, Figma, screenshots) into
-  production frontend code with fidelity — match structure, spacing, and
-  states without freestyle redesign. Use when implementing from design/
-  HTML, A/B winners, Figma frames, or "port vN mockup"; when agents keep
-  improving designs instead of matching them. Not for open-ended visual
-  exploration (use html-design first).
+  Port a signed-off mockup (HTML picker winner, Figma, screenshot) into
+  production with fidelity — no freestyle redesign. Use only when a design is
+  already chosen and the task is "match this." Prefer frontend-design when the
+  overall FE path is unclear. Not for open-ended exploration (html-design /
+  prototype first) or inventing new visual systems (design-system / craft).
 ---
 
 # Mockup → production implementation

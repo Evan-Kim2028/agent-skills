@@ -1,12 +1,13 @@
 ---
 name: design-system
 description: >
-  Keep frontend work on the project's design system — tokens, typography,
-  components, chart contracts, and brand locks. Use when implementing or
-  reviewing UI inside an existing product, when DESIGN.md / design-system docs /
-  token CSS exist, or when agents keep inventing fonts, colors, or spacing.
-  Prefer over generic aesthetic skills. Not for greenfield brand invention or
-  marketing storytelling.
+  Stay on project design-system rails — tokens, typography, components, chart
+  contracts, and brand locks. Use only when the task is already about tokens,
+  DESIGN.md / design-system docs, or agents inventing fonts/colors/spacing.
+  Prefer over generic aesthetic skills. When the right frontend skill is unclear
+  or the work is multi-step product UI, use frontend-design first (it routes
+  here). Not for greenfield brand invention, marketing storytelling, general
+  layout polish (product-ui-craft), or pure QA/verify (quality-check).
 ---
 
 # Design system fidelity

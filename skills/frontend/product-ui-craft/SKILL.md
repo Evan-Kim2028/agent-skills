@@ -1,12 +1,13 @@
 ---
 name: product-ui-craft
 description: >
-  Raise product UI craft — spacing, typography hierarchy, alignment, density,
-  radii, states, and restrained motion so interfaces feel designed rather than
-  merely functional. Use when polishing app chrome, chat, tables, cards,
-  filters, or dashboards; when UI "works but feels off"; or when tightening
-  visual consistency. Not for brand invention, marketing landings, or design
-  system token definition (use design-system).
+  Raise product UI craft — spacing, hierarchy, density, radii, states, and
+  restrained motion so chrome feels designed. Use only when polishing already
+  structured UI ("works but feels off"), not as the default for any UI task.
+  When the right frontend skill is unclear or work spans tokens/mobile/verify,
+  use frontend-design first. Not for brand invention, marketing landings,
+  design-system token definition (design-system), mobile sticky/sheet systems
+  (mobile-product-ux), or ship/e2e proof (quality-check / visual-verify).
 ---
 
 # Product UI craft

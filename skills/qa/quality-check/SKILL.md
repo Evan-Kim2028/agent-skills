@@ -1,15 +1,16 @@
 ---
 name: quality-check
 description: >
-  Use this skill when the right QA/verification path is unclear, when shipping
-  or fixing consumer-facing UI regressions (search, filters, sticky chrome,
-  URL/debounce state), or when choosing among TDD, diagnose, browser proof,
-  review, and ship checklists. Route first, then open one specialist SKILL.md.
-  Prefer specialists directly when the task is already clear (only check-work,
-  only visual-verify, only tdd). Triggers: quality-check, QA, verify, regression,
-  smoke, e2e, flaky, prove it, don't ship bugs. Do not use for pure product
-  design (frontend-design), marketing, issue filing alone (qa), or lakehouse
-  design without a verification intent (data).
+  QA routing hub for verification — TDD, diagnose, browser/visual proof,
+  web-quality, doubt-driven review, check-work, PR review, ship checklists,
+  data-semantic-quality. Use when the QA path is unclear, when shipping or
+  fixing consumer-facing regressions (search, filters, sticky chrome, URL/
+  debounce), or on "QA", "verify", "prove it", "e2e", "flaky", "don't ship bugs".
+  Prefer specialists directly when already clear (only tdd, only visual-verify).
+  Prefer frontend-design when the work is still building/redesigning product UI
+  (hand off here for proof). Do not use for pure product design exploration,
+  marketing, issue filing alone (qa), or lakehouse design without verification
+  intent (data).
 metadata:
   short-description: "QA hub — route TDD, diagnose, browser verify, review, ship"
 ---
@@ -52,7 +53,8 @@ One **default** name per row. Aliases only if that name is not installed.
 | File bugs conversationally | **qa** | not a fix path |
 | Auth / secrets / threat model | **security-and-hardening** | security-sensitive |
 | Row-truth / quality flags | **data-semantic-quality** | pipelines |
-| UI craft that *is* quality | **frontend-design** | then craft/a11y specialists |
+| UI still being built/redesigned (not proof yet) | **frontend-design** | then return here to prove |
+| A11y checklist during ship (not full redesign) | **web-quality** | after build |
 | Unclear multi-step QA | **start here** | pipeline A or B |
 
 ## Pipelines
@@ -165,12 +167,20 @@ Do not invent a fake skill name. Run the fallback, then note the gap.
 
 | Task | Use instead |
 |------|-------------|
-| UI craft / tokens / mockups | **frontend-design** |
+| Build / redesign product UI (tokens, craft, mobile, mockups) | **frontend-design** |
 | Marketing narrative | **marketing** |
-| Lakehouse / DuckDB / ingest | **data** |
+| Lakehouse / DuckDB / ingest without verify intent | **data** |
 | Spec before code | **spec** / **spec-driven-development** |
 | Images | **imagine** |
 | Design docs / PR plans | bundled **design** (docs) |
+
+### Build vs prove (with frontend-design)
+
+| Phase | Hub |
+|-------|-----|
+| Build / redesign product UI | **frontend-design** |
+| Prove / regression / e2e / ship checklist | **quality-check** (this hub) |
+| Full feature | **frontend-design** while implementing → **this hub** before done |
 
 Attribution for specialists: [`references/sources.md`](references/sources.md).
 

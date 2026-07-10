@@ -1,6 +1,7 @@
 ---
 name: marketing-offers
-description: Use when designing, reviewing, or improving offers, packages, pricing, bonuses, guarantees, scarcity, urgency, naming, value proposition, or conversion economics using Alex Hormozi's $100M Offers. Helps make an offer more valuable before writing ads or landing-page copy. Do not use for general brand messaging, viral social formats, or word-of-mouth strategy unless offer architecture is the blocker.
+description: Use when designing, reviewing, or improving offers, packages, pricing, bonuses, guarantees, scarcity, urgency, naming, value proposition, or conversion economics using Alex Hormozi's $100M Offers. Helps make an offer more valuable before writing ads or landing-page copy. Do not use for general brand messaging, viral social formats, or word-of-mouth strategy unless offer architecture is the blocker. Prefer the marketing hub when the marketing path is unclear; use this skill only for its specific framework.
+
 ---
 
 # Marketing / Offers

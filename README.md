@@ -4,6 +4,32 @@ A personal, growing collection of [agent skills](https://docs.claude.com/en/docs
 
 This started as data/lakehouse work and will accumulate whatever domains I happen to be working in.
 
+## How install works (no automatic download)
+
+**Nothing auto-downloads** when you open another repo or machine. Agents only see skills that are **already installed** under that environment’s skills folder (e.g. `~/.claude/skills`, `~/.grok/skills`).
+
+| Situation | What happens |
+|-----------|----------------|
+| New computer / fresh agent | Empty skills dir until you clone this repo and run the install steps below |
+| Another git repo on the same machine | Same global skills folder — already-installed skills apply; no per-repo fetch |
+| After `git pull` on this repo | **Copies do not update themselves** — re-run install (or re-copy the skill dirs you care about) |
+| Symlink install | Edits in this clone show up immediately; break if the clone path moves |
+
+You choose which packs to install. Specialists stay on disk for progressive disclosure; **you only need to remember the four hubs**.
+
+## Remember these four hubs
+
+| Hub | Say this when… | Routes to |
+|-----|----------------|-----------|
+| **`data`** | Pipelines, lakehouse, DuckDB, ingest/serve APIs, ops, table lifecycle, row-truth quality | data-* specialists |
+| **`frontend-design`** | Build / redesign product UI (tokens, craft, mobile, mockups, charts) | FE specialists |
+| **`marketing`** | Offers, messaging, ads, viral, word-of-mouth | marketing-* specialists |
+| **`quality-check`** | Prove it — TDD, diagnose, e2e/visual, review, ship, regressions | QA specialists (+ FE verify) |
+
+**Build vs prove:** multi-step product features → `frontend-design` while implementing → `quality-check` before claiming done.
+
+Specialist descriptions defer broad routing to these hubs so discovery does not fire five FE skills on “build a card page.”
+
 ## Layout
 
 Each skill is a directory containing a `SKILL.md`, following the

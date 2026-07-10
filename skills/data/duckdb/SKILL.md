@@ -1,6 +1,7 @@
 ---
 name: data-duckdb
-description: Use when building or debugging pipelines that use DuckDB as the embedded analytical engine — tuning memory_limit and threads, handling larger-than-memory queries and disk spilling, reading Parquet/CSV efficiently (predicate & projection pushdown, glob/Hive partitioning, union_by_name), writing Parquet well (PER_THREAD_OUTPUT, ROW_GROUP_SIZE, the partitioned-write temp-blowup trap), connection reuse, and EXPLAIN ANALYZE profiling. Covers DuckDB-over-Parquet and DuckDB-as-query-layer on a single node. Don't use as an OLTP/transactional application database, for cluster-scale work that genuinely exceeds one big node, or for generic SQL tutoring. For querying Iceberg tables (`iceberg_scan`, catalog reads) see data-apache-lakehouse; for serving DuckDB results over HTTP see data-api.
+description: Use when building or debugging pipelines that use DuckDB as the embedded analytical engine — tuning memory_limit and threads, handling larger-than-memory queries and disk spilling, reading Parquet/CSV efficiently (predicate & projection pushdown, glob/Hive partitioning, union_by_name), writing Parquet well (PER_THREAD_OUTPUT, ROW_GROUP_SIZE, the partitioned-write temp-blowup trap), connection reuse, and EXPLAIN ANALYZE profiling. Covers DuckDB-over-Parquet and DuckDB-as-query-layer on a single node. Don't use as an OLTP/transactional application database, for cluster-scale work that genuinely exceeds one big node, or for generic SQL tutoring. For querying Iceberg tables (`iceberg_scan`, catalog reads) see data-apache-lakehouse; for serving DuckDB results over HTTP see data-api. Prefer the data hub when the right data skill is unclear or the task spans ingest→store→serve.
+
 ---
 
 # DuckDB — embedded analytical engine

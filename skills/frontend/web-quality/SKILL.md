@@ -1,11 +1,12 @@
 ---
 name: web-quality
 description: >
-  Audit and fix web UI quality — accessibility, focus, forms, touch targets,
-  semantics, motion preferences, and interaction details. Use when reviewing UI
-  before ship, fixing a11y/axe findings, improving forms/sheets/dialogs, or
-  running a web-interface guidelines pass. Not for visual brand redesign or
-  React performance tuning alone.
+  Audit and fix interaction quality — a11y, focus, forms, touch targets,
+  semantics, motion preferences. Use only when the task is an a11y/guidelines
+  pass or form/dialog interaction fix. Prefer quality-check when the goal is
+  ship/verify/regression; prefer frontend-design when building or redesigning
+  product UI (it routes here). Not for visual brand redesign, React performance
+  alone (react-performance), or Playwright/e2e proof loops (visual-verify).
 ---
 
 # Web quality (a11y + interaction)

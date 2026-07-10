@@ -1,6 +1,7 @@
 ---
 name: marketing-contagious
-description: Use when designing or reviewing word-of-mouth, referral, sharing, PR, campaign, product-launch, social-sharing, or behavior-spread strategy using Jonah Berger's STEPPS framework from Contagious. Helps make products, ideas, messages, and campaigns more likely to be talked about, shared, remembered, and passed along. Do not use as a substitute for customer-message clarity; use marketing-storybrand first when the offer itself is unclear.
+description: Use when designing or reviewing word-of-mouth, referral, sharing, PR, campaign, product-launch, social-sharing, or behavior-spread strategy using Jonah Berger's STEPPS framework from Contagious. Helps make products, ideas, messages, and campaigns more likely to be talked about, shared, remembered, and passed along. Do not use as a substitute for customer-message clarity; use marketing-storybrand first when the offer itself is unclear. Prefer the marketing hub when the marketing path is unclear; use this skill only for its specific framework.
+
 ---
 
 # Marketing / Contagious

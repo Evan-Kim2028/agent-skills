@@ -1,6 +1,7 @@
 ---
 name: marketing-going-viral
-description: Use when designing, researching, scripting, reviewing, or diagnosing social media content for virality using Brendan Kane's Viral Content Model from The Guide to Going Viral, plus Alex Hormozi's hook guidance from $100M Playbook: Hooks. Helps choose platform-native formats, run Gold/Silver/Bronze analysis, identify performance drivers, generate and rank content ideas, improve hooks, retention, storytelling, and conversion. Best for social content strategy, not general brand positioning.
+description: Use when designing, researching, scripting, reviewing, or diagnosing social media content for virality using Brendan Kane's Viral Content Model from The Guide to Going Viral, plus Alex Hormozi's hook guidance from $100M Playbook: Hooks. Helps choose platform-native formats, run Gold/Silver/Bronze analysis, identify performance drivers, generate and rank content ideas, improve hooks, retention, storytelling, and conversion. Best for social content strategy, not general brand positioning. Prefer the marketing hub when the marketing path is unclear; use this skill only for its specific framework.
+
 ---
 
 # Marketing / Going Viral

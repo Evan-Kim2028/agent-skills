@@ -1,11 +1,13 @@
 ---
 name: visual-verify
 description: >
-  Verify frontend UI in a real browser — Playwright e2e, visual snapshots,
-  axe a11y, and screenshot-driven fix loops. Use when proving sticky layout,
-  mobile chrome, share flows, chat shells, or before claiming UI done; when
-  visual regression or cross-viewport checks are needed. Not for writing
-  product styles from scratch (use design-system / product-ui-craft first).
+  Prove UI in a real browser via Playwright e2e, visual snapshots, axe, and
+  screenshot-driven fix loops. Use only when the task is proof/regression
+  (sticky, multi-viewport, share flows) or "claim done" needs pixels. Prefer
+  quality-check when QA path is unclear (ship/regression/verify). Prefer
+  frontend-design when still building/redesigning UI. For live DOM/console/
+  network via Chrome DevTools MCP use browser-testing-with-devtools instead.
+  Not for writing product styles from scratch (design-system / product-ui-craft).
 ---
 
 # Visual verify

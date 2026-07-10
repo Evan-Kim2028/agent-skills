@@ -1,15 +1,16 @@
 ---
 name: frontend-design
 description: >
-  Routing hub for frontend UI work — picks the right specialist for design-system
-  fidelity, product craft, a11y, React performance, mobile UX, mockup ports,
-  HTML/prototype exploration, chart viz (tufte), and browser verification.
-  Prefer this hub over frontend-ui-engineering for product UI. Use when building
-  or polishing UI, card/chat/trade surfaces, charts, mobile chrome, landings, or
-  when the right frontend skill is unclear. Do not use for pure backend APIs,
-  data pipelines (use data), or marketing copy strategy (use marketing).
+  Routing hub for frontend product UI — routes to design-system, product-ui-craft,
+  mobile-product-ux, mockup-implement, html-design, tufte, web-quality,
+  react-performance, and (after build) visual-verify. Use when building or
+  polishing product UI, card/chat/trade surfaces, charts, mobile chrome, or when
+  the right frontend skill is unclear. Prefer this hub over frontend-ui-engineering
+  and over loading multiple FE specialists at once. Do not use for pure QA/
+  regression/e2e/ship proof alone (quality-check), pure backend APIs, data
+  pipelines (data), or marketing copy strategy (marketing).
 metadata:
-  short-description: "FE hub — route design-system, craft, a11y, mobile, charts, verify"
+  short-description: "FE hub — route design-system, craft, a11y, mobile, charts"
 ---
 
 # Frontend design — routing hub
@@ -54,7 +55,7 @@ For non-trivial product UI (new app surface, card chrome, chat, trade, dashboard
 5. Charts/analytics panels → **tufte** + design-system chart tokens  
 6. **web-quality** checklist  
 7. **react-performance** if data-heavy / chart-heavy  
-8. **visual-verify** and/or **browser-testing-with-devtools** before claiming done  
+8. Hand off to **quality-check** (or load **visual-verify** / **browser-testing-with-devtools** directly) before claiming done  
 
 ### Explore vs ship
 
@@ -64,8 +65,16 @@ explore (html-design | prototype)
     → mockup-implement
     → product-ui-craft (+ mobile-product-ux)
     → web-quality
-    → visual-verify | browser-testing-with-devtools
+    → quality-check / visual-verify | browser-testing-with-devtools
 ```
+
+### Build vs prove (with quality-check)
+
+| Phase | Hub |
+|-------|-----|
+| Build / redesign product UI | **frontend-design** (this hub) |
+| Prove / regression / e2e / ship checklist | **quality-check** |
+| Full feature | this hub while implementing → **quality-check** before done |
 
 ## Source attribution
 
@@ -154,8 +163,9 @@ Quantitative viz is not “make it pretty.” Use **tufte** for chart craft and
 
 | Task | Use instead |
 |------|-------------|
-| Marketing narrative, offers, hooks | `marketing` (+ sub-skills) |
-| Data lakehouse / DuckDB / APIs | `data` (+ specialists) |
+| Pure QA / regression / e2e / “prove it” / ship check | **quality-check** |
+| Marketing narrative, offers, hooks | **marketing** (+ sub-skills) |
+| Data lakehouse / DuckDB / APIs | **data** (+ specialists) |
 | Pure backend, no UI | no FE skill |
 | Image generation / edit | `imagine` |
 | Architecture design docs / PR plans | bundled `design` skill (docs), not UI |

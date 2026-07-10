@@ -1,15 +1,13 @@
 ---
 name: html-design
 description: >
-  Iterate product UI with standalone HTML design prototypes — before/after A/B
-  compare pages, multi-variant switchers, floating picker bars, and local serve —
-  before committing production code. Prefer HTML over Markdown for visual product
-  decisions (see Anthropic "unreasonable effectiveness of HTML"). Use when the
-  user wants design options, before/after of a UI change, HTML mockups, design
-  A vs B, switchable variants, visual product review, or runs /html-design.
-  Also trigger for "compare designs", "mock this up in HTML", "show me before
-  and after", or "design iteration". Not for production React routes (use
-  prototype skill UI branch) or data viz charts (use tufte).
+  Standalone HTML design exploration — before/after A/B, multi-variant pickers,
+  floating switchers, local serve — before production code. Use only when the
+  user wants design options, compare A vs B, HTML mockups, or /html-design.
+  Prefer frontend-design when overall product UI work is multi-step or unclear
+  (it routes here for explore). Not for production React ports (mockup-implement
+  after pick), data viz charts (tufte), marketing copy (marketing), or ship
+  verification (quality-check).
 ---
 
 # HTML Design
