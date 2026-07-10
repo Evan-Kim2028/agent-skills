@@ -24,10 +24,11 @@ Pick the **smallest** mode that answers the question. Many tasks need A only; us
 
 ## Sources (attribution)
 
-- **Playwright** — projects, fixtures, trace, screenshots  
-- Webapp-testing skill patterns (agent skill lineage): run → capture → assert → iterate  
-- **axe-core + Playwright** a11y scanning  
-- **Chrome DevTools MCP** live-browser practice (Addy Osmani skill lineage) — condensed in [`references/devtools-mcp.md`](references/devtools-mcp.md)
+- **Playwright** — projects, fixtures, trace, screenshots.  
+- **Webapp-testing** agent skill patterns (run → capture → assert → iterate) — synthesized.  
+- **axe-core + Playwright** a11y scanning patterns.  
+- **Chrome DevTools MCP** — condensed from [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) `browser-testing-with-devtools` (Addy Osmani); not a full re-host: [`references/devtools-mcp.md`](references/devtools-mcp.md).  
+- Pack index: [ATTRIBUTION.md](../../../ATTRIBUTION.md).
 
 ## Prefer project harness first (mode A)
 
