@@ -48,13 +48,27 @@ skills/
 
 ## Install
 
-Symlink (or copy) any skill directory into your agent's skills folder. For Claude Code / Grok:
+**Copy** skill directories into the agent skills folder (real dirs — not symlinks).
+Symlinks break when the clone moves and confuse some skill loaders.
 
 ```bash
 git clone https://github.com/Evan-Kim2028/agent-skills.git
 cd agent-skills
 
-# Data pack (family-prefixed names match SKILL.md `name:`; dirs need not match)
+install_skill() {
+  # usage: install_skill <src-relative-to-skills/> <installed-name>
+  local src="$PWD/skills/$1"
+  local name="$2"
+  for root in "$HOME/.claude/skills" "$HOME/.grok/skills"; do
+    mkdir -p "$root"
+    rm -rf "$root/$name"
+    mkdir -p "$root/$name"
+    cp -a "$src"/. "$root/$name"/
+  done
+  echo "installed $name"
+}
+
+# Data pack (family-prefixed names match SKILL.md `name:`)
 for pair in \
   "data/data:data" \
   "data/apache-lakehouse:data-apache-lakehouse" \
@@ -64,30 +78,28 @@ for pair in \
   "data/table-lifecycle:data-table-lifecycle" \
   "data/semantic-quality:data-semantic-quality"
 do
-  src="${pair%%:*}"; name="${pair##*:}"
-  ln -sfn "$PWD/skills/$src" ~/.claude/skills/"$name"
-  ln -sfn "$PWD/skills/$src" ~/.grok/skills/"$name"
+  install_skill "${pair%%:*}" "${pair##*:}"
 done
 
-# Frontend pack (router + specialists) — Claude Code + Grok Build
+# Frontend pack (router + specialists)
 for s in frontend-design design-system product-ui-craft web-quality \
          react-performance visual-verify mobile-product-ux mockup-implement; do
-  ln -sfn "$PWD/skills/frontend/$s" ~/.claude/skills/$s
-  ln -sfn "$PWD/skills/frontend/$s" ~/.grok/skills/$s
+  install_skill "frontend/$s" "$s"
 done
 
-# Also route from frontend-design (install separately if present on machine):
+# Also useful with frontend-design (install if present in this repo / machine):
 #   html-design, tufte, prototype, browser-testing-with-devtools
 
-# QA / quality-check pack (router only in this repo — specialists often live elsewhere)
-ln -sfn "$PWD/skills/qa/quality-check" ~/.claude/skills/quality-check
-ln -sfn "$PWD/skills/qa/quality-check" ~/.grok/skills/quality-check
-# Specialists the hub routes to (install if not already present):
+# QA router — real copy into ~/.grok/skills/quality-check
+install_skill "qa/quality-check" "quality-check"
+# Specialists the hub routes to (install from their packs if not already present):
 #   tdd, diagnose, doubt-driven-development, check-work, review,
 #   visual-verify, browser-testing-with-devtools, web-quality, qa (issue filing),
 #   implement-until-green, shipping-and-launch, security-and-hardening,
 #   data-semantic-quality, ship-feature
 ```
+
+Re-copy after pulling agent-skills updates (copies do not auto-update).
 
 The `name:` field in each `SKILL.md` is the skill's identifier; the directory is organizational and need not match it (e.g. `skills/data/duckdb/` → `name: data-duckdb`).
 
