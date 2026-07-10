@@ -6,7 +6,7 @@ description: >
   data-semantic-quality. Use when the QA path is unclear, when shipping or
   fixing consumer-facing regressions (search, filters, sticky chrome, URL/
   debounce), or on "QA", "verify", "prove it", "e2e", "flaky", "don't ship bugs".
-  Prefer specialists directly when already clear (only tdd, only visual-verify).
+  Prefer specialists directly when already clear (only tdd, only browser-verify).
   Prefer frontend-design when the work is still building/redesigning product UI
   (hand off here for proof). Do not use for pure product design exploration,
   marketing, issue filing alone (qa), or lakehouse design without verification
@@ -55,8 +55,7 @@ One **default** name per row. Aliases only if that name is not installed.
 | Prove bug before fix | **tdd** | Prove-It: fail first |
 | Hard bug / flaky / unclear root cause | **diagnose** | then `debugging-and-error-recovery` |
 | Non-trivial invariant / “is this safe?” | **doubt-driven-development** | before clever sync/fix |
-| Live DOM / console / network | **browser-testing-with-devtools** | runtime paint |
-| Playwright e2e / screenshots / axe | **visual-verify** | sticky, mobile, share |
+| Browser proof (Playwright e2e / snapshots / axe / DevTools MCP) | **browser-verify** | was visual-verify + browser-testing-with-devtools |
 | A11y, focus, forms, touch | **web-quality** | ship-quality pass |
 | Self-verify this session | **check-work** | after implement |
 | PR / branch review | **review** | `code-review-and-quality` |
@@ -78,7 +77,7 @@ One **default** name per row. Aliases only if that name is not installed.
    → if debounce/URL: read [`references/interaction-races.md`](references/interaction-races.md)  
 2. Implement  
 3. **doubt-driven-development** if any sync invariant  
-4. **visual-verify** or **browser-testing-with-devtools** (type/click ~2s; no input flicker)  
+4. **browser-verify** (type/click ~2s; no input flicker)  
 5. **web-quality** if forms/focus/touch  
 6. **check-work** before “done”  
 
@@ -147,7 +146,7 @@ Tag escaped bugs; add one automated check that would have blocked the class.
 |------|----------------|
 | Pure logic | unit / TDD |
 | Debounce / URL / local sync | race matrix + 30s browser type |
-| Sticky / gesture / density | **visual-verify** multi-viewport |
+| Sticky / gesture / density | **browser-verify** multi-viewport |
 | Auth / money / PII | **security-and-hardening** + **review** |
 | Data truth | **data-semantic-quality** + golden pack |
 
@@ -159,8 +158,7 @@ Do not invent a fake skill name. Run the fallback, then note the gap.
 |---------------|----------------------------|
 | **tdd** | Write failing test first in project runner; implement; re-run |
 | **diagnose** | Reproduce → minimize → one hypothesis → instrument → fix → regression test |
-| **visual-verify** | Project Playwright/e2e if any; else headed browser: sample UI 2s |
-| **browser-testing-with-devtools** | Browser MCP / DevTools: console + network + DOM assert |
+| **browser-verify** | Project Playwright/e2e if any; else headed browser or DevTools MCP: sample UI 2s |
 | **check-work** | Diff + build/test + re-read user ask; list gaps |
 | **review** | Standards + spec pass on the diff; no drive-by refactors |
 | **doubt-driven-development** | Fresh-context “find issues” pass on the invariant only |

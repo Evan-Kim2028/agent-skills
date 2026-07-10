@@ -6,7 +6,7 @@ description: >
   (sticky misbehaving, sheet vs keyboard, adapting desktop product UI to mobile).
   Prefer frontend-design when multi-step product UI or the right FE skill is
   unclear. Not for marketing landings only, pure desktop dashboards, general
-  polish (product-ui-craft), or browser proof loops (visual-verify / quality-check).
+  polish (product-ui-craft), or browser proof loops (browser-verify / quality-check).
 ---
 
 # Mobile product UX
@@ -89,7 +89,7 @@ Before shipping swipeable panels:
 
 ## Verify (required for sticky/gesture work)
 
-Route to **visual-verify**:
+Route to **browser-verify**:
 
 - Mobile project or 390-wide snapshot  
 - Scroll through full matrix/list with sticky claimed  

@@ -7,7 +7,7 @@ description: >
   When the right frontend skill is unclear or work spans tokens/mobile/verify,
   use frontend-design first. Not for brand invention, marketing landings,
   design-system token definition (design-system), mobile sticky/sheet systems
-  (mobile-product-ux), or ship/e2e proof (quality-check / visual-verify).
+  (mobile-product-ux), or ship/e2e proof (quality-check / browser-verify).
 ---
 
 # Product UI craft
@@ -110,4 +110,4 @@ Use as self-instructions when iterating:
 | Tokens/components wrong | **design-system** |
 | Phone sticky/gestures | **mobile-product-ux** |
 | A11y/focus | **web-quality** |
-| Prove pixels | **visual-verify** |
+| Prove pixels | **browser-verify** |

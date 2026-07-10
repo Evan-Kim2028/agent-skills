@@ -6,7 +6,7 @@ description: >
   pass or form/dialog interaction fix. Prefer quality-check when the goal is
   ship/verify/regression; prefer frontend-design when building or redesigning
   product UI (it routes here). Not for visual brand redesign, React performance
-  alone (react-performance), or Playwright/e2e proof loops (visual-verify).
+  alone (react-performance), or Playwright/e2e proof loops (browser-verify).
 ---
 
 # Web quality (a11y + interaction)
@@ -103,5 +103,5 @@ path/to/Sheet.tsx:18 — missing aria-labelledby on dialog
 |------|------------|
 | Visual density/spacing | **product-ui-craft** |
 | Mobile sticky/safe-area | **mobile-product-ux** |
-| Automated proof | **visual-verify** |
+| Automated proof | **browser-verify** |
 | Perf | **react-performance** |

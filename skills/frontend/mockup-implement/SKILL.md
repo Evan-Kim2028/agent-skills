@@ -4,8 +4,8 @@ description: >
   Port a signed-off mockup (HTML picker winner, Figma, screenshot) into
   production with fidelity — no freestyle redesign. Use only when a design is
   already chosen and the task is "match this." Prefer frontend-design when the
-  overall FE path is unclear. Not for open-ended exploration (html-design /
-  prototype first) or inventing new visual systems (design-system / craft).
+  overall FE path is unclear. Not for open-ended exploration (ui-explore first)
+  or inventing new visual systems (design-system / craft).
 ---
 
 # Mockup → production implementation
@@ -19,7 +19,7 @@ description: >
   visually.
 - **Repo `design/` workflows**: HTML pickers, `?design=` variants, selection
   JSON, DESIGN-DIRECTION locks (SilphCo-style and similar).
-- **html-design** skill: exploration stays in throwaway HTML; this skill starts
+- **ui-explore** skill: exploration stays in throwaway HTML; this skill starts
   **after** a winner is chosen.
 
 ## When to load
@@ -35,7 +35,7 @@ description: >
 2. **design-system** constraints known (tokens, kit)  
 3. Out of scope listed (don’t “while we’re here” redesign nav)  
 
-If not signed off → **html-design** (or Figma) first; do not implement fog.
+If not signed off → **ui-explore** (or Figma) first; do not implement fog.
 
 ## Workflow
 
@@ -88,7 +88,7 @@ Check:
 
 ### 5. Verify
 
-Use **visual-verify** (and **mobile-product-ux** if applicable). Update snapshots
+Use **browser-verify** (and **mobile-product-ux** if applicable). Update snapshots
 only when intentional.
 
 ## Anti-patterns
@@ -99,10 +99,10 @@ only when intentional.
 - New dependencies for something the kit already does  
 - Scope creep into adjacent pages  
 
-## Relation to html-design
+## Relation to ui-explore
 
 ```
-explore (html-design) → pick winner → mockup-implement → product-ui-craft polish → visual-verify
+ui-explore → pick winner → mockup-implement → product-ui-craft polish → browser-verify
 ```
 
 ## Hand off
@@ -112,4 +112,4 @@ explore (html-design) → pick winner → mockup-implement → product-ui-craft 
 | Tokens/primitives | **design-system** |
 | Post-port polish | **product-ui-craft** |
 | Mobile sticky | **mobile-product-ux** |
-| Browser proof | **visual-verify** |
+| Browser proof | **browser-verify** |

@@ -1,0 +1,478 @@
+<!DOCTYPE html>
+<html lang="en" data-design="a">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<title>Design A (before) vs B (after) — html-design template</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&family=Space+Grotesk:wght@400;500;600;700&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --bg: #06040a;
+    --surface: #0c0a12;
+    --elevated: #12101a;
+    --chip: #161320;
+    --text: #f4f2f8;
+    --muted: #9b97a8;
+    --secondary: #c8c4d4;
+    --border: rgba(168, 85, 247, 0.22);
+    --brand: #a855f7;
+    --brand-strong: #7c3aed;
+    --accent: #ec4899;
+    --positive: #34d399;
+  }
+  * { box-sizing: border-box; }
+  html, body { margin: 0; min-height: 100%; }
+  body {
+    font-family: "Space Grotesk", system-ui, sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    padding-bottom: 6rem;
+  }
+  .mono { font-family: "JetBrains Mono", ui-monospace, monospace; }
+
+  /* ── compare chrome ── */
+  .compare-banner {
+    border-bottom: 1px solid var(--border);
+    background: linear-gradient(180deg, #100c1a 0%, var(--bg) 100%);
+    padding: 0.85rem 1rem 1rem;
+  }
+  .compare-banner .inner {
+    max-width: 1100px;
+    margin: 0 auto;
+  }
+  .compare-banner h1 {
+    margin: 0 0 0.25rem;
+    font-size: 1.05rem;
+    font-weight: 600;
+    letter-spacing: -0.01em;
+  }
+  .compare-banner p {
+    margin: 0;
+    color: var(--muted);
+    font-size: 0.82rem;
+    line-height: 1.45;
+    max-width: 52rem;
+  }
+  .diff-chip {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.35rem;
+    margin-top: 0.55rem;
+    padding: 0.2rem 0.55rem;
+    border-radius: 999px;
+    border: 1px solid rgba(52, 211, 153, 0.35);
+    background: rgba(52, 211, 153, 0.08);
+    color: var(--positive);
+    font-size: 0.72rem;
+    font-weight: 600;
+  }
+  html[data-design="a"] .diff-chip { display: none; }
+
+  /* floating A/B picker */
+  .picker {
+    position: fixed;
+    z-index: 100;
+    left: 50%;
+    bottom: max(1rem, env(safe-area-inset-bottom));
+    transform: translateX(-50%);
+    display: flex;
+    align-items: center;
+    gap: 0.35rem;
+    padding: 0.4rem 0.45rem;
+    border-radius: 999px;
+    border: 1px solid rgba(168, 85, 247, 0.4);
+    background: rgba(10, 8, 18, 0.94);
+    box-shadow: 0 12px 40px rgba(0,0,0,0.55);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+  }
+  .picker button {
+    appearance: none;
+    border: none;
+    background: transparent;
+    color: var(--secondary);
+    font: inherit;
+    font-size: 0.8rem;
+    font-weight: 600;
+    padding: 0.45rem 0.85rem;
+    border-radius: 999px;
+    cursor: pointer;
+    transition: background .15s, color .15s;
+  }
+  .picker button:hover { background: rgba(168, 85, 247, 0.15); }
+  .picker button[aria-pressed="true"] {
+    background: linear-gradient(135deg, var(--brand-strong), var(--brand));
+    color: #fff;
+  }
+  .picker .meta {
+    padding: 0 0.55rem 0 0.25rem;
+    color: var(--muted);
+    font-size: 0.7rem;
+    white-space: nowrap;
+  }
+  .picker kbd {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.65rem;
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    border: 1px solid var(--border);
+    color: var(--muted);
+  }
+
+  /* ── mock app chrome ── */
+  .app-bar {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 1rem;
+    padding: 0.75rem 1rem;
+    border-bottom: 1px solid var(--border);
+    background: rgba(12, 10, 18, 0.9);
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    backdrop-filter: blur(10px);
+  }
+  .app-bar .brand {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-weight: 700;
+    font-size: 0.9rem;
+  }
+  .app-bar .mark {
+    width: 1.6rem; height: 1.6rem; border-radius: 0.45rem;
+    background: linear-gradient(135deg, var(--brand-strong), var(--accent));
+    display: grid; place-items: center; font-size: 0.7rem; font-weight: 800;
+  }
+  .app-bar .nav {
+    display: flex; gap: 0.75rem; color: var(--muted); font-size: 0.8rem;
+  }
+  .app-bar .nav span { opacity: 0.7; }
+
+  main { max-width: 1100px; margin: 0 auto; padding: 1.25rem 0 2rem; }
+
+  /* card header — mirrors production CardHeader layout */
+  .card-header {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    gap: 1.5rem;
+    width: 100%;
+    padding: 0 1rem;
+  }
+  @media (min-width: 1024px) {
+    .card-header {
+      flex-direction: row;
+      gap: 2rem;
+    }
+  }
+
+  .hero {
+    width: min(220px, 42vw);
+    flex-shrink: 0;
+  }
+  .hero img {
+    width: 100%;
+    aspect-ratio: 5/7;
+    object-fit: contain;
+    border-radius: 12px;
+    border: 1px solid var(--border);
+    background: var(--elevated);
+    box-shadow: 0 16px 40px rgba(0,0,0,0.35);
+  }
+
+  .meta-col { flex: 1; min-width: 0; display: flex; flex-direction: column; gap: 1rem; }
+
+  .crumb {
+    display: flex; flex-wrap: wrap; align-items: center; gap: 0.4rem;
+    font-size: 0.7rem; font-weight: 600; letter-spacing: 0.16em;
+    text-transform: uppercase; color: var(--secondary);
+  }
+  .crumb a { color: inherit; text-decoration: none; opacity: 0.85; }
+  .crumb a:hover { color: var(--text); }
+
+  .chips { display: flex; flex-wrap: wrap; gap: 0.5rem; }
+  .chip {
+    display: inline-flex; align-items: center;
+    border: 1px solid var(--border); background: var(--chip);
+    border-radius: 4px; padding: 0.15rem 0.5rem;
+    font-size: 0.7rem; font-weight: 700; letter-spacing: 0.06em;
+    text-transform: uppercase; color: var(--secondary);
+  }
+  .pill {
+    display: inline-flex; align-items: center;
+    border: 1px solid var(--border); background: var(--chip);
+    border-radius: 999px; padding: 0.15rem 0.55rem;
+    font-size: 0.72rem; font-weight: 500; color: var(--secondary);
+  }
+
+  h2.title {
+    margin: 0;
+    font-size: clamp(1.5rem, 3vw, 1.85rem);
+    font-weight: 700;
+    letter-spacing: -0.02em;
+    line-height: 1.15;
+  }
+
+  .stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+    gap: 0.6rem;
+  }
+  .stat {
+    border: 1px solid var(--border);
+    background: var(--elevated);
+    border-radius: 10px;
+    padding: 0.65rem 0.75rem;
+  }
+  .stat .label { font-size: 0.68rem; color: var(--muted); text-transform: uppercase; letter-spacing: 0.06em; font-weight: 600; }
+  .stat .value { margin-top: 0.2rem; font-size: 1.05rem; font-weight: 700; font-variant-numeric: tabular-nums; }
+  .stat .sub { margin-top: 0.15rem; font-size: 0.72rem; color: var(--muted); }
+
+  .actions { display: flex; flex-wrap: wrap; align-items: center; gap: 0.5rem; }
+
+  .btn-primary {
+    min-height: 44px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.5rem;
+    border: none; border-radius: 0.5rem; padding: 0.55rem 1rem;
+    font: inherit; font-size: 0.875rem; font-weight: 600; color: #fff; cursor: default;
+    background: linear-gradient(135deg, #7c3aed 0%, #a855f7 55%, #ec4899 120%);
+    box-shadow: 0 0 0 1px rgba(168,85,247,0.25), 0 8px 24px rgba(124,58,237,0.25);
+  }
+  .btn-secondary {
+    min-height: 44px;
+    display: inline-flex; align-items: center; justify-content: center; gap: 0.4rem;
+    border: 1px solid var(--border);
+    background: var(--chip);
+    border-radius: 0.4rem;
+    padding: 0.4rem 0.75rem;
+    font: inherit; font-size: 0.75rem; font-weight: 600; color: var(--text);
+    cursor: default;
+    transition: border-color .15s, background .15s, box-shadow .15s;
+  }
+
+  /* only the delta is highlighted in B */
+  .btn-new {
+    position: relative;
+  }
+  html[data-design="b"] .btn-new {
+    border-color: rgba(52, 211, 153, 0.55);
+    box-shadow: 0 0 0 1px rgba(52, 211, 153, 0.15), 0 0 20px rgba(52, 211, 153, 0.12);
+    animation: pulse-in 0.5s ease;
+  }
+  html[data-design="b"] .btn-new::after {
+    content: "NEW";
+    position: absolute;
+    top: -0.45rem;
+    right: -0.35rem;
+    font-size: 0.55rem;
+    font-weight: 800;
+    letter-spacing: 0.06em;
+    padding: 0.1rem 0.3rem;
+    border-radius: 4px;
+    background: var(--positive);
+    color: #052e1c;
+  }
+  @keyframes pulse-in {
+    from { transform: scale(0.96); opacity: 0.6; }
+    to { transform: scale(1); opacity: 1; }
+  }
+
+  /* hide Add to trade in design A */
+  html[data-design="a"] .btn-new { display: none !important; }
+
+  .fake-body {
+    margin: 1.75rem 1rem 0;
+    border: 1px dashed rgba(168, 85, 247, 0.2);
+    border-radius: 12px;
+    padding: 1rem 1.1rem;
+    color: var(--muted);
+    font-size: 0.8rem;
+    line-height: 1.5;
+  }
+  .fake-body strong { color: var(--secondary); font-weight: 600; }
+  .fake-charts {
+    display: grid;
+    grid-template-columns: 1fr;
+    gap: 0.75rem;
+    margin-top: 0.75rem;
+  }
+  @media (min-width: 720px) {
+    .fake-charts { grid-template-columns: 1.4fr 1fr; }
+  }
+  .fake-panel {
+    height: 140px;
+    border-radius: 10px;
+    border: 1px solid var(--border);
+    background:
+      linear-gradient(180deg, transparent 0%, rgba(168,85,247,0.06) 100%),
+      repeating-linear-gradient(90deg, transparent, transparent 28px, rgba(255,255,255,0.02) 28px, rgba(255,255,255,0.02) 29px),
+      var(--elevated);
+    position: relative;
+    overflow: hidden;
+  }
+  .fake-panel::after {
+    content: "";
+    position: absolute;
+    left: 8%; right: 8%; bottom: 28%;
+    height: 2px;
+    background: linear-gradient(90deg, transparent, var(--brand), var(--accent), transparent);
+    opacity: 0.7;
+  }
+  .fake-panel span {
+    position: absolute; top: 0.65rem; left: 0.75rem;
+    font-size: 0.7rem; font-weight: 600; color: var(--secondary);
+  }
+
+  .side-note {
+    max-width: 1100px;
+    margin: 1.25rem auto 0;
+    padding: 0 1rem;
+    font-size: 0.78rem;
+    color: var(--muted);
+    line-height: 1.5;
+  }
+  .side-note code {
+    font-family: "JetBrains Mono", monospace;
+    font-size: 0.72rem;
+    color: #c4b5fd;
+  }
+</style>
+</head>
+<body>
+  <div class="compare-banner">
+    <div class="inner">
+      <h1>Card page — before / after</h1>
+      <p>
+        Same production card chrome. Only the action row changes.
+        <strong style="color:var(--text)">A = current</strong> (no trade entry).
+        <strong style="color:var(--text)">B = minimal bridge</strong> (secondary “Add to trade” next to Compare grades).
+        Switch with the bar below or keys <span class="mono">A</span> / <span class="mono">B</span>.
+      </p>
+      <div class="diff-chip" id="diff-chip">Δ One secondary button · no layout change · Trade Floor owns the rest</div>
+    </div>
+  </div>
+
+  <header class="app-bar" aria-hidden="true">
+    <div class="brand"><span class="mark">S</span> SilphCo Analytics</div>
+    <div class="nav"><span>Explore</span><span>Sets</span><span>Trade</span><span>Chat</span></div>
+  </header>
+
+  <main>
+    <section class="card-header" aria-label="Card header mock">
+      <div class="hero">
+        <img
+          src="https://images.pokemontcg.io/base1/4_hires.png"
+          alt="Charizard"
+          width="245"
+          height="342"
+        />
+      </div>
+      <div class="meta-col">
+        <nav class="crumb" aria-label="Breadcrumb">
+          <a href="#">Explore</a>
+          <span aria-hidden="true">/</span>
+          <a href="#">Base</a>
+        </nav>
+
+        <div class="chips">
+          <span class="chip">Base · #4</span>
+          <span class="pill">Top 99% in set</span>
+        </div>
+
+        <h2 class="title">Charizard Prices</h2>
+
+        <div class="stats" data-testid="card-header-stats">
+          <div class="stat">
+            <div class="label">Last verified</div>
+            <div class="value mono">$235.00</div>
+            <div class="sub">Raw · Jul 6</div>
+          </div>
+          <div class="stat">
+            <div class="label">Top verified</div>
+            <div class="value mono">$5,499</div>
+            <div class="sub">PSA 8.5 · Jul 4</div>
+          </div>
+          <div class="stat">
+            <div class="label">Total sales</div>
+            <div class="value mono">987</div>
+            <div class="sub">all venues</div>
+          </div>
+        </div>
+
+        <div class="actions" id="actions">
+          <button type="button" class="btn-primary" tabindex="-1">Ask Silph Agent about this card</button>
+          <button type="button" class="btn-secondary" tabindex="-1">Compare grades</button>
+          <button type="button" class="btn-secondary btn-new" id="btn-add-trade" tabindex="-1" title="Goes to /trade?add=base1-4&amp;side=you">Add to trade</button>
+          <button type="button" class="btn-secondary" tabindex="-1">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true">
+              <path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8" />
+              <polyline points="16 6 12 2 8 6" />
+              <line x1="12" y1="2" x2="12" y2="15" />
+            </svg>
+            Share
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <div class="fake-body">
+      <strong>Rest of card page unchanged</strong> (charts, price matrix, sales — not part of this delta).
+      <div class="fake-charts">
+        <div class="fake-panel"><span>Price over time</span></div>
+        <div class="fake-panel"><span>Price by grade</span></div>
+      </div>
+    </div>
+
+    <p class="side-note">
+      Production wire: <code>CardHeader</code> → <code>buildTradeAddHref(id)</code> →
+      <code>/trade?add=base1-4&amp;side=you</code> → Trade Floor seeds Raw NM.
+      No grade-stats panel on the card page.
+    </p>
+  </main>
+
+  <div class="picker" role="group" aria-label="Design comparison">
+    <button type="button" id="btn-a" aria-pressed="true">A · Before</button>
+    <button type="button" id="btn-b" aria-pressed="false">B · After</button>
+    <span class="meta"><kbd>A</kbd> / <kbd>B</kbd> · <kbd>1</kbd> / <kbd>2</kbd></span>
+  </div>
+
+<script>
+(function () {
+  const root = document.documentElement;
+  const btnA = document.getElementById('btn-a');
+  const btnB = document.getElementById('btn-b');
+
+  function setDesign(d) {
+    const design = d === 'b' ? 'b' : 'a';
+    root.dataset.design = design;
+    btnA.setAttribute('aria-pressed', design === 'a' ? 'true' : 'false');
+    btnB.setAttribute('aria-pressed', design === 'b' ? 'true' : 'false');
+    document.title = design === 'a'
+      ? 'Card page — Design A (before)'
+      : 'Card page — Design B (after · Add to trade)';
+    const url = new URL(location.href);
+    url.searchParams.set('design', design);
+    history.replaceState(null, '', url.pathname + url.search + url.hash);
+  }
+
+  btnA.addEventListener('click', () => setDesign('a'));
+  btnB.addEventListener('click', () => setDesign('b'));
+
+  window.addEventListener('keydown', (e) => {
+    if (e.target && /input|textarea|select/i.test(e.target.tagName)) return;
+    if (e.key === 'a' || e.key === 'A' || e.key === '1') setDesign('a');
+    if (e.key === 'b' || e.key === 'B' || e.key === '2') setDesign('b');
+  });
+
+  const params = new URLSearchParams(location.search);
+  const hash = (location.hash || '').replace(/^#/, '');
+  const initial = (params.get('design') || hash || 'a').toLowerCase();
+  setDesign(initial === 'b' || initial === 'after' ? 'b' : 'a');
+})();
+</script>
+</body>
+</html>

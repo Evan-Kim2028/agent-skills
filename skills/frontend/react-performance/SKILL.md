@@ -89,5 +89,5 @@ MEDIUM — filter context re-renders entire PriceMatrix; split selection state
 | Need | Next skill |
 |------|------------|
 | Tokens/layout | **design-system** / **product-ui-craft** |
-| Prove no visual regression after split | **visual-verify** |
+| Prove no visual regression after split | **browser-verify** |
 | Mobile jank from sticky+scroll | **mobile-product-ux** |

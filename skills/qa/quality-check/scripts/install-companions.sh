@@ -74,7 +74,8 @@ fi
 
 # --- Tier A from this repo ---
 for pair in \
-  "frontend/visual-verify:visual-verify" \
+  "frontend/browser-verify:browser-verify" \
+  "frontend/ui-explore:ui-explore" \
   "frontend/web-quality:web-quality" \
   "frontend/frontend-design:frontend-design" \
   "data/semantic-quality:data-semantic-quality"
@@ -91,9 +92,11 @@ if [[ "$TIER" == "--full" ]]; then
     "frontend/mobile-product-ux:mobile-product-ux" \
     "frontend/mockup-implement:mockup-implement" \
     "frontend/react-performance:react-performance" \
+    "frontend/visual-verify:visual-verify" \
+    "frontend/prototype:prototype" \
+    "design/html-design:html-design" \
     "data/data:data" \
-    "marketing/marketing:marketing" \
-    "design/html-design:html-design"
+    "marketing/marketing:marketing"
   do
     src="${pair%%:*}"
     name="${pair##*:}"
@@ -101,13 +104,12 @@ if [[ "$TIER" == "--full" ]]; then
   done
 fi
 
-# --- Addy Osmani ---
+# --- Addy Osmani (optional companions; DevTools is in-repo browser-verify) ---
 AO="$WORK/addyosmani-agent-skills"
 echo
 echo "Cloning https://github.com/addyosmani/agent-skills (credit: Addy Osmani)..."
 clone_depth "https://github.com/addyosmani/agent-skills.git" "$AO"
 AO_NAMES=(
-  browser-testing-with-devtools
   doubt-driven-development
   shipping-and-launch
   security-and-hardening

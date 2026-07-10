@@ -29,12 +29,11 @@ Enough for the hub’s **pipeline A/B** (consumer UI + bug fix) on a clean machi
 | Skill name (install as) | Source pack | Path in source repo | Credit |
 |-------------------------|-------------|---------------------|--------|
 | **quality-check** | Evan-Kim2028/agent-skills | `skills/qa/quality-check/` | This hub |
-| **visual-verify** | Evan-Kim2028/agent-skills | `skills/frontend/visual-verify/` | Evan-Kim2028/agent-skills |
+| **browser-verify** | Evan-Kim2028/agent-skills | `skills/frontend/browser-verify/` | In-repo (Playwright + DevTools) |
 | **web-quality** | Evan-Kim2028/agent-skills | `skills/frontend/web-quality/` | Evan-Kim2028/agent-skills |
 | **frontend-design** | Evan-Kim2028/agent-skills | `skills/frontend/frontend-design/` | Evan-Kim2028/agent-skills |
 | **tdd** | mattpocock/skills | `skills/engineering/tdd/` (path may vary by release) | Matt Pocock — [mattpocock/skills](https://github.com/mattpocock/skills) |
 | **diagnose** | mattpocock/skills | `skills/engineering/diagnose/` | Matt Pocock — [mattpocock/skills](https://github.com/mattpocock/skills) |
-| **browser-testing-with-devtools** | addyosmani/agent-skills | `skills/browser-testing-with-devtools/` | Addy Osmani — [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) |
 | **doubt-driven-development** | addyosmani/agent-skills | `skills/doubt-driven-development/` | Addy Osmani — [addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) |
 | **check-work** | Grok Build bundle | Preinstalled on Grok; else use hub fallback | xAI / Grok Build |
 
@@ -58,7 +57,8 @@ Everything the hub’s routing table may name.
 |--------------|------|
 | quality-check | `skills/qa/quality-check/` |
 | frontend-design | `skills/frontend/frontend-design/` |
-| visual-verify | `skills/frontend/visual-verify/` |
+| browser-verify | `skills/frontend/browser-verify/` |
+| ui-explore | `skills/frontend/ui-explore/` |
 | web-quality | `skills/frontend/web-quality/` |
 | design-system | `skills/frontend/design-system/` |
 | product-ui-craft | `skills/frontend/product-ui-craft/` |
@@ -68,7 +68,8 @@ Everything the hub’s routing table may name.
 | data | `skills/data/data/` |
 | data-semantic-quality | `skills/data/semantic-quality/` |
 | marketing | `skills/marketing/marketing/` |
-| html-design | `skills/design/html-design/` |
+| visual-verify (alias) | `skills/frontend/visual-verify/` |
+| html-design (alias) | `skills/design/html-design/` |
 
 **Credit:** [Evan-Kim2028/agent-skills](https://github.com/Evan-Kim2028/agent-skills) — personal skill pack (data, FE hubs, quality-check).
 

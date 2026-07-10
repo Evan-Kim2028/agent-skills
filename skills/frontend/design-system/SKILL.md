@@ -44,7 +44,7 @@ Search, in order, and **cite paths in your plan**:
 5. Canonical UI kit path (`components/ui/*`, design-system package)  
 
 If none exist: draft a minimal token table *with the user* before freestyling —
-or route to **html-design** for exploration only.
+or route to **ui-explore** for exploration only.
 
 ### 2. Lock the palette of moves
 
