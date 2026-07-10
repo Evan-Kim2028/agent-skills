@@ -1,6 +1,7 @@
-# Exemplar — constraint + scale opener (infra)
+# Exemplar — constraint + scale opener
 
-Index: numbers-first, operator constraint, personal ownership.
+Index: payload-early, measured-constraint. Works for field-log / findings / design-brief.
+Domain-agnostic shape (numbers are illustrative).
 
 ---
 

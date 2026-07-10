@@ -117,8 +117,9 @@ long"). Even enthusiasm + even polish is the #1 AI tell. Always load the **seam*
 
 ## What you load at generation time (Pass B)
 
-**Default (evan):** `profiles/evan/evan.md` · `evan.card.yaml` · `themes.md` · ~4 exemplars from
-`exemplars/evan/` · optional secondary from `profiles/kaue/secondary/` per `profiles/evan/ROUTING.md`.
+**Default (evan):** `profiles/evan/evan.md` · `evan.card.yaml` · **`modes.md` (pick mode by job)** ·
+`themes.md` · mode-matched exemplars from `exemplars/evan/` per `profiles/evan/ROUTING.md` ·
+optional secondary from `profiles/kaue/secondary/`.
 
 **Kaue (when requested):** `profiles/kaue/kaue.md` · `kaue.card.yaml` · `themes.md` · exemplars under
 `exemplars/kaue/` · secondary per `profiles/kaue/ROUTING.md`.
@@ -152,6 +153,7 @@ Exemplars are rhythm donors, never content donors. **Never** read `evidence/*.pr
 | The full router (evan default) | [profiles/evan/ROUTING.md](profiles/evan/ROUTING.md) |
 | The full router (kaue) | [profiles/kaue/ROUTING.md](profiles/kaue/ROUTING.md) |
 | The primary voice (Evan — default) | [profiles/evan/evan.md](profiles/evan/evan.md) |
+| Evan presentation modes (by job) | [profiles/evan/modes.md](profiles/evan/modes.md) |
 | The primary voice (Kaue) | [profiles/kaue/kaue.md](profiles/kaue/kaue.md) |
 | The substance bank (Evan) | [profiles/evan/themes.md](profiles/evan/themes.md) |
 | A secondary voice's craft | `profiles/kaue/secondary/<voice>.md` |

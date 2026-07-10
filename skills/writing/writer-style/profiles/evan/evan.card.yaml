@@ -1,40 +1,42 @@
 voice: evan
 role: primary
-register: builder-research-technical
+register: structure-forward-technical  # multi-mode; not topic-bound
 persona_ref: evan.md
+modes_ref: modes.md
+routing_ref: ROUTING.md
 exemplars_ref: exemplars/evan/
 themes_ref: themes.md
 
-# Calibrated from evan_writings public corpus (~37k prose words, 2022–2026).
-# Median sentence ~19w, mean ~21w, pstdev ~13.4; short≤8 ~9%; long≥30 ~16%.
+# Calibrated from evan_writings (~37k prose words; multiple presentation modes).
+# Median sentence ~19w, mean ~21w; short≤8 ~9%; long≥30 ~16%.
 dials:
   sentence_length: { median: 19, short_punch_floor: 6, long_reach: 32, burstiness_min: 8 }
-  readability_grade: { min: 11, max: 16 }   # technical audience; not dumbed down
+  readability_grade: { min: 11, max: 16 }
   lexical_density: high
-  hedge_boost_lean: { value: 0, why: "confident on measured claims; open on unproven hypotheses" }
-  person_perspective: { first: 15, second: 10, third: 75 }  # sparse I/we; mostly third
-  example_density: { value: high, why: "tables, SQL, RSS peaks, dual-source validation" }
+  hedge_boost_lean: { value: 0, why: "confident on frozen claims; open on unproven bridges" }
+  person_perspective: { first: 15, second: 10, third: 75 }  # raise first in field-log only
+  example_density: { value: high, why: "evidence objects: units, quotes, tables, artifacts" }
   definition_density: { enum: just-in-time, per_1k: 1.2 }
   code_density: medium
   rhetorical_question_rate: low
 
 favor:
-  connectives: ["The fix.", "The problem.", "The lesson.", "That is why", "In practice,",
-                "Conversely,", "Specifically,", "Over a", "At startup", "Before the fixes"]
+  connectives: ["That is why", "Conversely,", "Specifically,", "In practice,",
+                "The problem.", "The fix.", "The lesson.", "Although", "In contrast,"]
   moves:
-    - "numbers-with-units in the first screen (GB, RAM, %, SOL, slots, multiples)"
-    - "TL;DR / findings bullets for empirical pieces"
-    - "problem → fix → lesson (or production scar) structure"
-    - "comparative tooling with measured latency or resource cost"
-    - "economic/incentive flip of a moral framing"
-    - "schema/registry/contract vocabulary for multi-source systems"
-    - "open question left open when proof is missing"
-    - "appendix SQL/code when methods must be reproducible"
-    - "chart/table as evidence, not decoration"
+    - "pick presentation mode by job (modes.md) before drafting"
+    - "payload in the first screen (finding, claim, constraint, or representation)"
+    - "structure does the thinking (claims-as-H2, TL;DR, parallel sections, lessons)"
+    - "evidence object next to load-bearing claims"
+    - "insight as reframe (incomplete slogan, incentive flip, map property)"
+    - "open gaps left open"
+    - "comparative differential under the same load when choosing"
+    - "appendix artifact when method must be reproducible"
+    - "conclusion only if implication or next experiment"
 
 avoid:
   words: [delve, utilize, "a testament to", "in today's fast-paced", "navigate the landscape",
-          "it is important to note", "game-changer", "leverage" # when used as empty verb]
+          "it is important to note", "game-changer", "leverage"]
   connectives: ["Moreover,", "Furthermore,", "Additionally,", "In conclusion,",
                 "First and foremost,", "In today's"]
 
@@ -42,25 +44,44 @@ ai_tells:
   - { id: uniform-cadence, min: 8 }
   - { id: delve-class, cap: 0 }
   - { id: em-dash-overuse, max: 6, kind: guardrail }
-  - { id: conclusion-restate, rule: "Conclusion must add implication or next experiment, not soft-restatement of TLDR" }
+  - { id: conclusion-restate, rule: "Conclusion must add implication or next experiment, not soft-restatement of open" }
   - { id: empty-moreover, cap: 0 }
+  - { id: wrong-mode, rule: "Do not force field-log scars or findings TL;DR onto a job that needs claim-diary/concept-map/walkthrough" }
 
 markers:
-  - id: measured-constraint
-    class: seam
-    patterns: ["GB", "RAM", "writer cap", "RSS", "OOM", "memory cap"]
-    cap: 4
-    per_words: 800
-    fallback: "name the bottleneck with a unit"
-  - id: tldr-findings
+  - id: payload-early
     class: structure
-    patterns: ["TL;DR", "TLDR", "TL; DR"]
+    patterns: ["TL;DR", "TLDR", "Summary", "findings"]
     cap: 1
     per_words: 0
-    fallback: "open with findings bullets or constraint stack"
+    fallback: "open with payload: findings, constraint stack, claim list, or representation rule"
+  - id: evidence-object
+    class: seam
+    patterns: ["%", "×", "x higher", "vs", "cross", "appendix", "query"]
+    cap: 6
+    per_words: 600
+    fallback: "put a checkable object next to the claim (unit, quote, table, artifact)"
+  - id: reframe-insight
+    class: seam
+    patterns: ["Conversely", "That is why", "incomplete", "little incentive", "falls out"]
+    cap: 3
+    per_words: 900
+    fallback: "land insight as reframe, not mood adjective"
+  - id: open-gap
+    class: seam
+    patterns: ["open question", "left open", "deeper dive", "could not find", "would be required"]
+    cap: 2
+    per_words: 1000
+    fallback: "leave unproven bridges explicitly open when relevant"
+  - id: measured-constraint
+    class: seam
+    patterns: ["cap", "limit", "peak", "RSS", "OOM", "latency", "window"]
+    cap: 4
+    per_words: 800
+    fallback: "when constraints matter, name them with a unit"
   - id: production-scar
     class: seam
-    patterns: ["killed", "mid-tick", "peak", "before the fixes", "scar"]
+    patterns: ["killed", "mid-tick", "before the fixes", "scar", "what failed"]
     cap: 2
     per_words: 1200
-    fallback: "name a failed run with a measured peak"
+    fallback: "field-log only: name a failed attempt with a measured peak"

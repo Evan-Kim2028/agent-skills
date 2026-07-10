@@ -1,34 +1,41 @@
-# themes.md — Evan substance bank (topic tags)
+# themes.md — substance bank + method habits
 
-Pull **fitting** examples from lived corpus themes; do not invent fake war stories.
+Pull **fitting** lived material; do not invent war stories.  
+**Modes are not chosen here** — see `modes.md` / `ROUTING.md`.
 
-## Data infrastructure / lakehouse
-- Single-host Iceberg medallion, memory caps, lane registry, promote stagger  
-- DuckDB serving on Iceberg snapshots, version-hint / metadata pointers  
-- Heterogeneous marketplace ingest (on-chain + off-chain)  
+## Method habits (domain-agnostic — prefer these patterns)
 
-## Solana data & oracles
-- Failed transaction rates, Pyth receiver, validator fee incentives  
-- Jito tips pipelines, Cryptohouse vs Dune, tooling series  
+- Dual-source or dual-path validation when empirical  
+- Fixed window / scope for cost control and reproducibility  
+- Appendix with the artifact (query, config, code) when method matters  
+- TL;DR or claim list when the piece carries results or takeaways  
+- Charts/tables as evidence; state what changed  
+- Open questions section when the work is incomplete by design  
+- Comparative matrix when the job is choose-under-same-load  
 
-## MEV / blobs / L1 markets
-- Reordering slippage, blob inclusion, preconfirmations, fee slippage  
-- Combinatorics of slot inclusion, competitive blob markets  
+## Lived topic tags (optional color only)
 
-## DeFi theory / AMM
-- AMM design trilemma (path independence, translation invariance, liquidity sensitivity)  
-- LMSR / pari-mutuel notes, CFMM IL / LVR open questions  
-- Bonding curves, managed pool controllers, RMM  
+Use only if the piece is actually about these; never force into unrelated drafts.
 
-## Build logs / agent tooling
-- MCP for Snowflake (`igloo-mcp`), guardrails, query history JSONL  
-- Agent-native data science workflows  
+### Infrastructure / pipelines
+- Memory caps, lane registries, schema contracts, promote/watermarks  
+- Heterogeneous ingest converging on one gold contract  
 
-## Methods
-- Dual-source validation; fixed slot/block ranges for cost control  
-- Appendix SQL; charts as evidence  
-- TL;DR bullets with units  
+### Empirical systems / markets
+- Failure rates, inclusion, fees, slippage, competitive markets  
+- Incentive flips (who gets paid when the “bug” persists)  
+
+### Theory / design notes
+- Axioms, trilemmas, scoring rules, portfolio/LP properties  
+- Paper takeaways with open bridges  
+
+### Tooling / agents
+- MCP / agent workflows, observability, bake-off of platforms  
+- Build logs: what failed, what exists upstream  
 
 ## Burn rates
-- Don’t recycle the same 8GB lakehouse story in every piece — rotate scars.  
-- One math digression per theory note max unless the piece is math-first.  
+
+- Don’t recycle the same scar or same 3-number opener in every piece — rotate.  
+- One deep digression per theory note unless the piece is digression-first.  
+- Referral/product plugs: omit unless the user asks.  
+- Don’t paste lakehouse vocabulary into pure claim-diary or concept-map work.  

@@ -54,10 +54,11 @@ writing
 
 #### A. Evan voice technical post
 
-1. **writing-technical** for structure (or outline yourself)  
-2. Fact-sheet (voice OFF)  
-3. **writer-style** with `profiles/evan/` — restyle, don’t re-derive  
-4. Naturalness + deslop + fact diff (`validate_voice.py` if available)  
+1. **Pick presentation mode** (job, not topic) — see `writer-style/profiles/evan/modes.md`  
+2. **writing-technical** for that mode’s skeleton (or outline yourself)  
+3. Fact-sheet (voice OFF)  
+4. **writer-style** pack **evan** — load mode exemplars per `ROUTING.md`; restyle, don’t re-derive  
+5. Naturalness + deslop + fact diff (`validate_voice.py` if available)  
 
 #### B. Pure docs
 
@@ -81,16 +82,26 @@ writing
 
 ## Evan default (quick)
 
-When in doubt for *his* public technical writing:
+**Constant spine** (all modes): structure-forward · payload early · evidence objects ·
+insight as reframe · open gaps · no soft conclusion loops.
 
-- Numbers + units early  
-- TL;DR findings or constraint stack  
-- Problem → fix → lesson / production scars  
-- Incentive/mechanism implications  
-- Open questions when unproven  
-- Avoid “Moreover / In conclusion” restatement loops  
+**Mode by job** (not topic): findings-note · field-log · claim-diary · systems-essay ·
+bake-off · walkthrough · concept-map · design-brief · forum-fragment.
 
-Full spine: `writer-style/profiles/evan/evan.md`.
+| Job | Mode |
+|-----|------|
+| Measured result | findings-note |
+| Production scars / build log | field-log |
+| Paper / theory takeaways | claim-diary |
+| Design A vs B argument | systems-essay |
+| Same task, many tools | bake-off |
+| Narrative how-to | walkthrough |
+| Pure runbook | **writing-docs** |
+| Lens / representation | concept-map |
+| Artifact + constraints | design-brief |
+| Unfinished public Q | forum-fragment |
+
+Full spine: `writer-style/profiles/evan/evan.md` · modes: `.../modes.md`.
 
 ## Sources (attribution)
 

@@ -1,111 +1,106 @@
 ---
 name: writing-technical
 description: >
-  Technical writing for research notes, empirical posts, design explainers, and
-  build logs — mechanism-first, numbers with units, problem/fix/lesson or
-  findings-led structure. Use for technical articles that teach or report
-  results (not pure install docs, not marketing). Prefer writing-docs for
-  procedures/reference; writing-prose for general human tone; writer-style when
-  Evan (or another) voice pack is required; writing hub when unclear.
+  Technical writing form — multi-mode structures for findings, field logs,
+  claim diaries, bake-offs, design briefs, concept maps, and forum notes.
+  Mechanism-first, evidence objects, reframe insights, open gaps. Domain-agnostic
+  (not only data/math). Prefer writing-docs for pure procedures; writing-prose for
+  general human tone; writer-style + evan pack for full Evan cadence and mode
+  routing; writing hub when unclear.
 ---
 
-# Writing technical — research, explainers, build logs
+# Writing technical — form by job (multi-mode)
 
-**Job:** Explain a system or result so a technical reader can **reproduce the
-reasoning** (and often the measurement). Default house technical register aligns
-with Evan Kim’s public archive (constraint-led, measured, incentive-aware).
+**Job:** Explain a system, result, design, or learning path so a technical reader
+can **reproduce the reasoning** (and often the measurement or the map).
+
+Aligns with Evan Kim’s public archive **presentation modes** — same mind, different
+page shapes. Full mode cards: `writer-style/profiles/evan/modes.md`.
 
 ## When to load
 
-- Empirical crypto/data posts (rates, fees, inclusion, pipelines)  
-- Protocol / mechanism explainers (AMM, MEV, markets)  
-- Infra build logs (what failed at what RSS, what changed)  
-- Paper takeaways with open questions  
+- Technical articles that teach, report, compare, or design  
+- Empirical notes, build logs, paper takeaways, tool bake-offs, design briefs  
+- Any domain (infra, markets, math, agents, product internals)
 
 **Not for:** pure runbooks (**writing-docs**), landing pages (**marketing**),
-pure voice cosplay without technical spine.
+persona cosplay without a form (**writer-style** alone after form is set).
 
-## Default structure (pick one)
+## Step 0 — Pick a mode (required)
 
-### A. Empirical result
+| Job | Mode | Skeleton |
+|-----|------|----------|
+| Report a measured/observed result | **findings-note** | TL;DR → setup → results → reframe → open Q → appendix |
+| What production taught you | **field-log** | Constraint → built → problem/fix/lesson → next |
+| Digest a paper/theory in public | **claim-diary** | Frame → numbered claims-as-H2 → quote/gloss → open gaps |
+| Argue design A vs B | **systems-essay** | Landscape → mech A → mech B → costed pick |
+| Same task, multiple tools | **bake-off** | Task → parallel sections per candidate → differential |
+| Narrative how-to with a visible result | **walkthrough** | Goal → steps + artifacts → what you should see → appendix |
+| Pure install/runbook | → **writing-docs** | — |
+| New lens on a structure | **concept-map** | Representation → worked example → properties → questions |
+| Artifact + why that shape | **design-brief** | TL;DR bounds → constraints → technique → applications |
+| Partial public research | **forum-fragment** | Observation → partial implication → **Open questions** |
 
-1. **TL;DR / findings** — bullets with units and multiples  
-2. **Setup** — window, sources, why dual-check  
-3. **Results** — tables/charts; name the effect size  
-4. **Mechanism / incentives** — why the number looks like that  
-5. **Implications / open questions** — not soft restatement  
-6. **Appendix** — SQL/code  
+Default if unclear: **findings-note**.  
+Wrong mode > slightly off tone.
 
-### B. Build log / infra
+## Principles (all modes)
 
-1. **Constraint stack** (scale + memory + topology)  
-2. **What feeds the system** (heterogeneity)  
-3. **Lessons** as *problem → fix → lesson*  
-4. **Scar tissue** with measured peaks  
-5. **What’s next**  
+### 1. Structure does the thinking
 
-### C. Theory / paper notes
+Outline is the argument. Headings advance claims; parallel sections enable comparison.
 
-1. One-sentence frame (“I read X; takeaways”)  
-2. **Numbered claims**  
-3. Short quotes only when definitional  
-4. **Open questions** left open  
-5. Light personal digression only if it clarifies  
+### 2. Payload early
 
-## Principles
+Finding, constraint, thesis, claim list, or representation rule in the first screen.
 
-### 1. Numbers with units early
+### 3. Evidence objects
 
-Lead with the measurement that forces the design (GB, %, SOL, slots, ms, ×).
+Number+unit, quote, table, chart, query, error string, diagram, config — next to the claim.
 
-### 2. Facts first
+### 4. Insight as reframe
 
-Fact-sheet for every quantitative claim; style after freeze. Cross-check when
-two public sources exist.
+Prefer incentive/structural implication, “slogan incomplete,” or “property falls out of the map” over mood (“concerning,” “exciting”).
 
-### 3. Mechanism over mood
+### 5. Facts first
 
-Prefer “validators retain failed fees → weak disincentive” to “this is concerning.”
+Fact-sheet for every quantitative or citation-sensitive claim; style after freeze.
+Cross-check when two sources exist.
 
-### 4. Comparative tooling
+### 6. Open gaps stay open
 
-When recommending stack choices, show a measured contrast (latency, RAM, ops).
+Unproven bridges and next experiments are first-class — especially claim-diary and forum-fragment.
 
-### 5. Show the artifact
+### 7. Conclusion discipline
 
-Schema, registry row, SQL, config — enough to reproduce. Link repos.
+If you close: **implication or next experiment**. Ban “In conclusion, we have shown…” restatements.
 
-### 6. Conclusion discipline
+### 8. Voice handoff
 
-If you write a conclusion, add **implication or next experiment**. Ban
-“In conclusion, we have shown…” restatements of the TL;DR.
-
-### 7. Voice
-
-Default: house technical (this skill) or **writer-style** with **evan** pack for
-full Evan cadence. Sparse first person; seams = scars and constraints.
+House technical (this skill) or **writer-style** pack **evan** (loads `modes.md` + exemplars for the chosen mode).
 
 ## Anti-patterns
 
+- Routing form by topic (“math = academic essay”) instead of job  
+- Field-log scar cosplay on a paper diary  
+- TL;DR theater with no findings  
 - Academic filler connectives without new claims  
 - Charts without stating what changed  
-- Hiding the failure that taught the lesson  
-- Marketing hero story before the metric  
-- Homogeneous sentence length (AI polish)  
+- Homogeneous sentence polish (AI default)  
 
 ## Hand off
 
 | Need | Skill |
 |------|--------|
 | Install/runbook only | **writing-docs** |
-| Named Evan voice pass | **writer-style** (evan pack) |
-| Deslop / human seam only | **writing-prose** |
+| Full Evan cadence + mode exemplars | **writer-style** (evan) |
+| Deslop only | **writing-prose** |
 | Offer/landing | **marketing** |
 
 ## Done criteria
 
-- [ ] Structure matches empirical / build-log / theory  
-- [ ] Units on headline numbers  
-- [ ] Reproducible method or artifact  
-- [ ] Implication or open question — not padded summary  
+- [ ] Mode named and skeleton followed  
+- [ ] Payload in first screen  
+- [ ] Evidence objects on load-bearing claims  
+- [ ] Reframe or open gap — not padded summary  
 - [ ] Optional: evan voice pack if “sound like Evan” requested  

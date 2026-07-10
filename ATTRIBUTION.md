@@ -52,7 +52,7 @@ into your install. Distilled book guidance must not quote long passages.
 | Skill | Credit | Bundled? |
 |-------|--------|----------|
 | **writer-style** | [solanabr/writer-style-skill](https://github.com/solanabr/writer-style-skill) — Superteam Brazil / Kaue (MIT). Two-layer voice engine, naturalness/deslop/facts-first rules, kaue pack, tools. | **Yes** — full skill under `skills/writing/writer-style/` with upstream `LICENSE` |
-| **writer-style / profiles/evan/** | Voice pack synthesized from public corpus [Evan-Kim2028/evan_writings](https://github.com/Evan-Kim2028/evan_writings) (GitHub Pages: https://Evan-Kim2028.github.io/evan_writings). Not a third-party skill copy — original spine/card/exemplars. Default pack for this install. | **Yes** |
+| **writer-style / profiles/evan/** | Voice pack synthesized from public corpus [Evan-Kim2028/evan_writings](https://github.com/Evan-Kim2028/evan_writings) (GitHub Pages: https://Evan-Kim2028.github.io/evan_writings). Domain-agnostic spine + multi-mode presentation (`modes.md`); original spine/card/exemplars. Default pack for this install. | **Yes** |
 | **writing-prose** | House floor adapted from the same naturalness/deslop/facts-first principles for **non-persona** writing | Original synthesis; cites solanabr pack |
 | **writing-docs** | Pure procedure/reference writing — original synthesis (operator docs practice) | Original |
 | **writing-technical** | Research / build-log form aligned with the same corpus habits (numbers-first, problem→fix→lesson) | Original synthesis |

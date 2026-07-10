@@ -1,6 +1,6 @@
-# Exemplar — problem / fix / lesson (scar tissue)
+# Exemplar — field-log problem / fix / lesson
 
-Index: measured failure, write-shape fix, named lesson.
+Index: measured failure, concrete fix, named lesson (“slogan incomplete”).
 
 ---
 

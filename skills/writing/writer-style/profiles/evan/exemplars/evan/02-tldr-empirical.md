@@ -1,6 +1,6 @@
-# Exemplar — empirical TL;DR (research)
+# Exemplar — findings-note TL;DR
 
-Index: findings bullets, units, cross-check, incentive flip.
+Index: findings bullets, units, cross-check, reframe (incentive flip). Domain-agnostic shape.
 
 ---
 

@@ -1,13 +1,56 @@
 exemplars:
   - id: 01-constraint-opener
     file: 01-constraint-opener.md
-    moves: [numbers-first, constraint, operator]
+    modes: [field-log, findings-note, design-brief]
+    moves: [payload-early, measured-constraint, operator]
+
   - id: 02-tldr-empirical
     file: 02-tldr-empirical.md
-    moves: [tldr, units, incentive-flip]
+    modes: [findings-note, systems-essay, forum-fragment]
+    moves: [tldr, units, reframe-insight, incentive-flip]
+
   - id: 03-problem-fix-lesson
     file: 03-problem-fix-lesson.md
-    moves: [scar, problem-fix-lesson, bounded-deltas]
+    modes: [field-log]
+    moves: [scar, problem-fix-lesson, reframe-insight]
+
+  - id: 04-claim-diary
+    file: 04-claim-diary.md
+    modes: [claim-diary]
+    moves: [claims-as-headings, open-gap, quote-gloss]
+
   - id: 04-paper-takeaways
     file: 04-paper-takeaways.md
-    moves: [numbered-claims, open-question, paper-notes]
+    modes: [claim-diary]
+    moves: [numbered-claims, open-question]
+    note: legacy alias; prefer 04-claim-diary
+
+  - id: 05-systems-compare
+    file: 05-systems-compare.md
+    modes: [systems-essay]
+    moves: [side-by-side-mechanism, costed-pick]
+
+  - id: 06-bake-off
+    file: 06-bake-off.md
+    modes: [bake-off]
+    moves: [parallel-sections, measured-differential]
+
+  - id: 07-walkthrough-insight
+    file: 07-walkthrough-insight.md
+    modes: [walkthrough]
+    moves: [steps-plus-visibility, appendix-artifact]
+
+  - id: 08-concept-map
+    file: 08-concept-map.md
+    modes: [concept-map]
+    moves: [representation-rule, property-falls-out]
+
+  - id: 09-design-constraint
+    file: 09-design-constraint.md
+    modes: [design-brief]
+    moves: [constraint-forces-technique, capability-bound]
+
+  - id: 10-open-questions
+    file: 10-open-questions.md
+    modes: [forum-fragment]
+    moves: [partial-observation, open-questions-ending]
