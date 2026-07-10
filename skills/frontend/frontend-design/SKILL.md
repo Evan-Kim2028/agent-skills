@@ -8,6 +8,8 @@ description: >
   or polishing UI, card/chat/trade surfaces, charts, mobile chrome, landings, or
   when the right frontend skill is unclear. Do not use for pure backend APIs,
   data pipelines (use data), or marketing copy strategy (use marketing).
+metadata:
+  short-description: "FE hub — route design-system, craft, a11y, mobile, charts, verify"
 ---
 
 # Frontend design — routing hub
