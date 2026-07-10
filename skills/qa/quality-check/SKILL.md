@@ -178,7 +178,8 @@ Do not invent a fake skill name. Run the fallback, then note the gap.
 
 | Task | Use instead |
 |------|-------------|
-| Build / redesign product UI (tokens, craft, mobile, mockups) | **frontend-design** |
+| Build / redesign product UI (implement path) | **frontend-design** |
+| Craft / mobile UX / density polish | **product-design** |
 | Marketing narrative | **marketing** |
 | Lakehouse / DuckDB / ingest without verify intent | **data** |
 | Spec before code | **spec** / **spec-driven-development** |

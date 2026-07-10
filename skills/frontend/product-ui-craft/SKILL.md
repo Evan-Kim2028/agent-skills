@@ -4,10 +4,11 @@ description: >
   Raise product UI craft — spacing, hierarchy, density, radii, states, and
   restrained motion so chrome feels designed. Use only when polishing already
   structured UI ("works but feels off"), not as the default for any UI task.
-  When the right frontend skill is unclear or work spans tokens/mobile/verify,
-  use frontend-design first. Not for brand invention, marketing landings,
-  design-system token definition (design-system), mobile sticky/sheet systems
-  (mobile-product-ux), or ship/e2e proof (quality-check / browser-verify).
+  Prefer product-design when multi-step product UX/craft is unclear (it routes
+  here). Prefer frontend-design for full FE feature implementation pipelines.
+  Not for brand invention, marketing landings, design-system token definition
+  (design-system), mobile sticky/sheet systems (mobile-product-ux), or ship/e2e
+  proof (quality-check / browser-verify).
 ---
 
 # Product UI craft

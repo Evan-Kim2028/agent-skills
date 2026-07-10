@@ -6,11 +6,12 @@ description: >
   react-performance, and (after build) browser-verify. Use when building or
   polishing product UI, card/chat/trade surfaces, charts, mobile chrome, or when
   the right frontend skill is unclear. Prefer this hub over frontend-ui-engineering
-  and over loading multiple FE specialists at once. Do not use for pure QA/
-  regression/e2e/ship proof alone (quality-check), pure backend APIs, data
-  pipelines (data), or marketing copy strategy (marketing).
+  and over loading multiple FE specialists at once. Prefer product-design when
+  the ask is pure craft/UX polish without a full implement pipeline. Do not use
+  for pure QA/regression/e2e/ship proof alone (quality-check), pure backend APIs,
+  data pipelines (data), or marketing copy strategy (marketing).
 metadata:
-  short-description: "FE hub — craft, mobile, explore, charts; then quality-check"
+  short-description: "FE hub — implement product UI; craft via product-design"
 ---
 
 # Frontend design — routing hub
@@ -36,8 +37,8 @@ When a specialist clearly fits, load it directly — skip re-reading this whole 
 | Browser proof (Playwright / DevTools) | **browser-verify** | After build — or via **quality-check** |
 | Unclear multi-step FE | **start here** | Default |
 
-Aliases (thin redirects): `ui-explore`, `ui-explore` → **ui-explore**;  
-`browser-verify`, `browser-testing-with-devtools` → **browser-verify**.
+Aliases: `html-design` / `prototype` → **ui-explore**;  
+`visual-verify` / `browser-testing-with-devtools` → **browser-verify**.
 
 ### Multi-step pipeline
 
@@ -54,13 +55,14 @@ Aliases (thin redirects): `ui-explore`, `ui-explore` → **ui-explore**;
 ui-explore → mockup-implement → craft (+ mobile) → web-quality → quality-check / browser-verify
 ```
 
-### Build vs prove
+### Build vs craft vs prove
 
 | Phase | Hub |
 |-------|-----|
-| Build / redesign product UI | **frontend-design** (this hub) |
+| Implement product UI (full FE path) | **frontend-design** (this hub) |
+| Craft / mobile UX / density / “feels off” | **product-design** |
 | Prove / regression / e2e / ship | **quality-check** |
-| Full feature | this hub → **quality-check** before done |
+| Full feature | this hub (+ **product-design** specialists) → **quality-check** |
 
 ## Shared principles
 
@@ -84,6 +86,7 @@ ui-explore → mockup-implement → craft (+ mobile) → web-quality → quality
 
 | Task | Use instead |
 |------|-------------|
+| Pure craft / mobile UX / density polish | **product-design** |
 | Pure QA / prove / e2e / ship | **quality-check** |
 | Marketing | **marketing** |
 | Data pipelines | **data** |

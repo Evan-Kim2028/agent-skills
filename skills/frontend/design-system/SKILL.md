@@ -4,10 +4,10 @@ description: >
   Stay on project design-system rails — tokens, typography, components, chart
   contracts, and brand locks. Use only when the task is already about tokens,
   DESIGN.md / design-system docs, or agents inventing fonts/colors/spacing.
-  Prefer over generic aesthetic skills. When the right frontend skill is unclear
-  or the work is multi-step product UI, use frontend-design first (it routes
-  here). Not for greenfield brand invention, marketing storytelling, general
-  layout polish (product-ui-craft), or pure QA/verify (quality-check).
+  Prefer over generic aesthetic skills. Prefer product-design when multi-step
+  product UX/craft is unclear; frontend-design for full FE implementation.
+  Not for greenfield brand invention, marketing storytelling, general layout
+  polish (product-ui-craft), or pure QA/verify (quality-check).
 ---
 
 # Design system fidelity

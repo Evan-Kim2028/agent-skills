@@ -2,25 +2,27 @@
 
 Portable agent skills for Claude Code, Grok Build, Cursor, and similar tools.
 
-**Clone this repo → you get every skill under `skills/`.** Nothing else is required for the four hubs and their specialists in this pack. You do **not** need to clone Addy Osmani, Matt Pocock, or other repos first to use the hubs below. Optional external packs only fill *non-bundled* QA companions (e.g. `tdd`, `diagnose`) if you want those names installed separately — see `skills/qa/quality-check/references/companion-install.md`.
+**Clone this repo → you get every skill under `skills/`.** Nothing else is required for the hubs and their specialists in this pack. You do **not** need to clone Addy Osmani, Matt Pocock, or other repos first. Optional external packs only fill *non-bundled* QA companions (e.g. `tdd`, `diagnose`) — see `skills/qa/quality-check/references/companion-install.md`.
 
 ---
 
-## Start here: four hubs
+## Start here: five hubs
 
 **Remember only these.** Say the hub name (or describe the job). The agent should load the hub first, then one specialist.
 
 | Hub | Use for |
 |-----|---------|
 | **`data`** | Pipelines / lakehouse / APIs / ops / row quality |
-| **`frontend-design`** | Build / redesign product UI |
+| **`product-design`** | Product UI/UX craft — density, mobile chrome, tokens, a11y, explore |
+| **`frontend-design`** | Build / implement product UI (full FE path, incl. perf) |
 | **`marketing`** | Offers / messaging / ads / viral |
 | **`quality-check`** | Prove it — TDD, e2e, review, ship, regressions |
 
-### Build vs prove
+### Craft vs build vs prove
 
 ```
-frontend-design  →  implement UI
+product-design   →  craft / mobile UX / “feels off”
+frontend-design  →  implement the feature in code
 quality-check    →  prove it before “done”
 ```
 
@@ -44,6 +46,7 @@ install_skill() {
 
 # --- hubs ---
 install_skill "data/data" "data"
+install_skill "frontend/product-design" "product-design"
 install_skill "frontend/frontend-design" "frontend-design"
 install_skill "marketing/marketing" "marketing"
 install_skill "qa/quality-check" "quality-check"
@@ -58,7 +61,7 @@ for pair in \
   "data/semantic-quality:data-semantic-quality"
 do install_skill "${pair%%:*}" "${pair##*:}"; done
 
-# --- frontend specialists ---
+# --- product / frontend specialists ---
 for pair in \
   "frontend/design-system:design-system" \
   "frontend/product-ui-craft:product-ui-craft" \
@@ -100,7 +103,7 @@ Re-run install after `git pull` if you use **copies** (they do not auto-update).
 | Pack | Skills (all under `skills/`) |
 |------|------------------------------|
 | **data** | hub + lakehouse, api, duckdb, pipeline-ops, table-lifecycle, semantic-quality |
-| **frontend** | hub + design-system, craft, web-quality, react-performance, mobile, mockup-implement, **ui-explore**, **browser-verify** (+ thin aliases) |
+| **frontend** | **product-design** + **frontend-design** hubs + design-system, craft, web-quality, react-performance, mobile, mockup-implement, **ui-explore**, **browser-verify** (+ thin aliases) |
 | **marketing** | hub + offers, storybrand, cashvertising, contagious, going-viral |
 | **qa** | **quality-check** hub (+ install docs for optional external companions) |
 

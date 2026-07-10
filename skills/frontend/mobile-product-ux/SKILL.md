@@ -4,9 +4,10 @@ description: >
   Mobile product UX — sticky chrome, bottom bars, sheets, safe areas, gesture
   conflicts, one-thumb density. Use only when phone/tablet chrome is the focus
   (sticky misbehaving, sheet vs keyboard, adapting desktop product UI to mobile).
-  Prefer frontend-design when multi-step product UI or the right FE skill is
-  unclear. Not for marketing landings only, pure desktop dashboards, general
-  polish (product-ui-craft), or browser proof loops (browser-verify / quality-check).
+  Prefer product-design when multi-step product UX is unclear (it routes here).
+  Prefer frontend-design for full FE feature builds. Not for marketing landings
+  only, pure desktop dashboards, general polish (product-ui-craft), or browser
+  proof loops (browser-verify / quality-check).
 ---
 
 # Mobile product UX
