@@ -42,6 +42,7 @@ skills/
 | [`visual-verify`](skills/frontend/visual-verify/SKILL.md) | Playwright e2e / visual snapshots / axe proof loops before claiming UI done. |
 | [`mobile-product-ux`](skills/frontend/mobile-product-ux/SKILL.md) | Sticky chrome, sheets, safe areas, gestures, one-thumb product flows. |
 | [`mockup-implement`](skills/frontend/mockup-implement/SKILL.md) | Port signed-off HTML/Figma/mockups into production with fidelity (no freestyle redesign). |
+| [`html-design`](skills/design/html-design/SKILL.md) | Standalone HTML product-design iteration: before/after A/B compare pages, multi-variant switchers, floating picker bars — explore before production UI. |
 
 ## Install
 
