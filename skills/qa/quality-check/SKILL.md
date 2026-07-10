@@ -31,8 +31,8 @@ When a specialist clearly fits, load it directly — skip re-reading this hub.
 | Short source table | [`references/sources.md`](references/sources.md) |
 | One-shot copy install | [`scripts/install-companions.sh`](scripts/install-companions.sh) |
 
-- **Hub alone** is fully portable from [Evan-Kim2028/agent-skills](https://github.com/Evan-Kim2028/agent-skills).
-- **Specialists** install from credited packs (Matt Pocock, Addy Osmani, this pack’s FE/data skills; Grok `check-work` if present). Use **real `cp -a` dirs**, not symlinks.
+- **Hub + browser-verify / web-quality / frontend-design / data-semantic-quality** ship in [Evan-Kim2028/agent-skills](https://github.com/Evan-Kim2028/agent-skills) — clone is enough for FE proof paths.
+- **Optional companions** (tdd, diagnose, doubt-driven, ship, …) may come from Matt Pocock / Addy Osmani packs — see companion-install. Grok may already bundle `check-work`.
 - Missing specialist → **If specialist missing** (do not invent skill files).
 
 ## How to use this hub
