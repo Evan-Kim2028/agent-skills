@@ -31,6 +31,9 @@ into your install. Distilled book guidance must not quote long passages.
 | **ui-explore** | Anthropic *Unreasonable effectiveness of HTML*; throwaway prototype branch pattern (logic/UI) | Original synthesis + in-repo templates |
 | **browser-verify** | Playwright official model; webapp-testing agent skill patterns; **Chrome DevTools MCP** practice condensed from [Addy Osmani — agent-skills](https://github.com/addyosmani/agent-skills) (`browser-testing-with-devtools`) | **Yes** — condensed in `skills/frontend/browser-verify/references/devtools-mcp.md` |
 | **tufte** | Edward Tufte, *The Visual Display of Quantitative Information* et al. | Optional separate install; we only **route** |
+| **emil-design-eng** | Emil Kowalski — [emil-design-eng](https://www.ui-skills.com/skills/emilkowalski/emil-design-eng) / [animations.dev](https://animations.dev/) | Optional separate install; we only **route** |
+| **make-interfaces-feel-better** | Jakub Krehel — [make-interfaces-feel-better](https://www.ui-skills.com/skills/jakubkrehel/make-interfaces-feel-better) / [interfaces.dev](https://interfaces.dev/), MIT | Optional separate install; we only **route** (condensed principles already summarized into `product-ui-craft` above) |
+| **12-principles-of-animation** | Raphael Salaja — Disney's 12 principles adapted for web, MIT | Optional separate install; we only **route** |
 
 ### Aliases (redirect only)
 

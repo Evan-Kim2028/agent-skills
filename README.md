@@ -132,6 +132,9 @@ Old names remain as **aliases** (redirect stubs) so existing prompts still resol
 | Skill | Notes |
 |-------|--------|
 | **tufte** | Charts — install separately if you use it; FE hub still routes there when present |
+| **emil-design-eng** | Emil Kowalski design-engineering — install separately; `product-design` hub routes there when present |
+| **make-interfaces-feel-better** | Jakub Krehel micro-interaction/feel checklist — install separately; `product-design` hub routes there when present |
+| **12-principles-of-animation** | Disney's 12 principles adapted for web (Raphael Salaja) — install separately; `product-design` hub routes there when present |
 | **tdd**, **diagnose**, **check-work**, **review**, … | QA companions — may live in other packs or Grok built-ins; hub documents fallbacks when missing |
 
 You do **not** need those optionals for data / marketing / core FE craft.  
@@ -147,7 +150,7 @@ You do **not** need those optionals for data / marketing / core FE craft.
 
 ### product-design →
 
-`design-system` · `product-ui-craft` · `mobile-product-ux` · `web-quality` · `ui-explore` · `mockup-implement` · `browser-verify` · (`tufte` if installed)
+`design-system` · `product-ui-craft` · `mobile-product-ux` · `web-quality` · `ui-explore` · `mockup-implement` · `browser-verify` · (`tufte`, `emil-design-eng`, `make-interfaces-feel-better`, `12-principles-of-animation` if installed)
 
 ### frontend-design →
 
