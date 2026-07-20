@@ -1,107 +1,75 @@
 # Mobile chart visual verification
 
-Use this when proving a chart pass under **mobile-chart-visual**. Target viewport
-**390×844** (or 375×812); measure chart content width ~**320–360 CSS px**.
+Prove under **mobile-chart-visual** at **~390×844** *and* a wide article paint
+(~720–880 CSS px) when the layout is responsive SVG.
 
-## 1. Text size floors (primary)
+## 1. Text size floors (mobile, primary)
 
-For each main figure’s SVG `<text>` nodes (sample titles, category labels, value
-tips, ticks):
+| Role | Min rendered height (CSS px) @ ~332 paint | Fail band |
+|------|-------------------------------------------|-----------|
+| Category / row label | **11** | ≤9 |
+| Value tip | **11** | ≤9 |
+| Axis tick | **10** | ≤9 |
+| In-SVG title | **13** | ≤11 |
 
-```js
-const r = textEl.getBoundingClientRect();
-// r.height is the practical “rendered size” signal
-```
+HTML titles (`h3 text-base`) outside the SVG satisfy V3.
 
-| Role | Min rendered height (CSS px) | Fail band |
-|------|------------------------------|-----------|
-| Category / row label | **12** | ≤9 |
-| Value tip | **12** | ≤9 |
-| Axis tick | **11** | ≤9 |
-| In-SVG title | **14** | ≤11 |
-| Source (in-SVG) | **11** | ≤9 |
+## 2. Desktop soft caps (density)
 
-If titles live in HTML (`h3 text-base`) outside the SVG, that is OK for V3 as
-long as category/value/tick floors still hold inside the plot.
+At ~720px chart width:
 
-## 2. Scale math cross-check
+| Role | Soft max CSS px |
+|------|----------------:|
+| Label | **~24** (body-sized; soft floors scale here) |
+| Value | **~22** |
+| Tick | **~20** |
 
-```text
-expected ≈ chartClientWidth × (fontSizeAttr / viewBoxWidth)
-```
+**Primary density fail:** thin plot strip (`plotW/viewBoxW < 0.48`) even when
+type is “readable.” Fix wrap/gutters first, not only font size.
 
-If measured height is far below expected, check transforms, `max-h`, or
-`preserveAspectRatio` crop. If expected itself is below floors, fix **user-unit
-fonts or viewBox width** — not CSS alone.
+## 3. Scale math
 
 ```text
-minFont(role) = ceil(TARGET[role] × viewBoxW / designW)
-designW default = 332
+expected ≈ paintWidth × (fontSizeAttr / viewBoxWidth)
+minFont(role) = ceil(TARGET[role] × viewBoxW / 332)
 ```
 
-## 3. Height-cap ban
+## 4. Height-cap ban
 
-Fail if the SVG (or wrapper) uses `max-height` / fixed height that:
+No `max-height` that undercuts natural aspect and floors.
 
-- shrinks `clientHeight` well below natural `clientWidth × (vbH/vbW)`, **and**
-- leaves labels/ticks in the squint band.
+## 5. Clip & collision (V5/V6)
 
-Prefer `className="w-full h-auto"` (or equivalent) with natural aspect.
+- Left labels sized by **per-line** width after wrap.  
+- Values **outside** bars (right of tip).  
+- No systematic overlap of tips/labels.
 
-## 4. Clip & collision
+## 6. Tick density (V7)
 
-- Longest left-axis label: full string bbox inside SVG; not cut by `overflow:hidden` without ellipsis intent.  
-- Value labels outside bars must not sit under adjacent rows.  
-- Rotated x labels: allow extra bottom pad; if still colliding, switch to horizontal bars or fewer categories.
+≥ ~48 CSS px between adjacent tick labels, or ≤ 3–5 ticks.
 
-## 5. Tick density
+## 7. Data density (V11)
 
-On the axis with continuous ticks, require **≥ ~48 CSS px** between adjacent
-tick label centers (or drop to 3–5 ticks). Dense day labels on launch charts
-should thin to key dates + one callout.
+| Metric | Pass |
+|--------|------|
+| `plotW / viewBoxW` | **≥ ~0.48** |
+| Row pitch | Compact (not empty bands between marks) |
+| Bar / mark thickness | Meaningful fraction of row height |
+| Left gutter | From wrap width, not full unwrapped string |
 
-## 6. Spacing gutters
+## 8. Source (V9)
 
-Visually (or via bbox):
+- Under the plot, not over marks  
+- Copy: **`Source: silphcoanalytics.xyz`** (not “Data source”)  
+- No redundant chart subtitles that restate the axis  
 
-- Category text ends ≥ ~6–8 CSS px before the plot origin.  
-- Outer figure padding exists (`p-3`+); charts not flush to article edge.  
-- Legend/source not overlapping the last data row.
+## 9. Evidence
 
-## 7. Raster figures
+- Unit tests on shipped layout constants (floors, soft caps, plot share, wrap)  
+- Optional Playwright at 390 + 1280 measuring text heights and plot share  
 
-For `<img>` charts:
+## 10. Silph lessons
 
-- `displayWidth / naturalWidth` scale applied to estimated design-time type.  
-- If estimated tick type &lt; 11px at display size → re-export mobile primary or
-  replace with SVG.  
-- Lightbox/`@2x` is **not** a pass for inline reading.
-
-## 8. Evidence package
-
-Record under the task scratch (or CI artifact):
-
-| File | Content |
-|------|---------|
-| `*-mobile-metrics.json` | Per figure: viewBox, clientW/H, sample texts with `renderedH`, pass/fail |
-| `*-chart-*.png` | Optional viewport screenshots of each figure |
-| `verify-summary.md` | Which checks ran; market-cap-only vs multi-post |
-
-## 9. Automated helpers (recommended)
-
-Unit-test pure layout constants:
-
-```ts
-renderedCssPx(fontSize, viewBoxW, 332) >= TARGET.label
-```
-
-Browser/Playwright: open the real article route at 390 width, query
-`figure svg text`, assert heights. Prefer measuring **shipped** DOM over
-reimplementing layout in the test.
-
-## 10. Silph blog lessons (Pitch Black)
-
-- Horizontal ranking bars with fat type + fat gutters pass easiest.  
-- Wide viewBox (900–1200) needs **large** user-unit fonts or it still lands ~10px.  
-- Pad growth must travel with type (clip failures on long card names).  
-- Many manual type-bump PRs → encode ratio + clip gate once instead.  
+- Pitch Black: fat horizontal rankings work; ratio beats raw font bumps.  
+- Market-cap v1 mobile pass: floors OK, density failed (giant type + huge pad).  
+- Fix path: soft floors + wrap + plot-share gate + values off bars.  

@@ -4,77 +4,93 @@
 
 | Token | Value | Meaning |
 |-------|------:|---------|
-| `DESIGN_WIDTH` | 332 | CSS px chart width assumption (390 viewport, padded frame) |
+| `DESIGN_WIDTH` | 332 | CSS px chart width (390 viewport, padded frame) |
+| `DESKTOP_SOFT_WIDTH` | 720 | Article paint width for soft caps |
 | `MIN_TICK_GAP_CSS` | 48 | Min gap between tick labels on mobile |
-| `ROW_H_MULT` | 2.4 | `rowH >= labelFont * ROW_H_MULT` |
-| `CHAR_WIDTH_FRAC` | 0.55 | Approx advance width for pad from char count (proportional sans) |
-| `PAD_GAP` | 8 | Extra user units between label end and plot |
+| `ROW_H_MULT_1` | 1.7 | Single-line row pitch |
+| `ROW_H_MULT_2` | 2.15 | Two-line wrapped row pitch |
+| `MAX_CHARS_PER_LINE` | 12 | Wrap budget for category labels |
+| `MIN_PLOT_WIDTH_SHARE` | 0.48 | Data region ≥ 48% of viewBox width |
+| `CHAR_WIDTH_FRAC` | 0.55 | Advance width estimate for pad |
+| `LABEL_END_GAP` | 10 | Plot origin → label end (textAnchor=end) |
+| `LABEL_LEFT_MARGIN` | 4 | SVG left → label start |
 
-## Target rendered CSS px
+## Soft floors (at DESIGN_WIDTH)
 
 ```ts
 const TARGET = {
-  title: 15,
-  label: 13,
-  value: 12,
-  tick: 11,
-  source: 11,
+  title: 13,
+  label: 11,
+  value: 11,
+  tick: 10,
+  source: 10,
 } as const;
 ```
 
-## Helpers (reference implementation)
+## Desktop soft caps (at DESKTOP_SOFT_WIDTH)
 
 ```ts
-function minFontUserUnits(role: keyof typeof TARGET, viewBoxW: number, designW = 332) {
+// Soft floors @ 332 → ~24px labels @ 720 (OK). Cap stops poster overshoot.
+const DESKTOP_CAP = { label: 24, value: 22, tick: 20 } as const;
+// renderedCssPx(font, viewBoxW, 720) <= CAP[role]
+// Primary density gate is still plotW/viewBoxW >= 0.48
+```
+
+## Helpers (reference)
+
+```ts
+function minFontUserUnits(role, viewBoxW, designW = 332) {
   return Math.ceil(TARGET[role] * (viewBoxW / designW));
 }
 
-function renderedCssPx(fontSize: number, viewBoxW: number, designW = 332) {
-  return designW * (fontSize / viewBoxW);
+function renderedCssPx(fontSize, viewBoxW, paintW = 332) {
+  return paintW * (fontSize / viewBoxW);
 }
 
-function padForLabelChars(maxChars: number, labelFont: number, gap = 8) {
-  return Math.ceil(maxChars * 0.55 * labelFont + gap);
+function leftGutterForLabels(maxCharsPerLine, labelFont) {
+  return Math.ceil(maxCharsPerLine * 0.55 * labelFont + 10 + 4);
 }
 
-function rowHeightForLabel(labelFont: number) {
-  return Math.ceil(labelFont * 2.4);
+function rowHeightForLabel(labelFont, lines = 1) {
+  return Math.ceil(labelFont * (lines >= 2 ? 2.15 : 1.7));
 }
 
-function maxTicksForPlotCss(plotWidthCss: number, minGap = 48) {
-  return Math.max(2, Math.floor(plotWidthCss / minGap));
+function wrapLabelLines(text, maxCharsPerLine = 12) { /* ≤2 lines, word break */ }
+
+function plotWidthShare(plotW, viewBoxW) {
+  return plotW / viewBoxW; // ≥ 0.48
 }
 ```
 
 ## Horizontal bar layout sketch
 
 ```ts
-const viewBoxW = 720; // or project choice
+const viewBoxW = 720;
 const label = minFontUserUnits("label", viewBoxW);
 const value = minFontUserUnits("value", viewBoxW);
 const tick = minFontUserUnits("tick", viewBoxW);
-const mL = padForLabelChars(maxLabelChars, label);
-const mR = padForLabelChars(maxValueChars, value);
-const rowH = rowHeightForLabel(label);
-const barH = Math.round(label * 0.9);
-// mT/mB: tick labels + axis title clearance using tick/title sizes
+const mL = leftGutterForLabels(12, label); // per-line after wrap
+const mR = padForLabelChars(6, value, 10);
+const rowH = rowHeightForLabel(label, 2);
+const barH = Math.round(rowH * 0.42);
+const plotW = viewBoxW - mL - mR;
+// assert plotW / viewBoxW >= 0.48
+// values always at mL + barW + gap (never on fill)
 // NO max-height on the SVG
 ```
 
-## Pass/fail examples at designW=332
+## Pass/fail examples
 
-| viewBoxW | fontSize | rendered | Verdict for labels |
-|---------:|---------:|---------:|--------------------|
-| 676 | 12 | ~5.9 | Fail |
-| 720 | 11 | ~5.1 | Fail |
-| 720 | 29 | ~13.4 | Pass |
-| 960 | 32 | ~11.1 | Borderline label (raise or narrow W) |
-| 960 | 38 | ~13.1 | Pass |
-| 340 | 11 | ~10.7 | Borderline tick; ok-ish for compact hist |
-| 340 | 14 | ~13.7 | Pass |
+| Case | Verdict |
+|------|---------|
+| 720 uu, font 12 @ 332 paint (~5.5px) | Fail floor |
+| 720 uu, font 24 @ 332 (~11.1px) | Pass soft floor |
+| 720 uu, font 29 @ 720 paint (~29px) | Fail desktop soft cap / density |
+| Single-line 22-char label → mL ~ half viewBox | Fail plot share |
+| Wrap to 12 chars/line → plot share ≥ 0.48 | Pass density |
 
-## Anti-pattern: max-height
+## Anti-patterns
 
-Desktop layout with `max-h-[300px]` on a 676×250 viewBox at width 324 yields
-~120px height and crushes perceived type further when combined with small
-user-unit fonts. Remove the cap; let height follow aspect ratio.
+- max-height crush  
+- Giant mobile-only type that empties the plot on desktop  
+- Single-line gutters for multi-word set names  
