@@ -72,6 +72,7 @@ for pair in \
   "frontend/web-quality:web-quality" \
   "frontend/react-performance:react-performance" \
   "frontend/mobile-product-ux:mobile-product-ux" \
+  "frontend/mobile-chart-visual:mobile-chart-visual" \
   "frontend/mockup-implement:mockup-implement" \
   "frontend/ui-explore:ui-explore" \
   "frontend/browser-verify:browser-verify"
@@ -113,7 +114,7 @@ Re-run install after `git pull` if you use **copies** (they do not auto-update).
 | Pack | Skills (all under `skills/`) |
 |------|------------------------------|
 | **data** | hub + lakehouse, api, duckdb, pipeline-ops, table-lifecycle, semantic-quality |
-| **frontend** | **product-design** + **frontend-design** hubs + design-system, craft, web-quality, react-performance, mobile, mockup-implement, **ui-explore**, **browser-verify** (+ thin aliases) |
+| **frontend** | **product-design** + **frontend-design** hubs + design-system, craft, web-quality, react-performance, mobile, **mobile-chart-visual**, mockup-implement, **ui-explore**, **browser-verify** (+ thin aliases) |
 | **marketing** | hub + offers, storybrand, cashvertising, contagious, going-viral |
 | **writing** | **writing** hub + **writing-prose** + **writing-docs** + **writing-technical** + **writer-style** (vendored [solanabr/writer-style-skill](https://github.com/solanabr/writer-style-skill) MIT engine; **default pack `evan`** from [evan_writings](https://github.com/Evan-Kim2028/evan_writings); kaue pack retained) |
 | **qa** | **quality-check** hub (+ install docs for optional external companions) |

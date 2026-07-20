@@ -74,6 +74,7 @@ pulls them in as steps inside a full implement pipeline:
 | HTML A/B or throwaway UI/logic prototypes | **ui-explore** | Design not signed off yet |
 | Port signed-off mockup with fidelity | **mockup-implement** | Winner chosen; match don’t freestyle |
 | Quantitative charts / dashboards | **tufte** | Viz craft (+ design-system chart tokens) |
+| Mobile chart text/spacing / blog figures too small | **mobile-chart-visual** | Phone-readable type floors, pads, no max-h crush (install from this pack) |
 | UI polish, component craft, perceived performance | **emil-design-eng** | Optional install — Emil Kowalski design-engineering pass on invisible details |
 | Micro-interaction / "feels better" review | **make-interfaces-feel-better** | Optional install — Jakub Krehel detail checklist (radius, optical align, shadows) |
 | Animation audit vs. 12 principles | **12-principles-of-animation** | Optional install — Disney's 12 principles adapted for web, file:line findings |
