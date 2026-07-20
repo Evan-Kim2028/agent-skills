@@ -101,9 +101,12 @@ soft floors + denser rows**.
 ## Hard bans
 
 - **`max-h-*`** that crushes the plot and undercuts type floors.  
+- **`overflow-hidden` on the chart frame** that clips SVG labels/tips when gutters are short (hides the bug instead of fixing layout).  
 - Desktop-only tiny fonts (10–13 uu on wide viewBoxes) without checking 332px.  
 - **Mobile-only giant type** that collapses plot share on desktop.  
+- **Value tips after full-width bars** without a reserved right column / tip budget — the longest bar (`$140M`) will shove the tip past the viewBox.  
 - Raster exports that only work after pinch/lightbox.  
+- **0.55× char-width estimates with font-weight 600** — Inter semi-bold is ~0.62–0.65×; underestimates clip “Umbreon VMAX” and the trailing `M` on market-cap tips. 
 
 ## Raster / PNG path
 
@@ -130,21 +133,33 @@ Full detail: [`references/verification.md`](references/verification.md).
 | V2 | **Tick floor** | Axis ticks ≥ ~10px at ~332 |
 | V3 | **Title** | HTML `text-base+` or in-SVG ≥ ~13px |
 | V4 | **No height crush** | No max-h undercutting natural aspect |
-| V5 | **No clip** | Labels fully inside SVG (per-line width after wrap) |
+| V5 | **No clip** | Labels + value tips fully inside SVG (semi-bold-safe width; **real data strings**, not only synthetic maxChars) |
 | V6 | **No collision** | Tips/labels do not systematically overlap |
 | V7 | **Tick density** | Adjacent ticks not jammed |
-| V8 | **Gutter breath** | Gap to plot; values outside bars |
+| V8 | **Gutter breath** | Gap to plot; values outside bars **or fixed right column** |
 | V9 | **Caption / source** | `Source: …` under plot; no “Data source” fluff |
 | V10 | **Raster** | Inline readable without pinch |
 | **V11** | **Plot share / density** | Data region ≥ ~48% of viewBox width; no giant empty label columns |
 | **V12** | **Desktop soft cap** | At ~720px paint, labels not poster-sized (≤ ~24px; prefer plot-share fix over raw type) |
+| **V13** | **Longest bar tip** | Full-scale bar (rank #1) still shows complete tip (`$140M` including `M`) |
+| **V14** | **No frame clip** | Chart surface is **not** `overflow-hidden` (or overflow is proven unused) |
 
 ## Anti-patterns
 
 - “Bump fontSize +10” without recomputing pads or plot share.  
-- Single-line labels for “Prismatic Evolutions”-class names.  
+- Single-line labels for “Prismatic Evolutions” / “Umbreon VMAX”-class names.  
 - Proving only mobile **or** only desktop.  
 - Chart subtitles that restate the axis (wasted vertical space).  
+- Unit tests that only check synthetic `maxValueChars: 6` while real tips are `$140M` under **font-weight 600**.  
+- Placing tips at `mL + barW + gap` without a reserved right column — rank #1 always collides.  
+
+## Horizontal ranking bars (required pattern)
+
+1. **Wrap** category labels (≤ ~11 chars/line) so gutters use per-line width.  
+2. Size left gutter with **semi-bold-safe** advance (~0.62× em).  
+3. Put values in a **fixed right column** (`textAnchor=end` at `viewBoxW − margin`), not after the bar tip.  
+4. Size right pad from **real tip strings** × ~0.65× em + gap.  
+5. Unit-test **TOP5-class fixtures** (`Umbreon VMAX`, `$140M`) against the shipped layout.  
 
 ## Hand off
 
@@ -157,6 +172,6 @@ Full detail: [`references/verification.md`](references/verification.md).
 ## Done criteria
 
 - [ ] V1–V3 at ~390; V11–V12 at desktop width  
-- [ ] V4–V8 clean  
+- [ ] V4–V8, **V13–V14** clean (longest tip + no overflow-hidden clip)  
 - [ ] Type from soft floors + wrap; plot share ≥ ~0.48  
-- [ ] Evidence: unit tests on real layout constants and/or dual-viewport metrics  
+- [ ] Evidence: unit tests on **real label/tip strings** and shipped layout constants

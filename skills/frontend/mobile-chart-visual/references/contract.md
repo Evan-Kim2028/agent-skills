@@ -9,9 +9,10 @@
 | `MIN_TICK_GAP_CSS` | 48 | Min gap between tick labels on mobile |
 | `ROW_H_MULT_1` | 1.7 | Single-line row pitch |
 | `ROW_H_MULT_2` | 2.15 | Two-line wrapped row pitch |
-| `MAX_CHARS_PER_LINE` | 12 | Wrap budget for category labels |
+| `MAX_CHARS_PER_LINE` | 11 | Wrap budget (forces “Umbreon VMAX”-class wrap) |
 | `MIN_PLOT_WIDTH_SHARE` | 0.48 | Data region ≥ 48% of viewBox width |
-| `CHAR_WIDTH_FRAC` | 0.55 | Advance width estimate for pad |
+| `CHAR_WIDTH_FRAC_LABEL` | 0.62 | Semi-bold-safe label advance (not 0.55 regular) |
+| `CHAR_WIDTH_FRAC_VALUE` | 0.65 | Semi-bold / tabular tip advance |
 | `LABEL_END_GAP` | 10 | Plot origin → label end (textAnchor=end) |
 | `LABEL_LEFT_MARGIN` | 4 | SVG left → label start |
 
@@ -47,15 +48,18 @@ function renderedCssPx(fontSize, viewBoxW, paintW = 332) {
   return paintW * (fontSize / viewBoxW);
 }
 
-function leftGutterForLabels(maxCharsPerLine, labelFont) {
-  return Math.ceil(maxCharsPerLine * 0.55 * labelFont + 10 + 4);
+function leftGutterForLabels(maxCharsPerLine, labelFont, frac = 0.62) {
+  return Math.ceil(maxCharsPerLine * frac * labelFont + 10 + 4);
 }
 
 function rowHeightForLabel(labelFont, lines = 1) {
   return Math.ceil(labelFont * (lines >= 2 ? 2.15 : 1.7));
 }
 
-function wrapLabelLines(text, maxCharsPerLine = 12) { /* ≤2 lines, word break */ }
+function wrapLabelLines(text, maxCharsPerLine = 11) { /* ≤2 lines, word break */ }
+
+// Horizontal ranking bars: fixed right value column (textAnchor=end at viewBoxW-4)
+// so the full-width bar never shoves "$140M" past the edge.
 
 function plotWidthShare(plotW, viewBoxW) {
   return plotW / viewBoxW; // ≥ 0.48

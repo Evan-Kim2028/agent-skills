@@ -38,11 +38,16 @@ minFont(role) = ceil(TARGET[role] × viewBoxW / 332)
 
 No `max-height` that undercuts natural aspect and floors.
 
-## 5. Clip & collision (V5/V6)
+## 5. Clip & collision (V5/V6/V13/V14)
 
-- Left labels sized by **per-line** width after wrap.  
-- Values **outside** bars (right of tip).  
-- No systematic overlap of tips/labels.
+- Left labels sized by **per-line** width after wrap, using **semi-bold-safe**
+  char width (~0.62× em for Inter 600). Regular 0.55× is a known underestimate.  
+- Values in a **fixed right column** (preferred) or proven to fit after the
+  **full-width** bar (rank #1 tip, including trailing `M` on `$140M`).  
+- No systematic overlap of tips/labels.  
+- Chart frame must **not** use `overflow-hidden` to hide overflow (V14).  
+- Unit tests must include **real article strings** (e.g. `Umbreon VMAX`, `$140M`),
+  not only synthetic `maxChars`.
 
 ## 6. Tick density (V7)
 
@@ -73,3 +78,7 @@ No `max-height` that undercuts natural aspect and floors.
 - Pitch Black: fat horizontal rankings work; ratio beats raw font bumps.  
 - Market-cap v1 mobile pass: floors OK, density failed (giant type + huge pad).  
 - Fix path: soft floors + wrap + plot-share gate + values off bars.  
+- **Market-cap TOP5 (2026-07):** unit tests passed floors/plot-share, but live
+  mobile clipped `$140M`’s `M` and `Umbreon VMAX` — 0.55× width + tip-after-bar
+  + `overflow-hidden`. Fix: 0.62/0.65× fracs, wrap ≤11, **fixed right value
+  column**, ban frame `overflow-hidden`, test real strings (V13/V14).  
