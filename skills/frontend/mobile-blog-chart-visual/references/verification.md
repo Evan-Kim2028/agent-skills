@@ -1,7 +1,10 @@
-# Mobile chart visual verification
+# Mobile blog chart visual verification
 
-Prove under **mobile-chart-visual** at **~390×844** *and* a wide article paint
+Prove under **mobile-blog-chart-visual** at **~390×844** *and* a wide article paint
 (~720–880 CSS px) when the layout is responsive SVG.
+
+**Gate e2e (cannot ship without):** `frontend/e2e/tests/32-blog-top5-mobile-geometry.spec.ts`
+— Playwright geometry probe for TOP5 (`$140M` / Umbreon / no overflow).
 
 ## 1. Text size floors (mobile, primary)
 
@@ -82,3 +85,10 @@ No `max-height` that undercuts natural aspect and floors.
   mobile clipped `$140M`’s `M` and `Umbreon VMAX` — 0.55× width + tip-after-bar
   + `overflow-hidden`. Fix: 0.62/0.65× fracs, wrap ≤11, **fixed right value
   column**, ban frame `overflow-hidden`, test real strings (V13/V14).  
+
+## 11. Title hygiene (V15)
+
+- HTML title only above the plot (no second-line subtitle under the title).
+- Insight / Source captions **below** the plot only.
+- Prefer no duplicate in-SVG title when HTML title exists.
+

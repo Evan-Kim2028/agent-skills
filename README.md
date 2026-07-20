@@ -72,18 +72,20 @@ for pair in \
   "frontend/web-quality:web-quality" \
   "frontend/react-performance:react-performance" \
   "frontend/mobile-product-ux:mobile-product-ux" \
-  "frontend/mobile-chart-visual:mobile-chart-visual" \
+  "frontend/mobile-blog-chart-visual:mobile-blog-chart-visual" \
+  "frontend/mobile-app-echarts-visual:mobile-app-echarts-visual" \
   "frontend/mockup-implement:mockup-implement" \
   "frontend/ui-explore:ui-explore" \
   "frontend/browser-verify:browser-verify"
 do install_skill "${pair%%:*}" "${pair##*:}"; done
 
-# Optional aliases (old names → thin redirects to ui-explore / browser-verify)
+# Optional aliases (old names → thin redirects)
 for pair in \
   "frontend/visual-verify:visual-verify" \
   "frontend/browser-testing-with-devtools:browser-testing-with-devtools" \
   "frontend/prototype:prototype" \
-  "design/html-design:html-design"
+  "design/html-design:html-design" \
+  "frontend/mobile-chart-visual:mobile-chart-visual"
 do install_skill "${pair%%:*}" "${pair##*:}"; done
 
 # --- marketing specialists ---
@@ -114,7 +116,7 @@ Re-run install after `git pull` if you use **copies** (they do not auto-update).
 | Pack | Skills (all under `skills/`) |
 |------|------------------------------|
 | **data** | hub + lakehouse, api, duckdb, pipeline-ops, table-lifecycle, semantic-quality |
-| **frontend** | **product-design** + **frontend-design** hubs + design-system, craft, web-quality, react-performance, mobile, **mobile-chart-visual**, mockup-implement, **ui-explore**, **browser-verify** (+ thin aliases) |
+| **frontend** | **product-design** + **frontend-design** hubs + design-system, craft, web-quality, react-performance, mobile-product-ux, **mobile-blog-chart-visual**, **mobile-app-echarts-visual**, mockup-implement, **ui-explore**, **browser-verify** (+ thin aliases) |
 | **marketing** | hub + offers, storybrand, cashvertising, contagious, going-viral |
 | **writing** | **writing** hub + **writing-prose** + **writing-docs** + **writing-technical** + **writer-style** (vendored [solanabr/writer-style-skill](https://github.com/solanabr/writer-style-skill) MIT engine; **default pack `evan`** from [evan_writings](https://github.com/Evan-Kim2028/evan_writings); kaue pack retained) |
 | **qa** | **quality-check** hub (+ install docs for optional external companions) |
