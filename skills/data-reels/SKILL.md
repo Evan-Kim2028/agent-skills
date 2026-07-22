@@ -17,6 +17,38 @@ The best-measured format is not a countdown. It's:
 
 This beat structure measurably outperformed 5-item countdown formats in the same niche. The whole video *is* the payoff, delivered as a sequence of corrections — not a tease building to a reveal.
 
+## 1.5 Format follows story shape
+
+The rejection-cascade (section 1) is not the only valid format — it's the right format for one
+specific story shape (a contradiction or anomaly being corrected in a sequence of beats). Match
+the format to the story, don't force every insight through the same template:
+
+- **Contradiction/anomaly** ("this looks like X, it's not") -> rejection-cascade: scene-swapped
+  beats, each stating a plausible-but-wrong read then rejecting it with proof.
+- **Comparison/duel** (A vs B, "bigger than," "beats") -> **one composition evolving, not
+  scene-swaps.** Build a persistent split/scale layout that stays on screen the whole reel;
+  elements transform in place — a number ticks up, a bar or beam tips, one side visibly
+  overtakes the other — rather than cutting between two separate scenes for A and B. The reel's
+  entire job is showing one continuous transformation, not a sequence of discrete reveals.
+- **Ranked list** (top N) -> countdown, frontloaded: put the strongest item first, not last —
+  short-form retention drops before a slow build to a big finish pays off.
+
+The generalizable principle: a scene-swap format asks the viewer to remember beat 1 while
+watching beat 3. A comparison story doesn't need that memory load — both sides can just stay
+visible and change value/position in front of the viewer, which is both easier to follow and
+better matches what a comparison *is* (a single relationship, not a sequence of separate facts).
+When a story is fundamentally "A vs B, and here's the moment B overtakes A," resist the urge to
+default to whatever format was used last — the composition-evolves shape will read as smoother
+and better-paced than forcing it into cascading scene cuts, which read as rushed/rough for this
+specific story shape (confirmed via user feedback on a rejection-cascade cut of a comparison
+story that was rebuilt as a persistent-composition format afterward).
+
+Pacing implication: a comparison/duel format needs room for a single climax to breathe (place it
+around 60-70% through the runtime, give it the longest beat window) and strictly soft transitions
+between beats (500-700ms crossfades/eases, never a hard cut) — since nothing ever leaves the
+screen, an abrupt transition on any single element reads as jarring in a way it wouldn't in a
+scene-swap format where cuts are the expected rhythm.
+
 ## 2. Consistency over virality
 
 The best pure-data account measured had **zero statistical outliers** — its top reel was only 1.35x its own median. Every post performs; none spike, none flop. That is the deliberate trade: template consistency as the strategy, not "swing for a viral outlier."
