@@ -8,7 +8,8 @@ description: >
   motion/micro-interaction review, or when the right craft skill is unclear.
   Routes to product-ui-craft, mobile-product-ux, design-system, web-quality,
   ui-explore, mockup-implement, tufte, emil-design-eng,
-  make-interfaces-feel-better, 12-principles-of-animation, then browser-verify.
+  make-interfaces-feel-better, 12-principles-of-animation, flutter-pro-ux-review
+  (Flutter apps), then browser-verify.
   Prefer frontend-design for full FE implementation
   pipelines (perf, SPA structure) when the ask is build-the-feature not craft.
   Do not use for marketing landings (marketing), pure QA/e2e (quality-check),
@@ -29,6 +30,7 @@ product-design (this hub)
     → design-system | product-ui-craft | mobile-product-ux | web-quality
     → ui-explore | mockup-implement | tufte
     → emil-design-eng | make-interfaces-feel-better | 12-principles-of-animation (motion/feel review)
+    → flutter-pro-ux-review (Flutter app production polish audit)
     → quality-check / browser-verify (prove pixels)
 ```
 
@@ -79,6 +81,7 @@ pulls them in as steps inside a full implement pipeline:
 | UI polish, component craft, perceived performance | **emil-design-eng** | Optional install — Emil Kowalski design-engineering pass on invisible details |
 | Micro-interaction / "feels better" review | **make-interfaces-feel-better** | Optional install — Jakub Krehel detail checklist (radius, optical align, shadows) |
 | Animation audit vs. 12 principles | **12-principles-of-animation** | Optional install — Disney's 12 principles adapted for web, file:line findings |
+| Flutter production UX polish (dead taps, null, haptics, keyboard, motion) | **flutter-pro-ux-review** | Flutter/`pubspec.yaml` apps — complements official Flutter architecture skills |
 | Prove sticky/viewport/a11y in browser | **browser-verify** | After craft — or **quality-check** for full QA path |
 | Full feature build (perf, SPA, implement pipeline) | **frontend-design** | Broader FE engineering hub |
 | Unclear multi-step *craft* | **start here** | Default for product UX |
@@ -183,6 +186,7 @@ Full pack table: [ATTRIBUTION.md](../../../ATTRIBUTION.md).
 | **emil-design-eng** | Emil Kowalski / animations.dev design-engineering — optional install; we route only |
 | **make-interfaces-feel-better** | Jakub Krehel / interfaces.dev — optional install; we route only (condensed lineage already folded into **product-ui-craft** above) |
 | **12-principles-of-animation** | Raphael Salaja — Disney's 12 principles adapted for web — optional install; we route only |
+| **flutter-pro-ux-review** | Multi-expert Flutter polish synthesis (Kamran-style micro-details + Bizzotto completeness + motion voices) — bundled under `skills/flutter/` |
 | **browser-verify** | Playwright + condensed Addy Osmani DevTools MCP lineage |
 
 Do **not** install competing aesthetic mega-skills (“UI/UX Pro Max” style) alongside

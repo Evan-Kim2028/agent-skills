@@ -65,6 +65,14 @@ Do not strip the MIT copyright notice from `skills/writing/writer-style/LICENSE`
 
 ---
 
+## Flutter (this pack)
+
+| Skill | Credit |
+|-------|--------|
+| **flutter-pro-ux-review** | Original synthesis for agents. Rule themes and audit workflow shaped by public Flutter craft signals: Kamran Bekirov ([flutterpro.design](https://flutterpro.design) / [@kamranbekirovyz](https://x.com/kamranbekirovyz) micro-detail tips; his `kamranbekirovyz/skills` was WIP / not installable when this was written), Andrea Bizzotto (production feature completeness), Mitch Koko (UI hygiene), Roaa Khaddam (animation craft), Ethiel Adisso (spring / interactive motion), Luke Pighetti (prod UX gotchas), plus supporting signals from Filip Hráček, Elvira Leveque, Mike Rydstrom, Majid Hajian. **Not** a copy of any third-party skill repo or a dump of flutterpro.design articles. Complements official Flutter/Dart agent skills (architecture, tests, layout fixes, package guidelines) rather than replacing them. |
+
+---
+
 ## Marketing (this pack)
 
 | Skill | Primary source (book / framework) |
