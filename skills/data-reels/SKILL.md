@@ -49,6 +49,26 @@ between beats (500-700ms crossfades/eases, never a hard cut) — since nothing e
 screen, an abrupt transition on any single element reads as jarring in a way it wouldn't in a
 scene-swap format where cuts are the expected rhythm.
 
+## 1.6 Format classes beyond rejection-cascade and head-to-head
+
+Measured competitor research on out-of-niche data-story accounts (geography/history/map creators) surfaced additional format classes worth matching to story shape, beyond the two above:
+
+- **Single-transformation reel.** One continuous, wordless, self-explanatory visual change (a map redraw, a silhouette shrink, a region wipe), 6-15s, with **no pacing scaffolding** — no chapter cards, no VO, sometimes not even a caption beyond a one-line title. The strongest measured example ran 6 seconds and hit 41x its account's own median view-to-follower ratio. **Key insight: duration is not the retention lever here — a single continuously-evolving self-explanatory visual is.** Don't assume every short-form idea needs beats, hooks, or narration scaffolding; if the transformation itself is legible and dramatic, let it carry the entire reel unassisted.
+- **Timeline biography.** An era-scrub playhead traveling across a horizontal/vertical timeline with milestone markers popping in at key dates — the "life story of a subject" shape (a market, a product line, an institution). The persistent progress cue doubles as a completion-satisfaction driver.
+- **True-size / nesting comparison.** A layered-silhouette overlay: a full-scale shape with a smaller shape shrinking/nesting inside it to true relative scale. Fits any "X is bigger/rarer/smaller than you think" claim — population counts, print runs, market caps as overlapping silhouettes instead of plain bar charts.
+- **Bar-chart race.** Ranked bars swap order and animate width/position continuously over a long time span. **Duration caps do not apply when the animation itself IS the story** — a measured 175-second bar-race reel (vs. a typical 15-30s target) still hit a strong outlier ratio, because viewers watch a long unbroken race for the rank-churn payoff itself, not despite its length. This format only works when the racing entities are already familiar to the viewer (well-known cities, countries, brands) — it's a poor fit for a single unfamiliar entity with no "cast" to recognize.
+- **Chapter story.** Self-aware, comedic "oversimplified version" framing with numbered chapter cards and a "part 2" tease at the close — lowers perceived stakes so viewers forgive compressed nuance. Carries genuine off-brand/tonal risk: it borrows a parody-documentary voice that may clash with a data-authority brand identity. Use deliberately, don't default to it.
+
+## 1.7 Share/save triggers
+
+Distinct psychological drivers behind why a data-story reel gets forwarded vs. bookmarked — worth naming separately because they call for different production choices:
+
+- **Identity signaling.** Rivalry/team framing ("team X vs team Y," fandom-vs-fandom) lets a viewer self-insert and tag someone on "the other side." **Identity-signaling rivalries are the strongest share trigger for fandom data** — it converts a data claim into a social move (tagging a friend), which is a stronger distribution mechanism than the data being merely interesting.
+- **Nostalgia arcs.** "Then vs now" / vintage framing triggers a documented dopamine/belonging response and reliably outperforms polished, hyper-modern content on feeds.
+- **Completion satisfaction.** Timelines, countdowns, and races resolve an open information loop; visible progress (playheads, milestone markers) intensifies the pull to watch to the end.
+- **Reference-utility end cards ("save this").** A reel that holds its final numbers static for a beat reads as a re-checkable artifact worth bookmarking rather than a one-time watch — long runtime combined with a low like-to-view ratio is the empirical signature of this behavior (people watch fully to save, not to react).
+- **The "whoa" transformation gasp.** A single wordless visual payoff is forwarded on its own visual strength with zero domain context required — this is a share trigger, not a save trigger, and correlates with low like-to-view ratios (high reach via algorithmic pass-along, not deep engagement).
+
 ## 2. Consistency over virality
 
 The best pure-data account measured had **zero statistical outliers** — its top reel was only 1.35x its own median. Every post performs; none spike, none flop. That is the deliberate trade: template consistency as the strategy, not "swing for a viral outlier."
