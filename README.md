@@ -104,6 +104,7 @@ install_skill "writing/writing-technical" "writing-technical"
 install_skill "writing/writer-style" "writer-style"   # engine + evan pack + kaue pack (MIT engine)
 
 # --- flutter (complements official Flutter/Dart skills) ---
+install_skill "flutter/flutter" "flutter"   # hub
 install_skill "flutter/flutter-pro-ux-review" "flutter-pro-ux-review"
 ```
 
@@ -123,7 +124,7 @@ Re-run install after `git pull` if you use **copies** (they do not auto-update).
 | **marketing** | hub + offers, storybrand, cashvertising, contagious, going-viral |
 | **writing** | **writing** hub + **writing-prose** + **writing-docs** + **writing-technical** + **writer-style** (vendored [solanabr/writer-style-skill](https://github.com/solanabr/writer-style-skill) MIT engine; **default pack `evan`** from [evan_writings](https://github.com/Evan-Kim2028/evan_writings); kaue pack retained) |
 | **qa** | **quality-check** hub (+ install docs for optional external companions) |
-| **flutter** | **flutter-pro-ux-review** — production UX polish audit (complements official Flutter architecture/test skills) |
+| **flutter** | **flutter** hub + **flutter-pro-ux-review** — production UX polish audit (complements official Flutter architecture/test skills) |
 
 ### Merged specialists (use the new names)
 
@@ -177,7 +178,7 @@ same craft specialists + **`react-performance`** · full implement pipeline · h
 
 ### flutter →
 
-`flutter-pro-ux-review` — ranked production UX findings (dead taps, null, haptics, keyboard, motion). Use **after** official Flutter architecture/test skills; not a substitute for them.
+`flutter` (hub) · `flutter-pro-ux-review` — ranked production UX findings (dead taps, a11y, null, haptics, keyboard, async honesty). Use **after** official Flutter architecture/test skills; not a substitute for them.
 
 ---
 
@@ -187,7 +188,7 @@ same craft specialists + **`react-performance`** · full implement pipeline · h
 skills/
   data/           # hub + specialists
   frontend/       # product-design + frontend-design hubs + specialists
-  flutter/        # production Flutter UX review (complements official Flutter skills)
+  flutter/        # hub + production Flutter UX review (complements official Flutter skills)
   marketing/      # hub + specialists
   writing/        # hub + writer-style (evan/kaue) + prose/docs/technical
   qa/             # quality-check hub

@@ -1,170 +1,155 @@
 ---
 name: flutter-pro-ux-review
 description: >
-  Production Flutter UX/UI audit — find user-felt polish bugs (dead tap zones,
-  layout shift, "null" on screen, missing haptics, keyboard dead-ends, raw
-  dates/phones, exit-slower-than-enter motion) with ranked findings and
-  optional per-finding PLAN.md. Complements official Flutter skills (architecture,
-  layers, tests, routing) which teach how to build; this finds how the shipped
-  product feels broken. Use when reviewing a Flutter app for polish, "feels off",
-  UX tip pass, design review before release, /flutter-pro-ux-review, or when
-  official Flutter skills already structured the code but micro-UX is missing.
-  Prefer flutter-apply-architecture-best-practices for layering; prefer
-  flutter-fix-layout-issues for RenderFlex overflows only; prefer product-ui-craft
-  for generic web density. Not for greenfield architecture, package setup, or CI.
+  Production Flutter UX audit: ranked polish findings (dead taps, null text,
+  a11y, keyboard, haptics, layout shift, async/offline honesty, motion) with
+  optional PLAN.md per pick. Use for Flutter app polish, "feels off", release
+  UX pass, /flutter-pro-ux-review, /flutter. Complements official Flutter
+  architecture/test skills — does not replace them. Not for greenfield
+  layering, RenderFlex-only fixes, React/web craft, or CI setup.
 ---
 
 # Flutter pro UX review
 
-**Job:** Audit a Flutter codebase for **user-visible production polish failures**
-and emit ranked, grep-backed findings. Optionally turn selected findings into
-small implementation plans. Do **not** redesign brand, refactor architecture,
-or restate framework guidelines.
+**Job:** Find **user-visible** Flutter polish failures with grep-backed evidence.
+Do not redesign brand, refactor architecture, or restate framework tutorials.
 
-Official Flutter / Dart skills answer *how to structure and write Flutter*.
-This skill answers *what still makes the app feel amateur on a real device*.
+## Hard stops (other skills own these)
 
-## Sources (attribution)
+| User ask | Do this instead |
+|----------|-----------------|
+| Project structure / MVVM / layers | Official **flutter-apply-architecture-best-practices** |
+| RenderFlex / unbounded height only | **flutter-fix-layout-issues** |
+| Widget/integration tests only | **flutter-add-widget-test** / integration skills |
+| React/web density / sticky CSS | **product-ui-craft** / **mobile-product-ux** |
+| Full e2e device farm | **quality-check** |
 
-Original synthesis for agents. Rule themes distilled from public Flutter craft
-practice (not a dump of any single site or skill repo):
+If the message is clearly one of the above, **do not** run a full UX catalog pass.
 
-| Personality | Public signal | What we take for agents |
-|-------------|---------------|-------------------------|
-| **Kamran Bekirov** | flutterpro.design, @kamranbekirovyz | Atomic Detect/Hunt/Why/Gotchas; dead taps, null, haptics, human formatting, scroll/safe-area |
-| **Andrea Bizzotto** | codewithandrea, @biz84 | Production feature completeness: loading/empty/error/retry, form validation paths |
-| **Mitch Koko** | @createdbykoko | Visual cleanliness, practical widget-level tips, theming hygiene |
-| **Roaa Khaddam** | @roaakdm | Animation craft — intentional motion, not decoration spam |
-| **Ethiel Adisso** | @enthusiastDev | Spring physics, sheet/blur polish, Apple-adjacent feel in Flutter |
-| **Luke Pighetti** | @luke_pighetti | Prod gotchas (e.g. keyboard not dismissing on outside tap) |
-| **Filip Hráček** | Flutter “little things” design-dev | Designer-developer discipline: spacing, hierarchy, restraint |
-| **Elvira Leveque** | micro-interactions talks | Feedback loops: press, success, transition micro-moments |
-| **Mike Rydstrom** | RydMike / adaptive theming | Platform-adaptive pickers, Material/Cupertino care |
-| **Majid Hajian** | @mhadaily | Production Flutter engineering taste at scale |
+## Modes
 
-See `references/experts.md` and `references/vs-official.md`. Full hunt recipes:
-`references/rule-catalog.md`.
+Read the user message; default **`review`**.
 
-## When to load
+| Mode | Do | Stop when |
+|------|-----|-----------|
+| **`review`** | Hunt → ranked findings | After report; **do not implement** unless asked |
+| **`plan`** | Selected finding(s) → `PLAN.md` | Plans written |
+| **`fix`** | One plan or one slug | Diff done + re-Detect that rule |
 
-- “Review this Flutter app for UX / polish / release readiness”
-- “Feels off” / dead buttons / layout jumps / snackbar spam
-- After architecture skills landed structure but product still rough
-- Pre-store-submit micro-pass
-- User runs `/flutter-pro-ux-review`
+Say the mode in the first line of your reply: `Mode: review | scope: lib/… | budget: 12`.
 
-## When **not** to load
+## Scope & budget (required defaults)
 
-- Greenfield project structure → official **flutter-apply-architecture-best-practices**
-- Widget/integration tests only → **flutter-add-widget-test** / integration skills
-- Pure RenderFlex / unbounded height → **flutter-fix-layout-issues**
-- Web React product craft → **product-ui-craft** / **web-quality**
-- Full e2e proof on device farm → project QA / **quality-check** path
+| Knob | Default | Notes |
+|------|---------|--------|
+| **scope** | User paths, else primary product UI under `lib/` (prefer `features/`, `ui/`, `screens/`, `pages/` over generated/test) | Never require boiling the whole monorepo |
+| **budget** | **12** findings (Critical+Noticeable first) | Subtle only if budget remains or user asked `taste` / `strictness: taste` |
+| **passes** | See default pass set below | User may name passes: `touch,a11y,forms` |
+| **strictness** | `release` | `release` = Critical+Noticeable; `taste` = include Subtle |
 
-## Workflow (strict)
+**Primary path first:** prefer home, auth, checkout, pay, search, core tabs over settings chrome.
 
-### Phase A — Review (strong model)
+## Decision principles
 
-1. Confirm this is a Flutter tree (`pubspec.yaml` with `flutter:`).
-2. Load `references/rule-catalog.md` and run **hunts by surface** (order below).
-3. For each hit: evidence at `file:line`, slug, severity, effort, one-line why.
-4. Deduplicate. Cap noise: prefer Critical/Noticeable; Subtle only when clear.
-5. Emit the **Findings report** (format below). **Stop.** Do not implement
-   the whole list unless the user asked to fix specific items.
+1. **User cost** — flag taps, trust, and time lost; not style nits without effect  
+2. **Primary path first** — core journeys before admin/settings  
+3. **Prevent ≤ punish** — block bad input; don’t only error on submit  
+4. **Stable layout** — images, numbers, async must not jump under the finger  
+5. **Acknowledge intent** — press / success / error get feedback  
+6. **Platform expectations** — back, swipe-dismiss, keyboard, status bar  
+7. **Honesty under failure** — empty, offline, error, retry  
+8. **A11y is polish** — unusable for some users → Critical  
+9. **Budget attention** — top N by severity then effort; stop at budget  
+10. **One fix, one verify** — no drive-by architecture in `fix` mode  
 
-### Phase B — Plan (on user selection)
+## Severity (with decision rules)
 
-For each selected finding ID / slug:
+| Severity | When |
+|----------|------|
+| **Critical** | Broken primary interaction, trust failure, or blocker for some users (dead primary tap, “null” on primary UI, stuck modal, missing Semantics on primary icon button, no error/retry on primary async) |
+| **Noticeable** | Every-session friction on common paths (layout jump, raw phones/dates, weak keyboard flow, missing haptics on primary actions, no bottom inset) |
+| **Subtle** | Taste / secondary (exit timing, changelog, list edge fade) — omit under `strictness: release` unless budget allows and user wants taste |
 
-- Write `PLAN.md` (or append section) with: problem, acceptance criteria,
-  files, minimal approach, out of scope, how to verify on device.
-- Prefer existing project helpers over new packages.
-- One plan per finding (cheap model can implement later).
+If a rule lists two severities: **Critical on primary path / core widget; else Noticeable** (or Subtle when the rule says so).
 
-### Phase C — Implement (cheap model OK)
-
-- One plan at a time. Small diffs. No drive-by refactors.
-- Re-run the single rule’s Detect after the fix.
-
-## Hunt order (surfaces)
-
-Run in this order so high-cost user pain surfaces first:
-
-1. **Touch / hit testing** — dead zones, GestureDetector defaults  
-2. **Data shown to humans** — null, raw dates/phones/numbers  
-3. **Forms / keyboard** — action button, autofocus, dismiss, formatters  
-4. **Scroll / safe area / layout stability** — bottom inset, image jump, tabular nums  
-5. **Feedback** — haptics, snackbar dedupe, loading/empty/error completeness  
-6. **Motion** — exit faster than enter, spring vs linear spam  
-7. **Platform / product chrome** — analytics screen names, adaptive pickers, back/sheets  
-
-Details and grep recipes: `references/rule-catalog.md`.
-
-## Severity & effort
-
-| Severity | User impact |
-|----------|-------------|
-| **Critical** | Broken interaction or trust failure (dead tap, “null”, unclosable modal, unusable form) |
-| **Noticeable** | Feels unfinished every session (layout jump, raw phone strings, missing primary haptics, no bottom inset) |
-| **Subtle** | Taste polish (exit timing, list edge fade, missing changelog) |
-
-| Effort | Scope |
-|--------|-------|
+| Effort | Meaning |
+|--------|---------|
 | **S** | Local one-liner / small helper |
 | **M** | Cross-widget or shared util |
-| **L** | Product surface (analytics pipeline, changelog, design-system change) |
+| **L** | Product surface (analytics, changelog, design-system) |
 
-## Findings report format
+## Progressive disclosure (load only what you need)
 
-```markdown
-# Flutter pro UX review
+| File | Load when |
+|------|-----------|
+| `references/surfaces.md` | **Always** in `review` (index + pass order) |
+| `references/touch.md` | Pass `touch` |
+| `references/data-display.md` | Pass `data` |
+| `references/forms-keyboard.md` | Pass `forms` |
+| `references/scroll-layout.md` | Pass `scroll` |
+| `references/feedback-async.md` | Pass `feedback` |
+| `references/a11y.md` | Pass `a11y` (default on) |
+| `references/motion.md` | Pass `motion` (default off in `release` unless user asks) |
+| `references/platform-chrome.md` | Pass `platform` |
+| `references/performance-feel.md` | Pass `perf` (default off; on for `taste` or user asks jank) |
+| `assets/findings-template.md` | Emitting the report |
+| `assets/plan-template.md` | `plan` mode |
+| `references/vs-official.md` | Only if tempted to refactor architecture |
+| `references/experts.md` | **Never** during audit (attribution only) |
+| `references/rule-catalog.md` | Legacy monolith — **prefer surface files**; load only if you need one-file search |
 
-Scope: <paths or "whole lib/">
-Official skills note: architecture/tests not re-audited here.
+### Default passes
 
-## Findings
+- **`strictness: release`:** `touch` → `a11y` → `data` → `forms` → `scroll` → `feedback` → `platform`  
+- **`strictness: taste`:** above + `motion` + `perf`  
+- Skip `platform` analytics/changelog noise if no analytics SDK and budget is tight.
 
-1. [Critical · S] `gesture-opaque-hit-target` — `lib/widgets/foo.dart:42`
-   Evidence: GestureDetector on Row without HitTestBehavior.opaque
-   Why: taps in gaps between icon and label do nothing
+## Workflow
 
-2. [Noticeable · S] `never-show-null` — `lib/screens/profile.dart:88`
-   Evidence: Text(user.bio.toString()) without null/empty/"null" guard
-   Why: users may see the word null
+### Mode `review`
 
-## Recommended order
-Critical S → Critical M → Noticeable S → Noticeable M → Subtle …
+1. Confirm Flutter app (`pubspec.yaml` with `flutter:`).  
+2. Set scope, budget, passes (defaults above).  
+3. Read `references/surfaces.md`, then **only** the pass files for this run.  
+4. Hunt primary-path files first; record `slug`, severity, effort, `file:line`, evidence, why.  
+5. Dedupe; sort Critical → Noticeable → Subtle, then effort S → L.  
+6. Cap at **budget**.  
+7. **Self-validate report** (below).  
+8. Emit findings. **Stop.**
 
-## Next
-Reply with finding numbers (or slugs) to generate PLAN.md for each.
-```
+### Mode `plan`
 
-## Implementation principles (when fixing)
+1. For each selected ID/slug: use `assets/plan-template.md`.  
+2. Prefer existing project helpers; no new state-management library.  
+3. One plan per finding.
 
-- **Prevent invalid input** over post-hoc error banners when the limit is hard.
-- **Human formats** for anything users read (locale-aware dates, phones, numbers).
-- **Helpers over ceremony** — small extensions (`orPlaceholder`), not new layers.
-- **Platform realism** — iOS status-bar scroll-to-top, Android back closes sheets,
-  adaptive date pickers when the app already claims adaptive UI.
-- **Respect reduced motion** when adding animation.
-- **Do not invent brand** — match existing ThemeData / design tokens.
-- Prefer **Navigator / routing patterns already in the project** (1.0 or go_router).
+### Mode `fix`
 
-## Anti-patterns for the agent
+1. Implement **one** plan or slug.  
+2. Small diff; match ThemeData / tokens.  
+3. Re-run that rule’s Detect; note residual risk.
 
-- Dumping “use Material 3” or architecture lectures (out of scope)
-- Flagging style preferences with no user-visible effect
-- Mass-renaming widgets or introducing Riverpod/Bloc mid-polish
-- Copying long third-party article text into the repo
-- Implementing all findings without user selection
+## Report self-validation (before sending)
+
+- [ ] Every finding has existing `file:line` (or honest “project-wide absence” for opportunity rules)  
+- [ ] Every `slug` comes from a loaded surface file  
+- [ ] Every finding has Evidence + Why  
+- [ ] Count ≤ budget  
+- [ ] Subtle count is 0 under `release` unless user asked taste  
+- [ ] Did not implement in `review` mode  
+- [ ] Did not recommend architecture rewrites  
+
+## Out of scope (explicit)
+
+- **Flutter web / desktop chrome** (browser tab titles, OG tags, web-only transitions) unless user opts in with `passes: web`  
+- Brand redesign, new design system, package upgrades for their own sake  
 
 ## Hand off
 
 | Need | Skill |
 |------|--------|
-| Layered architecture / feature structure | Official **flutter-apply-architecture-best-practices** |
-| Overflow / constraint errors | **flutter-fix-layout-issues** |
-| Widget tests for a fixed component | **flutter-add-widget-test** |
-| Generic web density / hierarchy | **product-ui-craft** |
-| Mobile web sticky chrome (not Flutter) | **mobile-product-ux** |
-| Prove in browser (Flutter web) | **browser-verify** / **quality-check** |
+| Layers / feature structure | **flutter-apply-architecture-best-practices** |
+| Overflow / constraints | **flutter-fix-layout-issues** |
+| Tests for a fixed widget | **flutter-add-widget-test** |
+| Flutter work routing | **flutter** hub (if installed) |
+| Browser proof (Flutter web) | **browser-verify** / **quality-check** |

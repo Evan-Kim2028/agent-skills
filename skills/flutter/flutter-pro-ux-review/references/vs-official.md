@@ -1,5 +1,7 @@
 # Complements official Flutter / Dart agent skills
 
+**Load only when tempted to refactor architecture or restate guidelines.**
+
 Official (and ecosystem) Flutter skills teach **how to build correctly**.
 This skill teaches **what still feels wrong to users after it builds**.
 

@@ -1,5 +1,7 @@
 # Expert personalities this skill synthesizes
 
+**Do not load during audits** — attribution and design history only.
+
 These are **public craft signals**, not endorsements or affiliation. The skill
 does not impersonate anyone; it encodes recurring *judgment patterns* so an
 agent can review Flutter apps the way seasoned shippers do.
