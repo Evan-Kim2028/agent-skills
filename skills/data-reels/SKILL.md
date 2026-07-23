@@ -142,6 +142,65 @@ Before calling a reel done:
 - **Audio silence checks.** Confirm the voice track isn't silent or clipped at any beat boundary (a botched TTS render can silently produce empty audio for a line).
 - **Foreground renders.** Render the final video in the foreground and watch/inspect it directly before publishing — don't trust a pipeline's exit code alone as proof the output looks right.
 
+## 11. Polish tier — the finishing standard
+
+A format and a pacing choice being correct isn't enough — a shipped reel also needs a
+baseline level of craft and a disciplined verification order. These generalize across
+projects; the concrete implementation (specific CSS classes, specific voice IDs, specific
+render scripts) belongs in your project's own playbook.
+
+- **Signature motion set.** Pick a small set of motion techniques and apply them
+  consistently across every reel unless the format explicitly contradicts one — e.g. a
+  glint/sheen sweep on hero-object landings, subtle depth/tilt on hero elements, a
+  settle-pulse on any counter/stat the instant it finishes animating, continuous
+  background drift so nothing is ever fully static behind the foreground, kinetic
+  word-reveal on any caption (excepting a frame-0 static hook headline, since that's the
+  cover thumbnail), and an emotional color/tone shift at any story turn. Signature motion
+  is a brand-consistency lever, not decoration — repeating the same techniques across
+  reels is what makes a format read as a deliberate house style rather than a one-off.
+- **Pacing floors.** Beats should land in the low single-digit seconds for fact/list
+  formats (aim ≤3.5s); any counter or stat fill should finish well before the format's
+  overall budget is spent (≤3s is a reasonable target); no stretch of the reel should sit
+  fully static for more than ~1s; total runtime caps apply *unless the animation itself
+  IS the story* (see section 1.6's bar-chart-race exception); and the single dramatic
+  peak of a reel that has one belongs around 60-70% through the runtime, not earlier or
+  saved for the very end.
+- **Never a static outro.** The single most consistently reported retention-killing
+  mistake is a dedicated "brand card" or static end-scene that outlives the content. Two
+  acceptable endings: a genuine loop seam (the reel visually returns toward its own
+  opening state), or a hard cut immediately after the final voiceover line ends (within a
+  few hundred milliseconds — a very tight ceiling, not "soon after"). A brand mark and any
+  scope/date chip belong *inside* the final active composition as overlays, not as their
+  own trailing scene.
+- **Phoneme-level pronunciation control, with an STT caveat.** Off-the-shelf TTS
+  mispronounces proper nouns and invented words by reading them literally, and this can
+  persist even after switching *voices* if the underlying *model* doesn't honor
+  phoneme-tag SSML — diagnose by testing an explicit phonetic tag (e.g. ARPAbet) against
+  the specific model, not just by trying a different voice preset. A speech-to-text
+  round-trip is a useful automated check, but treat it as validating that a word wasn't
+  dropped or substituted (the consonant skeleton / rough identity), not as proof the
+  vowels and stress pattern are actually correct — STT is lenient on vowel quality in a
+  way a human ear isn't. A flagged name still needs a human listen-through as the final
+  gate, even after a clean STT pass.
+- **Ship-gate ordering.** Verification steps have a cost order, and running them out of
+  order wastes the expensive steps on preventable failures. Cheapest-to-most-expensive,
+  in order: (1) a headless single-frame check of the specific timestamps/states a change
+  could break, before spending a full render; (2) the full render itself, run to
+  completion in the foreground, to a fresh/unique output path (never overwrite a
+  same-name output mid-flight — that produces silent race-condition corruption); (3) a
+  full decode scan of the rendered file (not just a handful of sampled frames) to catch
+  any corrupt segment; (4) a container/stream spec check (resolution, frame rate,
+  expected stream types); (5) an audio loudness check (no clipping, levels in the
+  expected band); (6) a silence-gap check (no unintended dead air, and specifically that
+  the ending satisfies the never-static-outro rule above); (7) a multi-frame visual
+  review at actual small-screen scale, including a crop to whatever safe-viewing-area
+  applies on the target platform; (8) a data-traceability pass — every on-screen number
+  checked against its literal source field, not against the narration (narration often
+  rounds differently); (9) a freshness check that the underlying data is current as of
+  the actual publish date, re-running the data step if it's gone stale since the reel was
+  built. Skipping ahead to the visual/data checks before the cheap frame-level and decode
+  checks means expensive re-renders get spent re-discovering cheap-to-catch bugs.
+
 ## Relationship to your project's reel playbook
 
 This skill stays generic on purpose. It does not hardcode a render pipeline, asset paths, CLI invocations, or a specific TTS voice ID. Your project's reel playbook is where those live — treat it as the executable counterpart to the principles above. When the two disagree on a *principle* (not a command), prefer this skill; when you need to know *how* to actually run something, go to the project playbook.
