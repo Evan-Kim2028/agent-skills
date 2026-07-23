@@ -2,14 +2,17 @@
 name: flutter-pro-ux-review
 description: >
   Production Flutter UX audit: ranked polish findings (dead taps, null text,
-  a11y, keyboard, haptics, layout shift, async/offline honesty, motion) with
-  optional PLAN.md per pick. Use for Flutter app polish, "feels off", release
-  UX pass, /flutter-pro-ux-review, /flutter. Complements official Flutter
-  architecture/test skills — does not replace them. Not for greenfield
-  layering, RenderFlex-only fixes, React/web craft, or CI setup.
+  a11y, keyboard, haptics, layout shift, async/offline honesty, motion, empty
+  states, destructive confirm, permission priming, RTL, charts/number
+  consistency) with optional PLAN.md per pick. Use for Flutter app polish,
+  "feels off", release UX pass, /flutter-pro-ux-review, /flutter. Complements
+  official Flutter architecture/test skills — does not replace them. Not for
+  greenfield layering, RenderFlex-only fixes, React/web craft, or CI setup.
 ---
 
 # Flutter pro UX review
+
+**Version:** 1.1
 
 **Job:** Find **user-visible** Flutter polish failures with grep-backed evidence.
 Do not redesign brand, refactor architecture, or restate framework tutorials.
@@ -92,7 +95,9 @@ If a rule lists two severities: **Critical on primary path / core widget; else N
 | `references/motion.md` | Pass `motion` (default off in `release` unless user asks) |
 | `references/platform-chrome.md` | Pass `platform` |
 | `references/performance-feel.md` | Pass `perf` (default off; on for `taste` or user asks jank) |
-| `assets/findings-template.md` | Emitting the report |
+| `references/trust-safety.md` | Pass `trust` (default on — empty states, destructive confirm, permission priming) |
+| `references/charts-numbers.md` | Pass `charts` (on when scope has charts/tables/signed numbers) |
+| `assets/findings-template.md` | Emitting the report — see `references/example-run.md` for a good-vs-bad worked example |
 | `assets/plan-template.md` | `plan` mode |
 | `references/vs-official.md` | Only if tempted to refactor architecture |
 | `references/experts.md` | **Never** during audit (attribution only) |
@@ -100,9 +105,10 @@ If a rule lists two severities: **Critical on primary path / core widget; else N
 
 ### Default passes
 
-- **`strictness: release`:** `touch` → `a11y` → `data` → `forms` → `scroll` → `feedback` → `platform`  
+- **`strictness: release`:** `touch` → `a11y` → `data` → `forms` → `scroll` → `feedback` → `platform` → `trust` → `charts` (if scope has charts/tables/signed numbers)  
 - **`strictness: taste`:** above + `motion` + `perf`  
-- Skip `platform` analytics/changelog noise if no analytics SDK and budget is tight.
+- Skip `platform` analytics/changelog noise if no analytics SDK and budget is tight.  
+- Skip `charts` entirely if scope has no data-viz/numeric surfaces.
 
 ## Workflow
 
@@ -112,7 +118,7 @@ If a rule lists two severities: **Critical on primary path / core widget; else N
 2. Set scope, budget, passes (defaults above).  
 3. Read `references/surfaces.md`, then **only** the pass files for this run.  
 4. Hunt primary-path files first; record `slug`, severity, effort, `file:line`, evidence, why.  
-5. Dedupe; sort Critical → Noticeable → Subtle, then effort S → L.  
+5. Dedupe (see rules below); sort Critical → Noticeable → Subtle, then effort S → L.  
 6. Cap at **budget**.  
 7. **Self-validate report** (below).  
 8. Emit findings. **Stop.**
@@ -128,6 +134,11 @@ If a rule lists two severities: **Critical on primary path / core widget; else N
 1. Implement **one** plan or slug.  
 2. Small diff; match ThemeData / tokens.  
 3. Re-run that rule’s Detect; note residual risk.
+
+## Dedupe rules
+
+- **Anti-clustering:** if one Hunt yields many hits of the same `slug`, report **one** systemic finding — state the count and give 2–3 representative `file:line` samples. Don't spend the findings budget listing every hit.
+- **Cross-slug dedupe:** if two different slugs both flag the same widget instance, keep the higher-severity finding and cross-reference the dropped slug in that finding's evidence line (e.g. "also matches `min-touch-target`").
 
 ## Report self-validation (before sending)
 

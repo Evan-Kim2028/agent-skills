@@ -57,3 +57,18 @@ Fix in one phrase: scrollable forms use `keyboardDismissBehavior: onDrag` (or eq
 **Why:** trapped keyboards cover CTAs and feel like a stuck app.
 
 **Gotchas:** chat composers often keep focus on purpose.
+
+---
+
+### Validate on blur or submit, not every keystroke
+
+`autovalidate-timing` · Noticeable · Effort: S  
+Fix in one phrase: validate on blur or submit; avoid `AutovalidateMode.always` yelling red errors while the user is still typing the first character.
+
+**Detect:** `Form`/`TextFormField` using `AutovalidateMode.always` from the first render instead of `AutovalidateMode.onUserInteraction` or manual validation on submit.
+
+**Hunt:** grep `AutovalidateMode.always`; check whether it's set before any user interaction.
+
+**Why:** an error message appearing before the user finishes typing feels like the app is scolding them prematurely.
+
+**Gotchas:** password-strength meters and live-feedback-by-design fields (character counters, availability checks) are meant to be live — don't flag those.

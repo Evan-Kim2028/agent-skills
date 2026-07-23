@@ -13,5 +13,7 @@
 | platform | `platform-chrome.md` |
 | motion | `motion.md` |
 | perf | `performance-feel.md` |
+| trust | `trust-safety.md` |
+| charts | `charts-numbers.md` |
 
 Do not load every file at once. See `SKILL.md` progressive disclosure.

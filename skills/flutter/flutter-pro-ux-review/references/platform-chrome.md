@@ -100,3 +100,48 @@ Fix in one phrase: settings/about shows version (+ build).
 **Hunt:** grep `PackageInfo|version` in settings UI.
 
 **Why:** support tickets without version waste time.
+
+---
+
+### Layouts mirror correctly in RTL
+
+`rtl-directional-layout` · Noticeable (Critical if primary nav/back breaks) · Effort: S–M  
+Fix in one phrase: use directional/start-end APIs (`EdgeInsetsDirectional`, `AlignmentDirectional`) instead of left/right; `Icons.arrow_back` auto-mirrors but custom arrow/chevron assets don't.
+
+**Detect:** `EdgeInsets.only(left:` / `Alignment.centerLeft` / hardcoded left-right positioning on widgets that should flip in RTL locales; custom arrow/chevron image assets used without a mirroring check.
+
+**Hunt:** grep `EdgeInsets.only\(left:|EdgeInsets.only\(right:|Alignment.centerLeft|Alignment.centerRight`; grep custom arrow/chevron asset paths and check for `Directionality`/`Transform.flip` handling.
+
+**Why:** in RTL locales a left-anchored back chevron or badge sits on the wrong side, breaking the reading flow and looking untranslated.
+
+**Gotchas:** charts, numbers, and code/URL fields are legitimately LTR everywhere — don't flag those for staying left-to-right.
+
+---
+
+### Support predictive back on Android 14+
+
+`predictive-back` · Noticeable · Effort: S  
+Fix in one phrase: primary routes use `PopScope` with `canPop` wired correctly, and the manifest enables `enableOnBackInvokedCallback` so the system predictive-back gesture works.
+
+**Detect:** `WillPopScope` (deprecated) or `PopScope` with `canPop: false` and no `onPopInvoked`/`onPopInvokedWithResult` handling; missing `android:enableOnBackInvokedCallback="true"` in `AndroidManifest.xml`.
+
+**Hunt:** grep `PopScope\(|WillPopScope\(` and check `canPop`/callback wiring; grep `enableOnBackInvokedCallback` in the manifest.
+
+**Why:** without opt-in, Android 14+ users lose the predictive back preview animation and the app feels behind platform conventions.
+
+**Gotchas:** apps intentionally blocking back (forced update, in-progress payment) should still explain why, per `back-closes-overlay`.
+
+---
+
+### State restoration on process death
+
+`state-restoration` · Noticeable · Effort: M  
+Fix in one phrase: forms use `restorationId`/`RestorationMixin`, long scroll views use `PageStorageKey`, and deep links restore to the intended screen — not just the app root.
+
+**Detect:** multi-step forms or long lists with no `restorationId`/`PageStorageKey`; deep-link handling that always lands on home after a cold relaunch instead of the linked screen.
+
+**Hunt:** grep `restorationId|RestorationMixin|PageStorageKey` presence on primary forms/scroll views; check deep-link route handling for state recovery.
+
+**Why:** Android can kill backgrounded apps at any time; losing form progress or scroll position on return feels like data loss.
+
+**Gotchas:** short single-screen flows with nothing to lose don't need this; focus on multi-step forms and long feeds.
