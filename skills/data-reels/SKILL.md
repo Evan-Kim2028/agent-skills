@@ -327,6 +327,17 @@ inconsistent-feeling reel:
   the category/set. Prevents unwanted text wrapping/misalignment, especially for paired
   items in a side-by-side layout where equal y-position and size are important unless
   hierarchy is deliberately designed.
+- **Full-disclosure thumbnail (2026-07-24, sourced from an EP04 review pass).** The 0s
+  frame is the entire pitch: hero card(s) plus the headline numbers (price and
+  delta/percentage) visible at frame 0, giving viewers exactly enough to decide
+  stay-or-scroll. Immediately disclose WHAT the reel is about (the interesting fact);
+  hold back the narrative payoff/verdict (the storytelling). It's a balance: fact up
+  front, story reserved. Frame 0 should let a stopped viewer name the subject and the
+  headline numbers without watching a single frame of motion — but never give away
+  which side wins or how the arc resolves. This refines, rather than replaces, the
+  card-first-cover and frame-0-fully-composed principles above: those require the hero
+  art/text to be assembled with no entrance gap at 0s; this adds that the headline
+  numbers specifically belong in that composition, while the verdict must stay out of it.
 
 ## Relationship to your project's reel playbook
 
