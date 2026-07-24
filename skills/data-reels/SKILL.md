@@ -338,6 +338,18 @@ inconsistent-feeling reel:
   card-first-cover and frame-0-fully-composed principles above: those require the hero
   art/text to be assembled with no entrance gap at 0s; this adds that the headline
   numbers specifically belong in that composition, while the verdict must stay out of it.
+- **No waiting on animations (2026-07-24, pace law).** The viewer never waits for the
+  screen. Charts, counters, and visuals must be condensed so there are no awkward pauses
+  while animations play out. If a bar/odometer/chart reveal takes longer than the VO line
+  it supports, shorten the animation, not the reel. Transitions should overlap
+  (entrance-over-exit, ~300-400ms seam, not ~600-800ms fades) so the eye never sees dead
+  air. Any beat where the animation finishes but VO continues without new on-screen visual
+  entrances reads as stalled — move to the next beat the instant the stat lands. Pacing
+  target: something new (a card, a counter landing, a badge pop, a color shift) appears
+  at least every ~1.5s of perceived time. An idle composition where only audio is
+  happening pulls retention. This generalizes the existing pacing-floors and signature-
+  motion-set principles: it's not just about how long individual elements hold, but about
+  density of visual *events* across the whole reel.
 
 ## Relationship to your project's reel playbook
 
