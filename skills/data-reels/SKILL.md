@@ -290,6 +290,33 @@ inconsistent-feeling reel:
   never need to touch its CSS/HTML — only pass the two numbers. Verify it mechanically (a
   headless check that the intro's key visual element is actually visible at its
   mid-window), not by eyeballing a sampled frame.
+- **Card/entity-art hierarchy — never name an entity without showing it.** Any named subject
+  (a card, a product, a team) that appears in on-screen text or VO must show its art/image in
+  that same beat — a naked name with no visual is an editorial gap, not a style nit. Encode
+  the data hierarchy in the visual hierarchy: the beat's hero subject renders large/dominant,
+  any comparison/reference subject renders smaller beside it (roughly half-to-60% of the
+  hero's size), so the size contrast on screen mirrors the numeric contrast being narrated.
+- **Count honesty — the stated cohort size is the literal measured cohort, not a rounder
+  guess.** Any on-screen or spoken count/category label must match the query's actual
+  measured population exactly. If the underlying data covers N tracked entities, say N —
+  never inflate to a colloquial category size ("dozens," "70+") the query never measured.
+  This is a distinct failure mode from the scope-caption principle in section 12: a scope
+  caption says *which* population a number describes; count honesty guards that the *stated
+  size* of that population is the real count, not an editorializing approximation.
+- **Parts-of-100 composition for any share/concentration claim.** A share-of-total or
+  concentration number never renders as a lone partial bar/segment floating without its
+  whole — render the full 100%-scale stacked composition (leader + runner-up(s) + a labeled
+  "OTHER"/remainder) so the claim is legible against its total, with a mandatory scope
+  caption per the data-contracts principle above.
+- **Card/entity-first cover for every subject in frame.** The cover frame (frame 0, the
+  platform's thumbnail) must show the hero subject's actual art, not a text-only card. If the
+  episode is a comparison between two or more subjects, every compared subject's art must be
+  present at frame 0 — not just the winner/hero.
+- **Breathable density — stagger entrances, one hard number per beat.** Elements should enter
+  the frame sequentially rather than simultaneously; a rough budget of one new primary
+  element plus one supporting chip per beat keeps a data-dense format legible. Density
+  reduction is about how many things compete for attention in a beat, not how many facts the
+  format delivers — every beat still needs a hard number.
 
 ## Relationship to your project's reel playbook
 
