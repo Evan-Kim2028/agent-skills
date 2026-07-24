@@ -201,6 +201,65 @@ render scripts) belongs in your project's own playbook.
   built. Skipping ahead to the visual/data checks before the cheap frame-level and decode
   checks means expensive re-renders get spent re-discovering cheap-to-catch bugs.
 
+## 12. Robustness systems — generated timelines, data contracts, golden frames
+
+Three structural principles, generalized from a concrete pipeline hardening pass, for any
+project mature enough to have shipped a broken/wrong reel at least once. Keep the concrete
+implementation (a specific compiler script, a specific JSON schema, a specific diff tool) in
+your project playbook — these are the invariants worth carrying to a new project from
+scratch.
+
+- **Generate timing from a single source of truth; never hand-author overlapping
+  animations.** Two "stacked animation bug classes" recur across every hand-authored
+  animation pipeline: (1) two separate `animation:`/keyframe declarations landing on the
+  same element/property, where an earlier one lacks a "hold" fill-mode and silently reverts
+  before the later one starts; (2) keyframe percentages hand-computed against a duration
+  that has since changed elsewhere, so the visual timing quietly drifts from the intended
+  ms offsets. The fix is structural, not "be more careful": declare every element's
+  enter/hold/exit window in one ms-denominated timeline document, and generate exactly one
+  keyframe/animation per element from it. A compiler that emits ONE animation per element
+  has nothing left to stack, and every percentage is computed from the same ms values a
+  human edited, so drift becomes impossible instead of just less likely. Extend the same
+  document with a **slot budget** — every persistent on-screen element declares which
+  screen-region/"slot" it owns for its active window — and make it a compile-time error for
+  two elements to claim the same slot with overlapping windows without an explicit,
+  authored hand-off. This turns "did two things silently collide on screen" from a
+  frame-by-frame visual QA question into a build-time check.
+- **Data contracts: every displayed number carries scope and freshness, not just a value.**
+  A bare number is not enough provenance once a metric can be read at more than one scope
+  (all-time vs. a recent window, one category vs. all categories, one grading tier vs. all
+  grades) — the same underlying fact can produce two "correct" numbers that contradict each
+  other on screen, and a viewer (or a future editor) can't tell which scope they're looking
+  at. Require a **scope caption** alongside any number whose unit is inherently
+  scope-ambiguous (a volume, a market cap, a percent change — anything where "compared to
+  what, over what window, across what population" changes the number), and treat a missing
+  scope caption on that class of metric as a hard failure, not a style nit. Separately,
+  require every displayed number to declare an **as-of date and a freshness ceiling**
+  (how many days old it's allowed to be before publish) — and gate publishing on that
+  ceiling automatically rather than trusting a human to remember to re-check. A contract
+  gate that fails should say exactly what to re-run, not just that something is stale.
+  Where the underlying data source has itself been reorganized or partially retired (a
+  table split into a live surface and a frozen snapshot, a warehouse migration, etc.),
+  encode that as a guard at the query layer — refuse queries that read drift-prone fields
+  from the retired/frozen surface, and let read-only/stable fields still be queried with a
+  warning, so the mistake is caught at the point of query, not after it's already on
+  screen.
+- **Golden-frame regression, not just "does it render."** A render pipeline succeeding
+  (correct codec, correct duration, no decode errors) says nothing about whether the
+  content *looks the same as it did yesterday* — a broken CSS change, a stale asset, or a
+  timing regression can all produce a technically-valid render that's visually wrong, and
+  spot-checking a handful of QA frames only catches it if the sampled timestamp happens to
+  land on the broken moment. Bless a small set of reference frames at fixed timestamps from
+  a render a human has actually reviewed, tag them with a hash of the *source* (not the
+  video bytes, so "did the source change" is answerable independent of a re-encode), and
+  diff every subsequent render against them with a perceptual similarity metric (structural
+  similarity or an equivalent pixel-difference measure — exact-pixel diffing is too brittle
+  against encoder noise). Any similarity drop at a timestamp NOT inside a deliberately
+  declared "this is an intentional change" window is a regression, full stop — this is the
+  automatable equivalent of "would a human who reviewed the last version notice this
+  changed," applied to every future render for free. Re-bless deliberately, after review,
+  whenever a change is intentional — goldens are a regression fence, not a permanent lock.
+
 ## Relationship to your project's reel playbook
 
 This skill stays generic on purpose. It does not hardcode a render pipeline, asset paths, CLI invocations, or a specific TTS voice ID. Your project's reel playbook is where those live — treat it as the executable counterpart to the principles above. When the two disagree on a *principle* (not a command), prefer this skill; when you need to know *how* to actually run something, go to the project playbook.
