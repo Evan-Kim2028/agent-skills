@@ -317,6 +317,16 @@ inconsistent-feeling reel:
   element plus one supporting chip per beat keeps a data-dense format legible. Density
   reduction is about how many things compete for attention in a beat, not how many facts the
   format delivers — every beat still needs a hard number.
+- **Visuals lead voice.** Any content the VO is about to speak — especially closers and
+  comment prompts — must appear on screen ~400ms *before* the VO says it. The eye arrives
+  first; the voice confirms. Applies to every beat, mandatory for closers. Makes
+  transitions feel faster and sustains retention.
+- **No redundant set/category names in titles.** When a category/set identifier and a title
+  both appear on screen (e.g. "SET · RARITY · GRADE" in a kicker line, then a card name in
+  a title), the title should carry only the core subject name ("Charizard ex"), not repeat
+  the category/set. Prevents unwanted text wrapping/misalignment, especially for paired
+  items in a side-by-side layout where equal y-position and size are important unless
+  hierarchy is deliberately designed.
 
 ## Relationship to your project's reel playbook
 
