@@ -350,6 +350,17 @@ inconsistent-feeling reel:
   happening pulls retention. This generalizes the existing pacing-floors and signature-
   motion-set principles: it's not just about how long individual elements hold, but about
   density of visual *events* across the whole reel.
+- **Cards command the frame (2026-07-24, visual-hierarchy law).** The card/subject art is
+  the primary visual anchor in every beat it appears — the first thing a viewer's eye lands
+  on. Numbers and data elements are second in hierarchy, large and editorially weighty, but
+  never overtaking the card in screen dominance. A stat block larger than the card it
+  describes is a violation. Paired cards must be geometrically aligned and scaled to a
+  common baseline so size differential mirrors the numeric contrast; a comparison card too
+  small to read comfortably undercuts the contrast being established. Beats need continuous
+  motion — a card sitting statically while only text animates reads as dead air; give every
+  featured card a subtle motion cue (entrance, tilt, glow, color shift) to hold the eye and
+  maintain pacing momentum. Sourced from EP03/04/05/07 review rounds, where visual hierarchy
+  and card prominence directly impacted clarity and retention on data claims.
 
 ## Relationship to your project's reel playbook
 
