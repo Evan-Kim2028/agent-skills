@@ -5,7 +5,7 @@ description: Principles for high-retention short-form data video (Instagram Reel
 
 # Data Reels
 
-Principles for turning quantitative content into short-form video that holds attention, distilled from measured competitor research (view-to-follower ratios, outlier analysis, transcripts) across data-viz and stats Instagram accounts. This skill is the philosophy layer — the "why" and the invariants. Your project's own reel playbook (e.g. `social_media/REEL_PLAYBOOK.md`) is the operational layer — the "how": render pipelines, asset-fetch scripts, exact CLI commands. Reference that project playbook for execution; use this skill for judgment calls.
+Principles for turning quantitative content into short-form video that holds attention, distilled from measured competitor research (view-to-follower ratios, outlier analysis, transcripts) across data-viz and stats Instagram accounts. This skill is the philosophy layer — the "why" and the invariants. Your project's own reel playbook (e.g. `digital_marketing/REEL_PLAYBOOK.md`) is the operational layer — the "how": render pipelines, asset-fetch scripts, exact CLI commands. Reference that project playbook for execution; use this skill for judgment calls.
 
 ## 1. The rejection-cascade / one-insight format
 
