@@ -260,6 +260,37 @@ scratch.
   changed," applied to every future render for free. Re-bless deliberately, after review,
   whenever a change is intentional — goldens are a regression fence, not a permanent lock.
 
+## 13. Editorial standards — laws, not style preferences
+
+Two rules that generalize beyond any one project's reel pipeline, worth carrying to a new
+project from day one rather than rediscovering after a viewer catches an ambiguous or
+inconsistent-feeling reel:
+
+- **No naked percentages — the price is the fact, the % is the flavor.** Any reel that
+  displays or narrates a percent change on top of a real-world quantity (a price, a value,
+  a market size) must show the actual underlying number on screen alongside it, scoped to
+  whatever grade/tier/window the number applies to (e.g. "PSA 10 · $1,675", not just
+  "+62%"). A percentage with no anchoring value is unverifiable and reads as marketing
+  spin rather than data — it's the same ambiguity class as an unscoped volume/mcap number
+  (section 12's data-contracts principle), applied specifically to price moves. Treat this
+  as a hard gate, not a style nit: whatever contract/validation layer your project already
+  runs before publish should refuse to ship a percent-change display that lacks a paired,
+  scoped price value for the same subject. Voiceover is exempt from having to *say* the
+  scope out loud — the on-screen chip carries that job — but the price itself must always
+  be visible whenever a % move is.
+- **One canonical series intro, owned by the template.** If a project has recurring
+  episodic branding (a sting, a bumper, a title card), there should be exactly ONE
+  implementation of it, living in the shared template layer, not hand-rolled per episode.
+  Copy-pasting or re-authoring a "one-off variant" per episode is how the same bug gets
+  reintroduced repeatedly (a stacked-animation/fill-mode regression, a timing drift, a
+  visual inconsistency between episodes that undermines the "this is a series" feeling).
+  Prefer a single-lifecycle-keyframe pattern for the intro's visibility (one animation
+  entry owning the wrapper's opacity for its entire life, immune to the composite-order
+  trap from section 12), parameterized only by a start-offset/duration pair so new episodes
+  never need to touch its CSS/HTML — only pass the two numbers. Verify it mechanically (a
+  headless check that the intro's key visual element is actually visible at its
+  mid-window), not by eyeballing a sampled frame.
+
 ## Relationship to your project's reel playbook
 
 This skill stays generic on purpose. It does not hardcode a render pipeline, asset paths, CLI invocations, or a specific TTS voice ID. Your project's reel playbook is where those live — treat it as the executable counterpart to the principles above. When the two disagree on a *principle* (not a command), prefer this skill; when you need to know *how* to actually run something, go to the project playbook.
