@@ -94,8 +94,12 @@ for pair in \
   "marketing/storybrand:marketing-storybrand" \
   "marketing/cashvertising:marketing-cashvertising" \
   "marketing/contagious:marketing-contagious" \
-  "marketing/going-viral:marketing-going-viral"
+  "marketing/going-viral:marketing-going-viral" \
+  "marketing/high-retention-insight-reels:high-retention-insight-reels"
 do install_skill "${pair%%:*}" "${pair##*:}"; done
+
+# philosophy layer for data shorts (optional pair with high-retention-insight-reels)
+install_skill "data-reels" "data-reels"
 
 # --- writing (Evan voice + form specialists) ---
 install_skill "writing/writing-prose" "writing-prose"

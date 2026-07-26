@@ -366,6 +366,8 @@ inconsistent-feeling reel:
 
 This skill stays generic on purpose. It does not hardcode a render pipeline, asset paths, CLI invocations, or a specific TTS voice ID. Your project's reel playbook is where those live — treat it as the executable counterpart to the principles above. When the two disagree on a *principle* (not a command), prefer this skill; when you need to know *how* to actually run something, go to the project playbook.
 
+**Silph Scope / algorithm ranking of finished Reels:** use **`high-retention-insight-reels`** (DistScore = Hook+Tension+Share+Save). This skill's density/polish laws are craft guidance — do not let them alone decide “which Reel will travel farthest.”
+
 ## Hooks: the number-forward contradiction
 
 Pick ONE hook shape and repeat it until it's a brand signature — consistency of format compounds; rotating hook styles reads as an account still finding itself. The strongest shape for data content: state the two most contradictory real numbers in the dataset, flat, in the first two seconds ("Price down 28%. Sales up 21%."). It is simultaneously a thesis-first claim, a curiosity gap (the contradiction is an open loop), and data-backed by construction. Rules: every clause traces to a real field; close the gap within 5-15 seconds or it reads as manipulation; the hook's only job is buying the next 10-15 seconds of watch time. Pattern interrupt, bold claim, direct question, and pain-point framings all work for faceless data brands; first-person story hooks do not. Hook A/B tests are the cheapest experiment available when audio is per-sentence: only the first sentence and thesis text change.
