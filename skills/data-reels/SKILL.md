@@ -366,7 +366,7 @@ inconsistent-feeling reel:
 
 This skill stays generic on purpose. It does not hardcode a render pipeline, asset paths, CLI invocations, or a specific TTS voice ID. Your project's reel playbook is where those live — treat it as the executable counterpart to the principles above. When the two disagree on a *principle* (not a command), prefer this skill; when you need to know *how* to actually run something, go to the project playbook.
 
-**Silph Scope / algorithm ranking of finished Reels:** use **`high-retention-insight-reels`** (DistScore = Hook+Tension+Share+Save). This skill's density/polish laws are craft guidance — do not let them alone decide “which Reel will travel farthest.”
+**Silph Scope / Instagram algorithm ranking of finished Reels:** use **`high-retention-insight-reels-instagram`** (DistScore = Hook+Tension+Share+Save). This skill's density/polish laws are craft guidance — do not let them alone decide “which Instagram Reel will travel farthest.”
 
 ## Hooks: the number-forward contradiction
 

@@ -95,10 +95,10 @@ for pair in \
   "marketing/cashvertising:marketing-cashvertising" \
   "marketing/contagious:marketing-contagious" \
   "marketing/going-viral:marketing-going-viral" \
-  "marketing/high-retention-insight-reels:high-retention-insight-reels"
+  "marketing/high-retention-insight-reels-instagram:high-retention-insight-reels-instagram"
 do install_skill "${pair%%:*}" "${pair##*:}"; done
 
-# philosophy layer for data shorts (optional pair with high-retention-insight-reels)
+# philosophy layer for data shorts (optional pair with high-retention-insight-reels-instagram)
 install_skill "data-reels" "data-reels"
 
 # --- writing (Evan voice + form specialists) ---

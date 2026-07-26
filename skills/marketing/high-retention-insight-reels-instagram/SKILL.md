@@ -1,17 +1,19 @@
 ---
-name: high-retention-insight-reels
+name: high-retention-insight-reels-instagram
 description: >
-  Create or optimize high-performing Instagram Reels for SilphCo Analytics (Silph Scope).
-  Use for faceless, AI-voice Pokémon TCG market insight shorts — price/volume analysis,
-  myth-busting set narratives, concentration stats, and collector mental models. Optimizes
-  strictly for 2026 Reels ranking signals (watch time, DM shares, saves). Apply when writing
-  Reel scripts, reviewing or ranking finished .mp4 Reels for algorithm impact, improving
-  retention, designing share triggers, or generating new Silph Scope episodes. When ranking
-  which Reel will travel farthest, this skill overrides data-reels craft density. Use when
-  the user runs /high-retention-insight-reels or mentions Silph Scope / insight reels.
+  High-retention insight Reels for Instagram (Silph Scope / SilphCo Analytics). Create or
+  optimize faceless, AI-voice Pokémon TCG market insight Instagram Reels — price/volume
+  analysis, myth-busting set narratives, concentration stats, collector mental models.
+  Optimizes strictly for 2026 Instagram Reels ranking signals (watch time, DM shares, saves).
+  Apply when writing Instagram Reel scripts, reviewing or ranking finished .mp4 Reels for
+  algorithm impact, improving retention, designing share triggers, or generating new Silph
+  Scope Instagram episodes. When ranking which Instagram Reel will travel farthest, this
+  skill overrides data-reels craft density. Use when the user runs
+  /high-retention-insight-reels-instagram or mentions Instagram Reels, Silph Scope, or
+  insight reels.
 ---
 
-# High Retention Insight Reels (Silph Scope)
+# High Retention Insight Reels — Instagram (Silph Scope)
 
 ## Goal
 
