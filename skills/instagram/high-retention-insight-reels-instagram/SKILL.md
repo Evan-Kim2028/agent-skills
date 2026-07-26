@@ -4,13 +4,13 @@ description: >
   High-retention insight Reels for Instagram (Silph Scope / SilphCo Analytics). Create or
   optimize faceless, AI-voice Pokémon TCG market insight Instagram Reels — price/volume
   analysis, myth-busting set narratives, concentration stats, collector mental models.
-  Optimizes strictly for 2026 Instagram Reels ranking signals (watch time, DM shares, saves).
-  Apply when writing Instagram Reel scripts, reviewing or ranking finished .mp4 Reels for
-  algorithm impact, improving retention, designing share triggers, or generating new Silph
-  Scope Instagram episodes. When ranking which Instagram Reel will travel farthest, this
-  skill overrides data-reels craft density. Use when the user runs
-  /high-retention-insight-reels-instagram or mentions Instagram Reels, Silph Scope, or
-  insight reels.
+  Optimizes strictly for 2026 Instagram Reels ranking signals (skip rate / first 1–3s,
+  watch time, DM shares, saves). Apply when writing Instagram Reel scripts, reviewing or
+  ranking finished .mp4 Reels for algorithm impact, improving retention, designing share
+  triggers, or generating new Silph Scope Instagram episodes. Routed from /instagram.
+  When ranking which Instagram Reel will travel farthest, this skill overrides data-reels
+  craft density. Use when the user runs /high-retention-insight-reels-instagram,
+  /instagram, or mentions Instagram Reels, Silph Scope, or insight reels.
 ---
 
 # High Retention Insight Reels — Instagram (Silph Scope)
@@ -19,9 +19,20 @@ description: >
 
 Produce faceless, AI-narrated Instagram Reels under the Silph Scope brand that maximize average watch time, completion rate, DM shares, and saves. Content is educational data storytelling for Pokémon TCG collectors and investors.
 
-Default to the **myth-bust narrative** (Gengar / Ascended Heroes style) for the strongest mix of narrative retention + shareable mental models. Secondary templates exist when the data fits better.
+Default to the **myth-bust / belief-confrontation mechanism** (proven live by Ascended Heroes Mega Gengar — ~1.6k views, ~10 DM shares) — not a frame-clone of that one Reel. Secondary templates only when the data cannot support confrontation *and* you accept higher skip risk.
 
 All output must work **faceless** with **AI voiceover** — no on-camera talent; cards, stamps, text, and animated data *are* the visuals.
+
+### Live account gate (overrides generic craft)
+
+**Your feed is currently punishing soft opens.** Clean comparisons, pure +% upside thumbs, and calm “NOT A SET / data layout” opens have posted **~70–80% skip** and died in the test pool. Gengar cleared the first gate with:
+
+- Frame 0 dual-line belief attack (“DIDN’T CRASH” + “YOU’RE READING IT WRONG”)
+- Red penalty chip (−28%) as pattern interrupt
+- Emotional charge before the data cascade
+- Portable rule after conflict
+
+**Until skip is consistently &lt;~40–45%:** treat first 1.5–3s as the only ship-gate that matters. Do not ship “beautiful concentration” as the growth bet.
 
 ### Skill conflict resolution (read first)
 
@@ -83,14 +94,14 @@ python scripts/storyboard_reel.py \
 
 Optimize in this exact order (do not reverse):
 
-1. **First 3 seconds retention** — Decide in ~1–2s. Drop-off here kills distribution.
-2. **Full narrative completion + replays** — Hold past 50%; rewatches are explosive.
-3. **DM sends / shares per reach** — Highest weight for non-follower discovery.
-4. **Saves** — High-intent lasting value (portable rules).
-5. **Likes per reach + early velocity** — Secondary (first ~30–60 min test pool).
-6. **Originality / authority** — Fresh SilphCo data; no watermarks / reposts.
+1. **Skip rate / first 1–3s** — Gatekeeper. ~30–40% skip is healthy; **50–60%+ kills the test pool** before mid-reel is scored. Many analyses cite ~1.5–1.7s decide window.
+2. **Total watch time + replays** — Long-term #1 once past the gate (Mosseri: watch time / sends / likes stack).
+3. **DM sends / shares per reach** — Strongest *distribution* signal for non-followers (often cited 3–5× a like).
+4. **Saves** — Portable rules after conflict.
+5. **Likes per reach + early velocity** — Secondary.
+6. **Original / human-feeling** — Preferred over glossy “AI brochure” polish (2026 platform rhetoric).
 
-Length: **12–25s** preferred. Extend only when each second advances the arc or a new visual/text payoff. ~21s is fine when a contradiction needs a cascade (AH-style).
+Length: **12–25s** preferred. ~21s OK for myth-bust cascade. **Length never fixes a 70% skip open.**
 
 ---
 
