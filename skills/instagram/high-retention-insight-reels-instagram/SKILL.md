@@ -34,6 +34,19 @@ All output must work **faceless** with **AI voiceover** — no on-camera talent;
 
 **Until skip is consistently &lt;~40–45%:** treat first 1.5–3s as the only ship-gate that matters. Do not ship “beautiful concentration” as the growth bet.
 
+### Hook cover hold (hard pace law)
+
+**Frame 0 must stay on screen ~3.0 seconds** to establish the claim. Flashing the cover for ~1–1.5s then cutting is a ship failure.
+
+| Control | Value |
+|---------|--------|
+| Visual `#scene-hook` / hookLife | **≥3000ms** (full opacity through ~90%, then short fade) |
+| Series sting | **after** hook hold (~2650–3000ms), not mid-hook |
+| Audio | `hookHoldMs: 3000` in `buildVoMix`; s1 `gapAfterMs` so s2 starts after the hold |
+| Do not | Sting at `s1_end − 80` when that is &lt;2s; empty sting wipe in the first 3s |
+
+Closer VO must be a **complete rule** (e.g. “Volume is not safety.”) — never dangling “because—” loop bridges that IG does not seam.
+
 ### Skill conflict resolution (read first)
 
 | Skill | Owns |
@@ -92,14 +105,17 @@ python scripts/storyboard_reel.py \
 
 ## 2026 Algorithm Priority Hierarchy
 
-Optimize in this exact order (do not reverse):
+Optimize in this exact order (do not reverse). Full native UI map + bands live on the **instagram** hub — load that map on every Insights read.
 
-1. **Skip rate / first 1–3s** — Gatekeeper. ~30–40% skip is healthy; **50–60%+ kills the test pool** before mid-reel is scored. Many analyses cite ~1.5–1.7s decide window.
-2. **Total watch time + replays** — Long-term #1 once past the gate (Mosseri: watch time / sends / likes stack).
-3. **DM sends / shares per reach** — Strongest *distribution* signal for non-followers (often cited 3–5× a like).
+1. **Skip rate / first 1–3s** — Gatekeeper. ~30–40% skip is healthy; **50–60%+ kills the test pool** before mid-reel is scored. Many analyses cite ~1.5–1.7s decide window. **Skip diagnoses the hook only** — not mid-reel craft.
+2. **Share rate / DM sends per reach** — Strongest *distribution* signal for non-followers after the skip gate (often cited 3–5× a like). Native Insights lists share next after skip.
+3. **Total watch time + replays** — Aggregate seconds and loops once past the gate (Mosseri-class).
 4. **Saves** — Portable rules after conflict.
-5. **Likes per reach + early velocity** — Secondary.
-6. **Original / human-feeling** — Preferred over glossy “AI brochure” polish (2026 platform rhetoric).
+5. **Likes per reach + early velocity** — Secondary (likes appear high in the native six-rate list; do not optimize them over skip/share).
+6. **Repost / comment rates** — Lowest reach levers in the native “What impacts your views” list; comment is not a DistScore input.
+7. **Original / human-feeling** — Preferred over glossy “AI brochure” polish (2026 platform rhetoric).
+
+**Diagnostic split:** high skip → rewrite frame 0. Low skip + mid retention cliff → cut dead air / retime payoffs. Do not confuse the two.
 
 Length: **12–25s** preferred. ~21s OK for myth-bust cascade. **Length never fixes a 70% skip open.**
 
@@ -234,11 +250,20 @@ A myth-bust Reel scored Hook 9, Tension 9, Share 8, Save 9, Complete 5, Visual 4
 
 ## Post-Performance Feedback Loop
 
-After publish, map metrics → template:
+After publish, run the **instagram hub post-publish diagnosis playbook** (single primary action). Do not freeform “improve everything.”
 
-- Avg % watched / replays → retention beats  
-- Sends / saves → share & save triggers  
-- Profile visits / follows → authority  
+Quick map (first match wins — full table on hub):
+
+| Pattern | Primary action |
+|---------|----------------|
+| Skip ≥ ~50–60% (or Silph soft-open ~70%+) | **rewrite-hook** |
+| Skip OK, sends ≈ 0 | **add-share-trigger** |
+| Skip OK, saves flat, no rule | **add-save-payload** |
+| Skip OK, mid retention cliff | **cut-mid** |
+| Soft comparison / calm open dies in test pool | **kill-template** for growth |
+| Skip + sends strong | **clone-mechanism** (not frame-clone) |
+
+Also log: avg % watched / replays → retention beats; profile visits / follows → authority.
 
 Prefer structures that repeatedly clear **50%+ completion** and strong send rates on *this* account. Do not override proven arcs with generic “shorter always wins” dogma.
 
