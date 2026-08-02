@@ -173,6 +173,21 @@ For zero-transaction-cost (in-person) trading the objective is `price × E[%move
 
 ---
 
+## If you are here to build a model
+
+Six properties of this asset class break assumptions that are so safe elsewhere they go unstated. Full treatment and evidence in [`references/asset-class-properties.md`](references/asset-class-properties.md).
+
+- **It is a point process, not a time series.** Every price series here is a grid *you imposed* on event data. Arrival intensity is a signal in its own right — often better than price.
+- **Observation is endogenous.** Cards trade *because* someone wanted them. Dropout varies with both the signal and the price: in the reference implementation the top return quintile is 6pp less likely to trade again than a flat card, and $50+ cards drop out at 81.5% vs 93.0% for sub-$2. **Your training set is selected on the outcome, and it loses exactly the expensive names with tradeable spread.**
+- **Cold start is the normal case.** New sets arrive continuously with zero history — 14.3% of the ending universe was new over three months. This is why hierarchical models earn their keep.
+- **Most of the observed return variance is measurement error.** Reliability ~0.70 means the ceiling on correlation with true momentum is √0.70 ≈ 0.84. Evaluate against that, not against 1.0.
+- **Weighting can flip the sign.** Same universe, same window: equal-weight **−7.65%**, dollar-weight **+3.18%**, median 0.00%. State which you chose.
+- **You cannot short.** Long-short decile spreads report a number you cannot monetize. Report the long leg separately.
+
+**And you cannot back-fill history.** Venues purge sold data on ~90-day horizons, so deep history exists only where someone was already capturing it. Broad early capture beats every model choice available.
+
+---
+
 ## Answer the person, not the panel
 
 Nobody buying cards has a Sharpe ratio. Four personas ask, and they optimize different — sometimes opposite — things:
@@ -196,6 +211,7 @@ Personas, the lingo→column translation table, market-structure facts and the f
 - [`references/data-quality.md`](references/data-quality.md) — the defect taxonomy, ordered by damage, each with a diagnostic.
 - [`references/sparsity-and-eras.md`](references/sparsity-and-eras.md) — era structure, panel fill rates, the condition/grade ladder, and the cross-grade reconstruction recipe.
 - [`references/methodology.md`](references/methodology.md) — the analytical traps. Every one has produced a wrong-but-plausible result.
+- [`references/asset-class-properties.md`](references/asset-class-properties.md) — for ML/quant work: what card markets *are* structurally, and which standard modeling assumptions they violate.
 - [`references/personas-and-decisions.md`](references/personas-and-decisions.md) — collector / flipper / vendor / grader: what each is optimizing, what output is useful, and how their question translates into ours.
 - [`references/domain-knowledge.md`](references/domain-knowledge.md) — the hobby's vocabulary mapped to columns, market-structure facts absent from every tape, and the folk-claims register (confirmed / retracted / untested).
 - [`references/findings.md`](references/findings.md) — dated result log from the reference implementation, plus superseded claims.

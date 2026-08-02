@@ -201,6 +201,24 @@ Standing caveats apply in full: one regime, six periods, no observed drawdown. A
 
 ---
 
+## 2026-08-02 — Asset-class structure (for model builders)
+
+Full treatment in [`asset-class-properties.md`](asset-class-properties.md). Measured on the canonical filter, `pd 5–11`, ≥4 sales per card-period.
+
+**Observation is endogenous.** Probability a card trades again next period, by this period's return quintile: 93.6% / 94.9% / **95.4%** / 94.7% / **89.3%**. Inverted U — big movers in both directions vanish, winners most. And dropout rises with price at near-identical sales counts: <$2 93.0%, $2–10 90.5%, $10–50 87.7%, **$50+ 81.5%**. The panel systematically sheds the expensive cards that carry tradeable dollar spread.
+
+**Universe churn.** 82.0% of cards present at pd 6 were still present at pd 11; **14.3% of the pd-11 universe was new** — over three months. Cold start is the default case.
+
+**Weighting flips the sign.** Same universe, same window: equal-weight mean **−7.65%**, dollar-weight mean **+3.18%**, median **0.00%**. Three defensible aggregations, three different market directions.
+
+**Return distribution** (68,521 obs, 14-day logs): p01 −239.6%, p25 −20.3%, median 0.00%, p75 +11.4%, p99 +155.5%, kurtosis 9.0, skew −1.22, 4.9% exactly zero. Against a momentum reliability of ~0.70, most of this dispersion is measurement error rather than price movement.
+
+**Price scale:** $0.01 → $8,414.90 across card-period medians (5.9 orders of magnitude), median $1.75, p99 $215.
+
+**Chase concentration:** top 3 cards hold a median **37.7%** of a set's dollar volume (range 10.8%–96.3%, 155 sets). A set index is often a three-card index — effective breadth is well below the set count.
+
+---
+
 ## Superseded / retracted claims
 
 - **"Cheap laggards will mean-revert toward their set."** Retracted 2026-08-02. Backtest gave `corr(trailing, forward) = +0.20` — continuation, not reversion. Under $10, laggards and leaders both returned ~+7% with no spread.
