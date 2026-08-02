@@ -151,6 +151,20 @@ Regime thresholds (fitted to one cooling episode — re-estimate):
 
 ---
 
+## 2026-08-02 — Sparsity, eras, and cross-grade reconstruction
+
+Full detail in [`sparsity-and-eras.md`](sparsity-and-eras.md). Headline results:
+
+- **65% of the catalogue is unpriceable** — 23,570 of 66,855 cards record a resolved sale in 12 weeks.
+- **Rawness declines monotonically with age**, and **mid-era (EX–DP–HGSS) tracks vintage, not modern**: raw NM share 30.3% vs 29.4%, against ~65% for SWSH/SV. Confirmed independently on the PSA 9 premium (7.72× / 7.53× vs 1.5–1.8×) and the LP/NM ratio (0.728 / 0.766 vs 0.895 / 0.924).
+- **Panel fill rate on raw NM alone: mid-era 22.3%**, vintage 56.0%, SV/ME 91.2%. Pooling raw conditions via per-era NM-equivalent factors lifts mid-era to 83.8%.
+- **Reconstruction is strictly better, not a trade-off.** On identical cells, split-half reliability of the *level* rises in every era (mid 0.897 → 0.967, a 68% cut in noise variance). On cells NM-only cannot fill, pooling still reaches 0.948–0.989 and adds 14,285 usable mid-era card-periods against the 3,299 NM-only supported — **5.3× coverage at higher precision.**
+- **The condition ladder inverts; the grade ladder does not.** IQ spread 1.50–1.95 for LP/MP/HP vs 3.49–4.25 for PSA 9/10 and CGC 9+. Graded legs stay a directional signal (PSA 10 move → raw, IC +0.230), never a price level.
+
+Caveat: these are **level** reliabilities. The 0.70 figure elsewhere is *momentum* reliability, which has not been re-measured under pooling. Factors are single-window medians in one regime — re-estimate on refresh, and on a slice disjoint from what you evaluate.
+
+---
+
 ## Superseded / retracted claims
 
 - **"Cheap laggards will mean-revert toward their set."** Retracted 2026-08-02. Backtest gave `corr(trailing, forward) = +0.20` — continuation, not reversion. Under $10, laggards and leaders both returned ~+7% with no spread.

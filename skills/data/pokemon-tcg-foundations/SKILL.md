@@ -1,6 +1,6 @@
 ---
 name: data-pokemon-tcg-foundations
-description: Use when working with the Pokémon TCG sales lakehouse (silphcoanalytics / lake-of-rage gold tables on lor-main) — reading or writing any query against card_sales_history / card_rollup, card price prediction, momentum and value factor construction, set-level regime detection, cross-venue basis and anchor-follower models, buy/sell signal design, or backtesting card selection. Encodes the dataset's real shape and defects (two competing condition encodings, a 7-week TCGplayer outage, lot-price contamination, FX-converted venues, venues that aren't secondary markets) plus measured results (venue error-correction coefficients, factor ICs, anchor-by-price-band). Don't use for TCG game strategy/deckbuilding, general lakehouse engineering (that's data-apache-lakehouse), generic DuckDB syntax (data-duckdb), or non-Pokémon collectibles.
+description: Use when working with the Pokémon TCG sales lakehouse (silphcoanalytics / lake-of-rage gold tables on lor-main) — reading or writing any query against card_sales_history / card_rollup, card price prediction, momentum and value factor construction, set-level regime detection, cross-venue basis and anchor-follower models, buy/sell signal design, or backtesting card selection. Encodes the dataset's real shape and defects (two competing condition encodings, a 7-week TCGplayer outage, lot-price contamination, FX-converted venues, venues that aren't secondary markets), the era structure and severe panel sparsity in pre-SWSH sets, the cross-grade/condition price reconstruction that fixes it, plus measured results (venue error-correction coefficients, factor ICs, anchor-by-price-band). Don't use for TCG game strategy/deckbuilding, general lakehouse engineering (that's data-apache-lakehouse), generic DuckDB syntax (data-duckdb), or non-Pokémon collectibles.
 ---
 
 # Pokémon TCG Lakehouse — Foundations
@@ -59,6 +59,26 @@ WHERE game = 'pokemon'
 **6. Never compare venues unconditionally.** SV/ME raw NM medians: TCGplayer **$0.19**, eBay **$10.00**. That 50× gap is pure mix — TCGplayer is 64% sub-$1 bulk, eBay clusters on `.99` ask points. Only compare per card with ≥4 sales on both sides.
 
 **7. Skip-a-period test every new signal.** Build it from *t*, measure the return *t+1 → t+2*. Sharing transactions between signal and target manufactures correlation from median noise. This killed the best-looking factor found so far (tail shape: IC −0.216 → −0.026).
+
+## Sparsity is the binding constraint — reconstruct across conditions
+
+**Two thirds of the catalogue never trades.** 66,855 cards are listed; only 23,570 record a resolved sale in a 12-week window. Every method question here reduces to "does this buy me more observations per card-period?"
+
+**And rawness collapses with age.** Raw NM share of sales: SV/ME 64.8% · SWSH 64.2% · BW–XY–SM 46.5% · **mid-era (EX–DP–HGSS) 30.3% · vintage (WotC) 29.4%.** Mid-era behaves like vintage, not like modern — old cards mostly don't survive in NM, so their tape is LP/MP/HP and graded copies. The same grouping appears independently in the PSA 9 premium (vintage 7.5× / mid 7.7× vs modern 1.5–1.8×) and the LP discount (0.766 / 0.728 vs 0.895 / 0.924).
+
+The panel consequence, fill rate of card×period cells at ≥8 sales:
+
+| Era | Raw NM only | Condition-pooled |
+|---|---|---|
+| vintage | 56.0% | 91.3% |
+| **mid** | **22.3%** | **83.8%** |
+| BW–XY–SM | 49.0% | 85.7% |
+| SWSH | 90.3% | 97.8% |
+| SV–ME | 91.2% | 94.6% |
+
+**A raw-NM-only panel is not viable before SWSH.** The fix is to convert every raw condition to an NM-equivalent price using a per-era factor (LP/MP/HP/DMG), then pool. Split-half reliability *rises* in every era (mid 0.897 → 0.967) while mid-era usable cells go **3,299 → 17,584 (5.3×)**.
+
+Condition legs invert cleanly (IQ spread 1.5–1.95). **Graded legs do not** (3.5–4.25) — use PSA/CGC as a directional signal, never as a price level. Factor tables and the recipe: [`references/sparsity-and-eras.md`](references/sparsity-and-eras.md).
 
 ## Two more rules for aggregation
 
@@ -131,6 +151,7 @@ A $20 price cap is usually the binding constraint on dollar spread, not signal q
 ## References
 
 - [`references/data-quality.md`](references/data-quality.md) — how the tape is built and where it is broken. Twelve audited defects with counts.
+- [`references/sparsity-and-eras.md`](references/sparsity-and-eras.md) — era taxonomy, panel fill rates, the condition/grade ladder, and the cross-grade reconstruction recipe with its split-half validation.
 - [`references/dataset-map.md`](references/dataset-map.md) — tables, columns, venue coverage, resolution rates, staleness, environment gotchas.
 - [`references/methodology.md`](references/methodology.md) — the analytical traps, each with its diagnostic.
 - [`references/findings.md`](references/findings.md) — dated result log, set-level regime state, and superseded claims.
