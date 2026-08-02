@@ -138,9 +138,17 @@ This is exactly why the within-set IC matters: a factor with real within-set IC 
 
 Multiple printings map to one `tcg_card_id`, producing a bimodal price distribution and a meaningless median.
 
+**Now measured** (eBay titles, SV/ME raw): reverse holos are **7.7% of sales**; across 638 cards with ≥10 sales each way the reverse-vs-base median price ratio is **1.000** (p25 0.905, p75 1.137) — but **21.9% of cards differ by more than 30%**.
+
+Read that carefully: contamination is *unbiased in aggregate and severe in the tail*. Pooling is fine for set-level work. For a single card's level estimate it is roughly 1-in-5 that you are averaging two materially different assets.
+
+Japanese printings are a non-issue in this era — no SV/ME card reaches 10 Japanese-titled raw sales, despite 6.4% of all Pokémon eBay titles mentioning Japan.
+
 **Gate:** interquartile dispersion `q75/q25 ≤ 1.7–1.8` over the trailing 30 days. Cards above that are contaminated; exclude them from level work.
 
 Note the tension with trap #5: this gate is a *filter for level estimation*, not a signal, and it must not be applied when the distribution's shape is what you're studying.
+
+Title mining is eBay-only — **`title` is NULL on 91.7% of TCGplayer rows.**
 
 ---
 
@@ -150,11 +158,53 @@ Card momentum is **negative at 14 days** (IC −0.027, skip +0.070) and **positi
 
 ---
 
+---
+
+## 11. Reading a pipeline outage as a market event
+
+**What happens.** Missing venue-days look exactly like collapsed demand. TCGplayer has 37 fully missing days (2026-03-03 → 2026-04-21) and 23 more below quarter-volume; the newest 14-day period is always under-ingested (eBay falls 66% in the final bar from lag alone).
+
+Both were live hazards. Before the guard was added, the panel's early periods carried a "venue gap" computed from **48 TCGplayer sales against 48,836 eBay sales**.
+
+**The diagnostic.** Count distinct days per venue per period, not just rows, and compare against the calendar:
+
+```sql
+CREATE OR REPLACE TABLE cal AS
+SELECT unnest(generate_series(DATE '2026-02-16', DATE '2026-08-01', INTERVAL 1 DAY))::DATE d;;
+SELECT count(*) missing FROM cal
+WHERE d NOT IN (SELECT CAST(sold_at AS DATE) FROM sale WHERE marketplace='tcgplayer');;
+```
+
+**The fix.** `pd BETWEEN 6 AND 11` — baked into `scripts/panel.sql`. Re-derive both bounds whenever the data is refreshed; the upper bound moves every time.
+
+---
+
+## 12. Choosing the sparser of two equivalent columns
+
+**What happens.** When two columns encode the same thing, the one with the friendlier name is not necessarily the populated one. `condition='NM'` and `grade_label='raw_nm'` agree on price to within 0.3%, but `grade_label` carries **2.36× more eBay rows**.
+
+Against a measured reliability ceiling of 0.70 — 30% of momentum variance is sampling noise — a 2.4× sample increase beats every model-class change available.
+
+**The diagnostic.** For any two candidate filters, check *both* count and price agreement before picking:
+
+```sql
+SELECT marketplace,
+  count(*) FILTER (WHERE condition='NM') via_a,
+  count(*) FILTER (WHERE grade_label='raw_nm') via_b,
+  count(*) FILTER (WHERE condition='NM' AND grade_label='raw_nm') via_both
+FROM e GROUP BY 1;;
+-- then per card: median(px under A) / median(px under B) should be ~1.000
+```
+
+Agreement on price plus disagreement on count means one column is simply more complete. Take the complete one.
+
+---
+
 ## Standing sample caveats
 
 State these on any result from this dataset:
 
-- ~6 months of usable history (TCGplayer from Feb 2026, eBay Mar–Apr).
+- ~6 months of usable history — and only **6 usable 14-day periods** (pd 6–11) for anything cross-venue, after the TCGplayer outage and the newest-period lag are excluded.
 - **One regime** — an up-then-cooling episode. No observed drawdown.
 - Backtests partly overlap the very episode they evaluate. Strip out `rsv10pt5`/`zsv10pt5` and the continuation evidence gets thin.
 - Exogenous drivers (reprints, rotation, tournament meta, a popular video) are absent from every column and are a large share of what actually moves prices. That's an information problem, not a modeling one.

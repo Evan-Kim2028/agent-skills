@@ -18,6 +18,13 @@
 --
 -- AS-OF DATE IS HARDCODED. DuckDB on lor-main has no pytz, so max(sold_at)
 -- and date_trunc on a TIMESTAMPTZ both fail. Update these two dates.
+--
+-- TWO PERIOD FILTERS ARE MANDATORY AND BAKED IN BELOW:
+--   pd >= 6  - TCGplayer was absent/degraded before 2026-04-26 (37 missing days
+--              Mar 3 - Apr 21). At pd=5 TCGplayer is 0.1% of volume, so any
+--              cross-venue factor is undefined before pd=6.
+--   drop max(pd) - the newest period is always under-ingested (eBay fell 66%
+--              in the final period purely from ingest lag).
 
 CREATE OR REPLACE TABLE era AS
 SELECT tcg_card_id, name, set_id, rarity, card_number
@@ -27,7 +34,7 @@ WHERE set_id IN ('sv1','sv2','sv3','sv3pt5','sv4','sv4pt5','sv5','sv6','sv6pt5',
                  'me1','me2','me2pt5','me3','me4','me5');;
 
 CREATE OR REPLACE TABLE sale AS
-SELECT s.tcg_card_id, s.marketplace, s.price_usd, s.grader, s.grade_num, s.condition,
+SELECT s.tcg_card_id, s.marketplace, s.price_usd, s.grader, s.grade_num, s.grade_label,
   CAST(floor((CAST(s.sold_at AS DATE) - DATE '2026-02-01')/14.0) AS INT) pd
 FROM 'card_sales_history.parquet' s JOIN era e USING (tcg_card_id)
 WHERE s.game='pokemon' AND s.price_usd>0
@@ -36,15 +43,19 @@ WHERE s.game='pokemon' AND s.price_usd>0
   AND s.marketplace IN ('tcgplayer','ebay')           -- ebay_hk is a separate price regime
   AND CAST(s.sold_at AS DATE) >= DATE '2026-02-01';;
 
+-- NM selector. Use grade_label, NOT condition. They agree on price to within
+-- 0.3% but grade_label carries 2.4x more eBay rows (443k vs 187k on SV/ME).
+-- 'raw_unknown' is NOT near-mint - it medians $9.90 vs $5.99 for raw_nm.
+
 -- Wide 3x IQR fences. Use 1.5x for level estimation; 3x here because the LEFT
 -- TAIL IS A SIGNAL (p10 depletion) and 1.5x trims away the thing being measured.
 CREATE OR REPLACE TABLE fen AS
 SELECT tcg_card_id, quantile_cont(price_usd,0.25) f25, quantile_cont(price_usd,0.75) f75
-FROM sale WHERE (grader IS NULL OR grader='RAW') AND condition='NM' GROUP BY 1;;
+FROM sale WHERE (grader IS NULL OR grader='RAW') AND grade_label='raw_nm' GROUP BY 1;;
 
 CREATE OR REPLACE TABLE nm AS
 SELECT a.* FROM sale a JOIN fen f USING (tcg_card_id)
-WHERE (a.grader IS NULL OR a.grader='RAW') AND a.condition='NM'
+WHERE (a.grader IS NULL OR a.grader='RAW') AND a.grade_label='raw_nm'
   AND a.price_usd BETWEEN f.f25-3*(f.f75-f.f25) AND f.f75+3*(f.f75-f.f25);;
 
 CREATE OR REPLACE TABLE cp AS
@@ -55,18 +66,18 @@ SELECT tcg_card_id, pd, count(*) n,
   count(*) FILTER (WHERE marketplace='ebay') neb,
   median(price_usd) FILTER (WHERE marketplace='tcgplayer') tcg50,
   median(price_usd) FILTER (WHERE marketplace='ebay') eb50
-FROM nm GROUP BY 1,2 HAVING count(*)>=8;;
+FROM nm WHERE pd BETWEEN 6 AND 11 GROUP BY 1,2 HAVING count(*)>=8;;
 
 -- PSA 10 leg. Disjoint transactions from raw, so it is structurally immune to
 -- bid-ask bounce against a raw-price target.
 CREATE OR REPLACE TABLE psa AS
 SELECT tcg_card_id, pd, count(*) npsa, median(price_usd) psa50
-FROM sale WHERE grader='PSA' AND grade_num=10 GROUP BY 1,2 HAVING count(*)>=4;;
+FROM sale WHERE grader='PSA' AND grade_num=10 AND pd BETWEEN 6 AND 11 GROUP BY 1,2 HAVING count(*)>=4;;
 
 -- LP leg: condition substitution / supply exhaustion. Also disjoint from NM.
 CREATE OR REPLACE TABLE lp AS
 SELECT tcg_card_id, pd, count(*) nlp, median(price_usd) lp50
-FROM sale WHERE (grader IS NULL OR grader='RAW') AND condition='LP'
+FROM sale WHERE (grader IS NULL OR grader='RAW') AND grade_label='raw_lp' AND pd BETWEEN 6 AND 11
 GROUP BY 1,2 HAVING count(*)>=4;;
 
 -- Error-correction pair: both venues present in the same card-period.
@@ -117,3 +128,17 @@ UNION ALL SELECT 'distinct cards', count(DISTINCT tcg_card_id) FROM cp
 UNION ALL SELECT 'periods', count(DISTINCT pd) FROM cp
 UNION ALL SELECT 'panel rows', count(*) FROM sc
 UNION ALL SELECT 'ec pairs', count(*) FROM g;;
+
+-- Sanity: composite IC on the grade_label panel, total and within-set.
+CREATE OR REPLACE TABLE ws AS
+SELECT *, ret_next - avg(ret_next) OVER (PARTITION BY set_id, pd) resid,
+          score   - avg(score)   OVER (PARTITION BY set_id, pd) dscore
+FROM sc;;
+
+SELECT round(corr(a,b),3) ic_next FROM (
+  SELECT rank() OVER (ORDER BY ret_next) a, rank() OVER (ORDER BY score) b FROM sc);;
+SELECT round(corr(a,b),3) ic_skip FROM (
+  SELECT rank() OVER (ORDER BY ret_skip) a, rank() OVER (ORDER BY score) b
+  FROM sc WHERE ret_skip IS NOT NULL);;
+SELECT round(corr(a,b),3) ic_within_set FROM (
+  SELECT rank() OVER (ORDER BY resid) a, rank() OVER (ORDER BY dscore) b FROM ws);;

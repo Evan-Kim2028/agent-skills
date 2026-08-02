@@ -4,6 +4,32 @@ Dated results. Append; don't rewrite history. Mark superseded claims rather than
 
 ---
 
+## 2026-08-02 — Tape audit (structure, not prices)
+
+Full detail in [`data-quality.md`](data-quality.md). Headlines:
+
+- **`grade_label='raw_nm'` beats `condition='NM'`** — 2.36× the eBay rows (442,805 vs 187,398 on SV/ME), median price ratio **1.000** across 1,826 cards. Free sample-size win against a 0.70 reliability ceiling.
+- **TCGplayer is missing 37 days**, 2026-03-03 → 2026-04-21. At pd 5 it is 0.1% of volume. **No cross-venue factor exists before pd 6.**
+- **The newest period is always under-ingested** — eBay −66% in the final bar from lag alone.
+- **The "900k blocked sales" figure was wrong.** renaiss/courtyard/beezie are primary/buyback/burn venues; genuine secondary across all unresolved venues is **~148k**.
+- **Lot sales** stamp one price on every card in 86% of 4–10-card transactions ($48/row vs $5.73). Confined to already-excluded venues — a landmine, not a current defect.
+- **Reverse-holo contamination measured**: 7.7% of eBay raw SV/ME sales, median ratio 1.000 but **21.9% of cards off by >30%**.
+- **Sub-cent price precision is an FX fingerprint**: ebay_hk 99.68%, mercari_jp 77.81%, courtyard 13.52%, renaiss 13.20% vs TCGplayer 0.00%.
+- **Liquidity inverts against rawness** — the 266 highest-volume SV/ME cards are only 15.5% raw NM, against 72.2% for the 10–49-sale bucket. Only 595 cards carry ≥180 raw NM sales.
+- eBay history reaches **2009-11-02**, but pre-2026 resolution is <1%. The data becomes *joinable* in 2026 rather than *starting* there.
+
+**Composite rebuilt** on the `grade_label` panel with pd 6–11 guards: 25,285 card-periods, 4,543 cards, **4,236 panel rows (+64% vs the old build despite dropping 7 of 13 periods)**, 6,647 EC pairs.
+
+| | Old (condition, pd 0–12) | New (grade_label, pd 6–11) |
+|---|---|---|
+| IC t+1 | 0.287 | **0.283** |
+| IC skip | 0.185 | **0.167** |
+| Within-set IC | 0.261 | **0.225** |
+
+The mild decline is the honest number — the old figures were partly inflated by degenerate early periods where TCGplayer barely existed. The composite survives a larger, cleaner, guard-railed sample.
+
+---
+
 ## 2026-08-02 — Anchor / error-correction model
 
 Universe: SV+ME sets, `trade_type='secondary'`, 14-day periods, `n>=4` per card-venue-period, Feb–Aug 2026. 7,091 card-periods.
@@ -133,4 +159,8 @@ Regime thresholds (fitted to one cooling episode — re-estimate):
 - **"eBay clears below TCGplayer."** True for the 11 specific IRs examined; false as a general statement. Universe mean gap is +0.16 logs — eBay runs ~17% *richer*. Always demean per card.
 - **"Tail shape is the strongest factor" (IC −0.216).** Killed by the skip test (−0.026). Bid-ask bounce.
 - **"Momentum-leader selection beats value within a set."** Partially retracted. Within-set, `rel_price_vs_peer` scores IC 0.130 vs momentum gap 0.046 — value is the better within-set selector, which vindicated the original "underrated vs cohort" framing over the momentum-leader pivot.
+- **"~900k sales are blocked by identity resolution across 9 follower venues."** Corrected 2026-08-02. Those venues are dominated by primary issuance, buybacks and NFT burns; genuine `secondary` volume across all of them is **~148k**. The pipeline fix is still worth doing, but it is a ~148k-row prize.
+- **"Usable history starts Feb 2026 (TCGplayer) / Mar–Apr 2026 (eBay)."** Imprecise. eBay rows exist from 2009-11-02; what starts in 2026 is *identity resolution* (0.1–0.4% pre-2025 → 55.1% in 2026).
+- **"~6 months of usable history."** True in calendar terms, misleading in usable terms: only **6 periods** (pd 6–11) support cross-venue work once the TCGplayer outage and newest-period lag are excluded.
+- **`condition='NM'` as the raw-NM filter.** Superseded by `grade_label='raw_nm'` — same prices, 2.36× the eBay sample. All pre-2026-08-02 factor ICs were computed on the smaller sample.
 - **A weekly-median index reading showed the hot sets stalling in weeks 14–17.** Artifact of sticky TCGplayer prices (>50% of cards show exactly 0% WoW). Corrected to "decelerating, not stalled" against monthly matched-model data.
