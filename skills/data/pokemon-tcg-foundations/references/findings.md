@@ -180,6 +180,27 @@ Also two DuckDB reserved words found the hard way: `rows` and `days` fail as col
 
 ---
 
+## 2026-08-02 — Set age and returns
+
+Matched-model, venue-neutral, `pd 5–11`, ≥4 sales per card-venue-period. Set age from `release_date`.
+
+| Set age | Venue | Obs | Sets | Median %/14d | % up |
+|---|---|---|---|---|---|
+| 10+ yr | ebay | 13,050 | 84 | **+2.19%** | 53.0% |
+| under 10 yr | ebay | 22,762 | 66 | +0.33% | 52.7% |
+| 10+ yr | tcgplayer | 9,928 | 85 | **+1.39%** | 54.0% |
+| under 10 yr | tcgplayer | 48,498 | 69 | 0.00% | 43.3% |
+
+**A vintage/modern split in returns, confirmed independently on both venues** on 84–85 sets.
+
+**It is a step, not a gradient.** Intermediate age buckets are flat: 6–11 mo `+0.03%`, 1–2 yr `+0.12%`, 2–5 yr `0.00%`, 5–10 yr `0.00%`. No smooth decay curve in set age.
+
+**The "new sets bleed after release" claim is untestable in this window** and must not be repeated as fact. Only three sets are under six months old (`me4`, `me3`, `me2pt5`) and all three are Mega Evolution — set age and cohort are the same variable. The apparent −2.27%/14d for the 0–2 mo bucket is one cohort's drawdown. Testing it needs a window spanning several release cycles.
+
+Standing caveats apply in full: one regime, six periods, no observed drawdown. A vintage bull market and a vintage risk premium are indistinguishable over three months.
+
+---
+
 ## Superseded / retracted claims
 
 - **"Cheap laggards will mean-revert toward their set."** Retracted 2026-08-02. Backtest gave `corr(trailing, forward) = +0.20` — continuation, not reversion. Under $10, laggards and leaders both returned ~+7% with no spread.

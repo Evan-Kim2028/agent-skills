@@ -169,6 +169,25 @@ For zero-transaction-cost (in-person) trading the objective is `price × E[%move
 >
 > A price cap is usually the binding constraint on dollar spread, not signal quality.
 
+**And the threshold is channel-specific.** $2 is a real spread in person at ~0% fees and nothing at all on a venue taking ~13%. Always state the channel a dollar figure assumes.
+
+---
+
+## Answer the person, not the panel
+
+Nobody buying cards has a Sharpe ratio. Four personas ask, and they optimize different — sometimes opposite — things:
+
+- **Collector** — buys to keep. Wants a *fairness check* on today's ask, not a return forecast. Reprint risk is their real enemy.
+- **Flipper** — wants a buy-under and a sell-over price **in dollars**, plus how long the exit takes. A percentage on a $3 card is not an answer.
+- **Vendor** — judged on **turns, not appreciation**. Ranking by expected return without liquidity hands them a shelf of unsellable stock. The avoid-list is worth more to them than the buy-list.
+- **Grader** — wants EV of submission. We can supply the graded price distribution; `P(grade)` depends on the physical card and **analysis must defer there.**
+
+**Three things the hobby knows that the tape cannot see** — treat as veto inputs, not features: **reprint risk** (modern supply is elastic; vintage is fixed), **rotation and playability** (a published, exogenous calendar), and **condition in hand** (centering, whitening and print lines appear in no column).
+
+**The most-asked question is the one the data cannot support.** "Is this a good long-term hold?" over a six-period window is not answerable. Decline it rather than extrapolating a 14-day coefficient.
+
+Personas, the lingo→column translation table, market-structure facts and the folk-claims register: [`references/personas-and-decisions.md`](references/personas-and-decisions.md) and [`references/domain-knowledge.md`](references/domain-knowledge.md).
+
 ---
 
 ## References
@@ -177,6 +196,8 @@ For zero-transaction-cost (in-person) trading the objective is `price × E[%move
 - [`references/data-quality.md`](references/data-quality.md) — the defect taxonomy, ordered by damage, each with a diagnostic.
 - [`references/sparsity-and-eras.md`](references/sparsity-and-eras.md) — era structure, panel fill rates, the condition/grade ladder, and the cross-grade reconstruction recipe.
 - [`references/methodology.md`](references/methodology.md) — the analytical traps. Every one has produced a wrong-but-plausible result.
+- [`references/personas-and-decisions.md`](references/personas-and-decisions.md) — collector / flipper / vendor / grader: what each is optimizing, what output is useful, and how their question translates into ours.
+- [`references/domain-knowledge.md`](references/domain-knowledge.md) — the hobby's vocabulary mapped to columns, market-structure facts absent from every tape, and the folk-claims register (confirmed / retracted / untested).
 - [`references/findings.md`](references/findings.md) — dated result log from the reference implementation, plus superseded claims.
 - [`references/reference-implementation.md`](references/reference-implementation.md) — the concrete instance: connection, tables, columns, environment quirks.
 - [`scripts/profile.sql`](scripts/profile.sql) — the five opening questions, as one script.
