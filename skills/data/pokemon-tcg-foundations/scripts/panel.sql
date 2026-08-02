@@ -1,4 +1,11 @@
--- Canonical card x venue x 14-day-period panel for the Pokemon TCG lakehouse.
+-- Canonical card x venue x 14-day-period panel.
+--
+-- THIS IS REFERENCE-IMPLEMENTATION CODE. Column names, venue names, set-id
+-- prefixes and dates below are specific to the lakehouse described in
+-- references/reference-implementation.md. On another tape it is a template:
+-- substitute your own columns using the role mapping in that file, and
+-- re-derive every hardcoded date and bound from your own profiling run.
+--
 -- Run with: ./q.sh < panel.sql
 -- q.sh splits statements on a doubled semicolon, so never write that token
 -- inside a comment or string literal - it will truncate the file mid-statement.
@@ -20,11 +27,13 @@
 -- and date_trunc on a TIMESTAMPTZ both fail. Update these two dates.
 --
 -- TWO PERIOD FILTERS ARE MANDATORY AND BAKED IN BELOW:
---   pd >= 6  - TCGplayer was absent/degraded before 2026-04-26 (37 missing days
---              Mar 3 - Apr 21). At pd=5 TCGplayer is 0.1% of volume, so any
+--   pd >= 6  - TCGplayer coverage does not extend back as far as eBay's
+--              (no rows Mar 3 - Apr 21; this is the shape of the data, not an
+--              outage). At pd=5 TCGplayer is 0.1% of volume, so any
 --              cross-venue factor is undefined before pd=6.
---   drop max(pd) - the newest period is always under-ingested (eBay fell 66%
---              in the final period purely from ingest lag).
+--   drop max(pd) - the newest period is always short. Two causes: ingest lag,
+--              plus the cardindex writer regression (lake-of-rage#1580) which
+--              accounts for 43% of the missing eBay rows at pd=12.
 
 CREATE OR REPLACE TABLE era AS
 SELECT tcg_card_id, name, set_id, rarity, card_number

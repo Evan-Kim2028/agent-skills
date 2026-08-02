@@ -1,172 +1,196 @@
 ---
 name: data-pokemon-tcg-foundations
-description: Use when working with the Pokémon TCG sales lakehouse (silphcoanalytics / lake-of-rage gold tables on lor-main) — reading or writing any query against card_sales_history / card_rollup, card price prediction, momentum and value factor construction, set-level regime detection, cross-venue basis and anchor-follower models, buy/sell signal design, or backtesting card selection. Encodes the dataset's real shape and defects (two competing condition encodings, a 7-week TCGplayer outage, lot-price contamination, FX-converted venues, venues that aren't secondary markets), the era structure and severe panel sparsity in pre-SWSH sets, the cross-grade/condition price reconstruction that fixes it, plus measured results (venue error-correction coefficients, factor ICs, anchor-by-price-band). Don't use for TCG game strategy/deckbuilding, general lakehouse engineering (that's data-apache-lakehouse), generic DuckDB syntax (data-duckdb), or non-Pokémon collectibles.
+description: Use when working with a trading-card sales tape — any sale-level dataset of collectible card transactions across multiple venues (Pokémon TCG, sports cards, MTG, or similar) — for price estimation, momentum and value factor construction, set/era-level regime detection, cross-venue basis and anchor-follower models, buy/sell signal design, or backtesting card selection. Encodes the structural defects these tapes reliably have (competing condition encodings, venue coverage gaps, lot-price contamination, FX-converted venues, venues that aren't secondary markets, silent writer regressions), the era structure and panel sparsity that makes naive panels unusable, the cross-grade price reconstruction that fixes it, and the traps that produce wrong-but-plausible results. Includes measured coefficients from a reference implementation. Don't use for TCG game strategy/deckbuilding, general lakehouse engineering (that's data-apache-lakehouse), generic DuckDB syntax (data-duckdb), or non-card asset classes.
 ---
 
-# Pokémon TCG Lakehouse — Foundations
+# Trading-Card Sales Tapes — Foundations
 
-Everything needed to query this dataset correctly and to know what has already been measured on it. Read this before writing the first query; most of the obvious analyses here are wrong in ways that look right.
+How a card sales tape is shaped, where it is reliably broken, and which analyses on it are wrong in ways that look right.
 
-> **Verified 2026-08-02** against `~/data/pokemontcg_pipe/gold/` on `lor-main`, DuckDB 1.5.3.
-> Structural facts (which venue anchors, where the defects are) age slowly. Magnitudes were measured over Feb–Aug 2026 in **a single up-then-cooling regime** and should be re-measured.
+**This skill is written to be portable.** The structure, defects and traps below recur across card sales tapes because they come from how these markets and pipelines work, not from one vendor. Concrete numbers come from a **reference implementation** and are marked as such:
 
-## What this dataset is
+> **Ref impl** — measured against a Pokémon TCG lakehouse (~9.4M sales, Feb–Aug 2026, DuckDB over Parquet). Connection details, table names and environment quirks: [`references/reference-implementation.md`](references/reference-implementation.md).
 
-**Not a price series.** It is a 9.4M-row transaction tape in which the same card trades simultaneously in several observable markets — TCGplayer raw, eBay raw, PSA 10, raw LP — and those markets do not move at the same time. Nearly all the exploitable signal lives in the *relationships between* those markets, not in the price history of any one of them. Card-level price momentum is close to worthless at 14 days; the cross-venue basis is the strongest single factor measured.
+Treat ref-impl magnitudes as **order-of-magnitude priors and worked examples**, not constants. Re-measure them on your tape — every section tells you how.
 
-The practical consequence: work at **card × venue × 14-day-period** granularity. Collapsing to monthly medians throws away ~99.9% of the information and leaves ~20 effective observations.
+---
 
-## Shape of the tape
+## What a card sales tape is
 
-| | |
-|---|---|
-| Pokémon rows | 9,439,263 (`sale_id` unique — no dedup needed) |
-| Usable venues | **`tcgplayer`, `ebay`, `ebay_hk`** — everything else is 0% identity-resolved |
-| Joinable history | **2026 onward.** eBay rows exist back to 2009 but are <1% resolved before 2025 |
-| Identity resolution | TCGplayer 91.7% · eBay 43.9% · ebay_hk 75.6% · all others 0% |
-| Usable panel periods | **pd 6–11** (2026-04-26 → 2026-07-19) for anything cross-venue |
-| Realistic card universe | ~595 SV/ME cards with ≥180 raw NM sales |
+**It is not a price series.** It is a transaction log in which the same card trades simultaneously in several observable markets — a marketplace's raw listings, an auction site's raw sales, graded copies at each grade, off-condition copies — and **those markets do not move at the same time.**
 
-`ebay_hk` is a **separate price regime** (~3× lower, 99.7% FX-converted). Exclude from US-market work.
+Nearly all exploitable signal lives in the *relationships between* those markets, not in the price history of any one. Card-level price momentum is close to worthless at short horizons; the cross-venue basis is typically the strongest single factor.
 
-## The canonical filter
+The practical consequence: work at **card × venue × period** granularity, with periods of 14 days or a month. Collapsing to a single blended monthly median per card throws away almost all the information and leaves you with a few dozen effective observations.
 
-Start every query from this. Each clause is load-bearing; the reasons are in [`references/data-quality.md`](references/data-quality.md).
+## The five questions to answer before your first analysis
 
-```sql
-WHERE game = 'pokemon'
-  AND price_usd > 0
-  AND id_confidence IN ('high','title_verified')   -- mandatory; else unmapped
-  AND trade_type = 'secondary'                     -- excludes primary/buyback/burn/internal/transfer
-  AND marketplace IN ('tcgplayer','ebay')          -- ebay_hk is a different regime
-  AND grade_label = 'raw_nm'                       -- NOT condition='NM'  (see rule 1)
-  AND CAST(sold_at AS DATE) >= DATE '2026-02-01'
--- then: keep pd BETWEEN 6 AND 11
-```
+Any card tape you pick up. In this order:
+
+1. **Which venues are actually usable?** Identity resolution rate per venue, and `trade_type` composition per venue. Most venues fail one or both.
+2. **How is condition/grade encoded, and is there more than one encoding?** There usually is. Pick the *complete* one, not the well-named one.
+3. **Where does each venue's coverage start and stop?** Per-venue distinct-days-per-period against the calendar.
+4. **How sparse is the panel?** Fraction of card×period cells clearing your minimum sale count — broken out by era.
+5. **What is the measurement noise ceiling?** Split-half reliability. This bounds every result you will ever get and usually matters more than model choice.
+
+`scripts/profile.sql` runs all five. Do not skip to modeling.
+
+---
 
 ## Seven things that will burn you
 
-**1. There is no canonical grade column — use `grade_label`.** Condition lives in two contradicting columns with 678 distinct values between them. `grade_label='raw_nm'` returns **2.36× more eBay rows** than `condition='NM'` (443k vs 187k on SV/ME) at a **median price ratio of 1.000**. Since ~30% of measured momentum is sampling noise, this is the single largest free improvement available. Never fold in `raw_unknown` — it medians $9.90 against $5.99. Filed upstream as [lake-of-rage#1580](https://github.com/Evan-Kim2028/lake-of-rage/issues/1580).
+**1. There is probably no canonical grade column — find the complete one.** Card pipelines accrete condition encodings: a marketplace's own vocabulary, a parsed-from-title vocabulary, a normalized slug vocabulary. They coexist, disagree, and neither dominates. **Check both row count and price agreement before choosing.** Agreement on price plus disagreement on count means one column is simply more complete — take it. Never fold in an "unknown condition" bucket: it is not "probably NM", it is a different, usually pricier population of unparsed listings.
 
-**2. A live writer regression is hiding 360,669 rows.** Since **2026-06-29** a `cardindex` path writes `id_confidence='cardindex_card_id'` (and `grade_label='NM'`), which the canonical filter rejects. Those rows are *fully identified* — same window, TCGplayer `raw_nm` is 100% resolved and bare `NM` is 0.0%. It is growing. **Anything after pd 9 is under-counted by a widening margin.**
+> **Ref impl:** two encodings; the slug one returned **2.36× more rows** at a **median price ratio of 1.000** across 1,826 cards. 678 distinct values across the two columns, 109,314 rows where they contradict, 893 rows on impossible grades (`PSA 172`, `CGC 2006`). Filed upstream as [lake-of-rage#1580](https://github.com/Evan-Kim2028/lake-of-rage/issues/1580).
 
-**3. Drop the newest period, always.** eBay volume falls 66% in the final period — part ingest lag, part rule 2 (which alone strips 43% of pd 12's eBay rows). Either way, a signal built on the last bar reads it as a demand collapse.
+**2. Assume a silent writer regression is in flight.** A new ingest path lands, emits its own vocabulary for one or two columns, and every downstream consumer's filter silently drops its rows. This is invisible by construction — the rows are *present and correct*, just spelled wrong — so it shows up as an unexplained volume decline, which reads as a demand collapse. **Profile distinct values of every filter column by month.** A vocabulary that gains a new value mid-series is a regression until proven otherwise.
 
-**3b. TCGplayer starts at pd 6 — that is expected, not an outage.** Its history doesn't reach as far back as eBay's, and 37 days are absent (2026-03-03 → 2026-04-21). At pd 5 it contributes 48 sales against eBay's 48,836, so **no cross-venue factor exists before pd 6.** Don't read it as a market event.
+> **Ref impl:** since a specific date, a new writer emitted a fourth vocabulary for *both* the grade and identity-confidence columns. **360,669 fully-identified rows** (card key populated on 100% of them) were invisible to the canonical filter, and the share was still growing. Same window, same venue: old encoding 100% resolved, new encoding **0.0%**.
 
-**4. Most "venues" are not secondary markets.** renaiss is 98.8% primary/buyback; courtyard is mostly burn/transfer; beezie has **zero** secondary sales. Genuine secondary volume across all unresolved venues is ~148k rows, not the ~900k their raw counts suggest.
+**3. Drop the newest period, always.** The most recent bar is still filling. A signal built on it reads ingest lag as collapsing demand. This is universal and free to fix.
 
-**5. Lot sales stamp the lot price on every card.** In 4–10-card transactions, 86% share one identical `price_usd` — median $48/row against $5.73 for real single-card sales. Confined today to the excluded venues, but it goes live the moment any of them is resolved. Guard with `count(*) OVER (PARTITION BY tx_id) = 1`.
+> **Ref impl:** final-bar volume fell 66% — part lag, part the §2 regression, which alone stripped 43% of that period's rows on one venue.
 
-**6. Never compare venues unconditionally.** SV/ME raw NM medians: TCGplayer **$0.19**, eBay **$10.00**. That 50× gap is pure mix — TCGplayer is 64% sub-$1 bulk, eBay clusters on `.99` ask points. Only compare per card with ≥4 sales on both sides.
+**4. Venue coverage windows differ, and a short one is usually expected.** Venues get added to a pipeline at different times and backfill to different depths. **Do not read a coverage gap as a market event, and do not file it as an outage** — it is the shape of the data. It only determines where your panel can start: begin at the first period where every venue you need is adequately covered.
 
-**7. Skip-a-period test every new signal.** Build it from *t*, measure the return *t+1 → t+2*. Sharing transactions between signal and target manufactures correlation from median noise. This killed the best-looking factor found so far (tail shape: IC −0.216 → −0.026).
+> **Ref impl:** the second venue's history is shorter and has a 37-day interior gap. One period before the start bound had **48 sales on one venue against 48,836 on the other** — a "venue gap" computed from that is noise.
 
-## Sparsity is the binding constraint — reconstruct across conditions
+**5. Most "venues" are not secondary markets.** A tape that aggregates on-chain and marketplace sources will carry primary issuance, buybacks, burns, internal transfers and vault movements alongside genuine arms-length resale. Filter on trade type explicitly. Headline row counts per venue routinely overstate tradeable volume by 5–10×.
 
-**Two thirds of the catalogue never trades.** 66,855 cards are listed; only 23,570 record a resolved sale in a 12-week window. Every method question here reduces to "does this buy me more observations per card-period?"
+> **Ref impl:** one venue was 98.8% primary/buyback, another mostly burn/transfer, a third had **zero** secondary rows. Genuine secondary across all unresolved venues was **~148k**, not the ~900k the raw counts suggested.
 
-**And rawness collapses with age.** Raw NM share of sales: SV/ME 64.8% · SWSH 64.2% · BW–XY–SM 46.5% · **mid-era (EX–DP–HGSS) 30.3% · vintage (WotC) 29.4%.** Mid-era behaves like vintage, not like modern — old cards mostly don't survive in NM, so their tape is LP/MP/HP and graded copies. The same grouping appears independently in the PSA 9 premium (vintage 7.5× / mid 7.7× vs modern 1.5–1.8×) and the LP discount (0.766 / 0.728 vs 0.895 / 0.924).
+**6. Lot sales stamp the lot price on every card.** Multi-card transactions frequently write the whole lot's price onto each row. Guard with `count(*) OVER (PARTITION BY <transaction key>) = 1`, or reconstruct per-card value. Check this even if it is currently confined to venues you exclude — it goes live the day one of them is resolved.
 
-The panel consequence, fill rate of card×period cells at ≥8 sales:
+> **Ref impl:** in 4–10-card transactions, 86% shared one identical price — median $48/row against $5.73 for genuine single-card sales.
 
-| Era | Raw NM only | Condition-pooled |
-|---|---|---|
-| vintage | 56.0% | 91.3% |
-| **mid** | **22.3%** | **83.8%** |
-| BW–XY–SM | 49.0% | 85.7% |
-| SWSH | 90.3% | 97.8% |
-| SV–ME | 91.2% | 94.6% |
+**7. Never compare venues unconditionally.** Venues differ in *price formation*, not just level: auction-style venues cluster on psychological ask points, bulk marketplaces are continuous and dominated by sub-dollar volume. A pooled cross-venue comparison measures product mix, not basis. **Only compare per card, with a minimum sale count on both sides.**
 
-**A raw-NM-only panel is not viable before SWSH.** The fix is to convert every raw condition to an NM-equivalent price using a per-era factor (LP/MP/HP/DMG), then pool. Split-half reliability *rises* in every era (mid 0.897 → 0.967) while mid-era usable cells go **3,299 → 17,584 (5.3×)**.
-
-Condition legs invert cleanly (IQ spread 1.5–1.95). **Graded legs do not** (3.5–4.25) — use PSA/CGC as a directional signal, never as a price level. Factor tables and the recipe: [`references/sparsity-and-eras.md`](references/sparsity-and-eras.md).
+> **Ref impl:** same era, same condition, median price by venue: **$0.19 vs $10.00.** All of that 50× is mix.
 
 ## Two more rules for aggregation
 
-- **Compute returns within a venue, then volume-weight across.** Marketplace mix moves violently (TCGplayer 117k→443k monthly while eBay 198k→137k). Pooled medians fabricate large moves that are pure composition.
-- **Report within-set IC, not just total IC.** ~34% of forward variance is set-level. A factor at total IC 0.49 / within-set 0.034 is a set-beta proxy that cannot choose between two cards in the same set — which is the only decision that matters when buying one card.
+- **Compute returns within a venue, then volume-weight across.** Venue mix moves violently as pipelines add and lose sources. Pooled medians fabricate large moves that are pure composition.
+- **Report within-set IC, not just total IC.** A large share of forward variance is set-level. A factor with high total IC and near-zero within-set IC is a set-beta proxy — it cannot choose between two cards in the same set, which is the only decision that matters when buying one card.
 
-## The anchor model (central finding)
+> **Ref impl:** ~34% of forward variance was set-level; one factor scored total IC 0.491 / within-set 0.034.
 
-TCGplayer is the **price anchor**; eBay is a **follower that error-corrects toward it**. With `gap = ln(eBay_median / TCG_median)`:
+---
 
-| | Correlation with gap | Correction coefficient |
+## Sparsity is the binding constraint — reconstruct across conditions
+
+**Most of a card catalogue never trades.** Expect the majority of catalogued cards to have zero sales in any given quarter. Every method question reduces to *"does this buy me more observations per card-period?"*
+
+**And rawness declines with print age.** Older cards mostly did not survive in near-mint, so their tape is dominated by played-condition and graded copies. This is a property of physical card survival, so it should hold on any long-lived card line.
+
+> **Ref impl** — raw-NM share of sales by era: newest 64.8% · recent 64.2% · middle-modern 46.5% · **mid-era 30.3% · vintage 29.4%.** Mid-era tracks vintage, not modern. The same grouping appears independently in the graded premium (vintage 7.5× / mid 7.7× vs modern 1.5–1.8×) and the played-condition discount (0.766 / 0.728 vs 0.895 / 0.924) — three unrelated measurements, same split.
+
+The panel consequence — fraction of card×period cells clearing a minimum sale count:
+
+| Era (ref impl) | NM-only | Condition-pooled |
 |---|---|---|
-| eBay's next move | **−0.384** | **−0.223** |
-| TCGplayer's next move | −0.002 | −0.001 |
+| vintage | 56.0% | 91.3% |
+| **mid** | **22.3%** | **83.8%** |
+| middle-modern | 49.0% | 85.7% |
+| recent | 90.3% | 97.8% |
+| newest | 91.2% | 94.6% |
 
-TCGplayer's response is zero to three decimals — it is exogenous. The gap decays at **ρ ≈ 0.78 per 14 days**, entirely from the follower side.
+**A best-condition-only panel is not viable on older eras.** The fix is to convert every raw condition to a best-condition-equivalent price using a per-era factor, then pool.
 
-**This turns forecasting into convergence.** You are not predicting what a card will be worth. You are measuring a published anchor, measuring how far a slow venue sits from it, and collecting the gap. Every unobserved venue — local shops, shows, Facebook, Discord — prices off the same anchor and updates *slower* than eBay, so eBay's half-life is a lower bound on how stale in-person pricing is.
+**Condition legs invert cleanly; graded legs do not.** Condition ratios are tight enough for a multiplier; graded premiums vary far too much card-to-card. **Use grades as a directional signal, never as a price level.**
 
-### The anchor migrates with price
+> **Ref impl:** interquartile spread 1.50–1.95 for played conditions vs 3.49–4.25 for graded. Pooling raised split-half reliability in *every* era (mid 0.897 → 0.967) while mid-era usable cells went **3,299 → 17,584 (5.3×)**.
 
-| Price band | eBay volume share | β_ebay | β_tcg | **TCG share of correction** | Gap half-life |
-|---|---|---|---|---|---|
-| <$10 | 75.2% | −0.282 | 0.013 | **4%** | 28 d |
-| $10–25 | 79.0% | −0.308 | 0.046 | 13% | 22 d |
-| $25–50 | 79.8% | −0.215 | 0.050 | 19% | 32 d |
-| $50–100 | 84.2% | −0.158 | 0.061 | 28% | **40 d** |
-| $100–250 | 86.7% | −0.478 | 0.154 | 24% | 10 d |
-| $250+ | **91.4%** | −0.390 | 0.234 | **38%** | 10 d |
+Factor tables, the recipe, and its validation: [`references/sparsity-and-eras.md`](references/sparsity-and-eras.md).
 
-- **Under $25, treat TCGplayer as truth** — it does 4–13% of the correcting.
-- **Above $100, eBay carries 87–91% of volume and TCGplayer starts following it.** For chase cards eBay is the better liquidity-weighted reference.
-- **$50–100 converges slowest (40-day half-life)** — the widest window to act in. $100+ closes in ~10 days: sharper edge, a third of the time.
-- Pooled ρ=0.78 exceeds most individual bands (cross-sectional heterogeneity). **Use band-level ρ.**
+---
 
-Universe mean gap is **+0.16 logs — eBay runs ~17% richer.** The signal is deviation from a card's own baseline, not the raw sign. Demean per card.
+## The anchor model
 
-## Factor table (measured)
+**In a multi-venue card market, one venue is the price anchor and the others error-correct toward it.** With `gap = ln(follower_price / anchor_price)` per card, regress each venue's next-period move on the gap. The anchor's coefficient is ~zero (it is exogenous); the follower's is negative (it closes the gap).
 
-Rank IC, 14-day horizon, SV/ME. The `skip` column is the honest one.
+**This turns forecasting into convergence.** You are not predicting what a card will be worth. You are measuring a published anchor, measuring how far a slower venue sits from it, and collecting the gap.
+
+The wider implication: **every unobserved venue — local shops, shows, social marketplaces — prices off the same public anchor and updates more slowly than the observed follower.** So the follower's measured half-life is a *lower bound* on how stale in-person pricing is. That is the mechanism behind in-person arbitrage.
+
+**The anchor migrates with price band.** Expect the bulk marketplace to anchor cheap cards and the liquid auction venue to anchor chase cards, with the crossover somewhere in the middle. **Always fit this per band** — a pooled correction coefficient is a cross-sectional average that matches no individual band.
+
+> **Ref impl** — follower correlation with gap −0.384 vs anchor −0.002; pooled gap decay ρ ≈ 0.78 per 14 days.
+>
+> | Price band | Follower vol share | β_follower | β_anchor | Anchor's share of correction | Gap half-life |
+> |---|---|---|---|---|---|
+> | <$10 | 75.2% | −0.282 | 0.013 | **4%** | 28 d |
+> | $10–25 | 79.0% | −0.308 | 0.046 | 13% | 22 d |
+> | $25–50 | 79.8% | −0.215 | 0.050 | 19% | 32 d |
+> | $50–100 | 84.2% | −0.158 | 0.061 | 28% | **40 d** |
+> | $100–250 | 86.7% | −0.478 | 0.154 | 24% | 10 d |
+> | $250+ | **91.4%** | −0.390 | 0.234 | **38%** | 10 d |
+>
+> Under $25 the bulk marketplace is truth. Above $100 the auction venue carries 87–91% of volume and the marketplace starts following *it*. Mid-band converges slowest (40-day half-life — the widest window to act in); the top band closes in ~10 days.
+
+**Demean the gap per card.** The universe mean gap is nonzero — one venue runs structurally richer — so the raw sign is not the signal. Deviation from a card's own baseline is.
+
+> **Ref impl:** universe mean gap **+0.16 logs**, i.e. the follower ran ~17% richer.
+
+---
+
+## Factor table
+
+Measured on the ref impl at a 14-day horizon. **The `skip` column is the honest one** (see trap 1). Treat the ranking as a prior, the magnitudes as instance-specific.
 
 | Factor | IC (t+1) | **IC (skip)** | Verdict |
 |---|---|---|---|
-| **Venue gap** `ln(eb/tcg)` | −0.267 | **−0.247** | Strongest. Survives fully |
+| **Venue gap** `ln(follower/anchor)` | −0.267 | **−0.247** | Strongest. Survives fully |
 | **Volume growth** | +0.117 | **+0.147** | Real; *strengthens* with horizon |
-| **PSA 10 move → raw** | +0.230 | — | Real (disjoint transactions) |
-| **LP/NM ratio change** | +0.152 | — | Real (disjoint transactions) |
-| p10 (cheap-tail) rise | +0.103 | +0.063 | Partly real |
+| **Top-grade move → raw** | +0.230 | — | Real (disjoint transactions) |
+| **Played/best condition ratio change** | +0.152 | — | Real (disjoint transactions) |
+| Cheap-tail (p10) rise | +0.103 | +0.063 | Partly real |
 | Price momentum | −0.027 | +0.070 | Noise at this horizon |
 | ~~Tail shape~~ | −0.216 | **−0.026** | **Artifact. Do not use** |
 
-Card momentum is negative at 14d and **+0.20 at 60d** — short-horizon reversal, long-horizon continuation. Do not mix horizons in one model.
+**Note the structural pattern, which should transfer:** the factors that survive are the ones built from *disjoint transaction sets* — graded sales are different transactions from raw sales, played sales are different from best-condition. Signals built from the same transactions as the target are exposed to bounce.
 
-**Equal-weight composite** (venue gap + volume growth + p10 change, percentile ranks, no fitting), rebuilt 2026-08-02 on the `grade_label` panel with the pd 6–11 guards: **IC 0.283 next-period, 0.167 skip-tested, within-set 0.225** over 4,236 card-periods. Decile 1 → 10 spread runs −37.8% to +5.0% forward, monotone. **The short side is much stronger than the long side — this is primarily an avoid-list.**
+Card momentum was negative at 14d and **+0.20 at 60d** — short-horizon reversal, long-horizon continuation. Do not mix horizons in one model.
+
+**Equal-weight composite** (venue gap + volume growth + p10 change, percentile ranks, no fitting): **IC 0.283 next-period, 0.167 skip-tested, within-set 0.225.** Decile 1 → 10 spread −37.8% to +5.0% forward, monotone. **The short side is much stronger than the long side — this is primarily an avoid-list.** That asymmetry is worth checking for on any tape; overpriced cards are easier to identify than underpriced ones.
 
 ## Dollar economics
 
-For zero-transaction-cost (in-person) trading the objective is `price × E[%move]`, not `E[%move]`. Top-decile composite, forward 14 days:
+For zero-transaction-cost (in-person) trading the objective is `price × E[%move]`, not `E[%move]`. Cheap cards can have excellent percentage signal and no tradeable spread.
 
-| Band | $ per card | % clearing $2+ |
-|---|---|---|
-| <$5 | $0.18 | 3% |
-| $5–10 | $0.37 | 1% |
-| $10–20 | $1.27 | 25% |
-| **$20–50** | **$2.22** | **43%** |
-| $50+ | $3.37 | 29% |
+> **Ref impl** — top-decile composite, forward 14 days:
+>
+> | Band | $ per card | % clearing $2+ |
+> |---|---|---|
+> | <$5 | $0.18 | 3% |
+> | $5–10 | $0.37 | 1% |
+> | $10–20 | $1.27 | 25% |
+> | **$20–50** | **$2.22** | **43%** |
+> | $50+ | $3.37 | 29% |
+>
+> A price cap is usually the binding constraint on dollar spread, not signal quality.
 
-A $20 price cap is usually the binding constraint on dollar spread, not signal quality.
+---
 
 ## References
 
-- [`references/data-quality.md`](references/data-quality.md) — how the tape is built and where it is broken. Twelve audited defects with counts.
-- [`references/sparsity-and-eras.md`](references/sparsity-and-eras.md) — era taxonomy, panel fill rates, the condition/grade ladder, and the cross-grade reconstruction recipe with its split-half validation.
-- [`references/dataset-map.md`](references/dataset-map.md) — tables, columns, venue coverage, resolution rates, staleness, environment gotchas.
-- [`references/methodology.md`](references/methodology.md) — the analytical traps, each with its diagnostic.
-- [`references/findings.md`](references/findings.md) — dated result log, set-level regime state, and superseded claims.
-- [`scripts/q.sh`](scripts/q.sh) — remote query runner (double-hop SSH → DuckDB).
-- [`scripts/panel.sql`](scripts/panel.sql) — canonical panel builder, guards included. Verified end-to-end.
+- [`references/tape-anatomy.md`](references/tape-anatomy.md) — what a card sales tape contains, the columns that matter, and what to profile first.
+- [`references/data-quality.md`](references/data-quality.md) — the defect taxonomy, ordered by damage, each with a diagnostic.
+- [`references/sparsity-and-eras.md`](references/sparsity-and-eras.md) — era structure, panel fill rates, the condition/grade ladder, and the cross-grade reconstruction recipe.
+- [`references/methodology.md`](references/methodology.md) — the analytical traps. Every one has produced a wrong-but-plausible result.
+- [`references/findings.md`](references/findings.md) — dated result log from the reference implementation, plus superseded claims.
+- [`references/reference-implementation.md`](references/reference-implementation.md) — the concrete instance: connection, tables, columns, environment quirks.
+- [`scripts/profile.sql`](scripts/profile.sql) — the five opening questions, as one script.
+- [`scripts/panel.sql`](scripts/panel.sql) — canonical panel builder with guards.
+- [`scripts/q.sh`](scripts/q.sh) — remote query runner for the reference implementation.
 
 ## Known open problems
 
-- **Identity backfill on 2024–2025 eBay is the highest-value fix.** ~810k rows exist at <1% resolution. It is the only route to a **second market regime**, and one regime is the binding limitation on every coefficient in this skill.
-- ~148k genuine secondary sales across 9 venues sit at 0% resolution. Smaller than it first appeared, but still the follower venues the anchor model wants.
-- **eBay is only 43.9% resolved** — 2.5M sales discarded, and the unresolved half is probably non-random (messier titles, bundles), which is where mispricing concentrates.
-- `listings.parquet` is stale since 2026-06-18. It carries `ask_price_usd`/`is_active`/`delisted_at` — the only true leading indicator here. Sales say what cleared; listings say what is about to.
-- `pop_psa.parquet` is empty. PSA *population* is missing; PSA *prices* are not (1.08M transactions).
-- No sealed-product table exists.
-- Breadth (% of a set's cards up) is **coincident, not leading** — it predicts next-month set return worse than price itself (0.737 vs 0.761, concurrent 0.887). Do not build an early-warning indicator on it.
-- eBay **auctions are excluded** by `trade_type='secondary'` (16,081 rows). Auction closes may be the cleanest clearing prices in the dataset; nobody has looked.
+Generic first, then instance-specific.
+
+- **One regime is the binding limitation on every coefficient here.** All magnitudes were fit in a single up-then-cooling episode with no observed drawdown. Extending identity resolution backwards to reach a second regime is worth more than any modeling improvement.
+- **Ask-side data is the only true leading indicator.** Sales say what cleared; listings say what is about to. Time-to-sale beats price as a demand signal. If your tape has a listings table, keep it fresh.
+- **Auction closes are arguably the cleanest clearing prices** in any card tape, and a `trade_type='secondary'` filter usually excludes them. That exclusion is a choice, not a given.
+- **Exogenous drivers are absent from every column** — reprints, rotation, tournament meta, a popular video. They are a large share of what actually moves prices. That is an information problem, not a modeling one.
+- **Population data and sealed product** are usually missing or empty; check rather than assume.
+
+> **Ref impl specifics:** ~810k pre-2026 rows sit at <1% identity resolution; the main auction venue is only 43.9% resolved and the unresolved half is probably non-random (messier titles, bundles), which is where mispricing concentrates; the listings table is stale; the PSA population table is empty (PSA *prices* are not — 1.08M transactions); no sealed-product table exists. Breadth (% of a set's cards up) tested as **coincident, not leading** — do not build an early-warning indicator on it.

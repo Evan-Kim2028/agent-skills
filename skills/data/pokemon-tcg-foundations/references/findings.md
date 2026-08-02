@@ -1,4 +1,8 @@
-# Findings log
+# Findings log — reference implementation
+
+**Every number in this file was measured on one dataset**, the one described in [`reference-implementation.md`](reference-implementation.md). Nothing here is a constant. Read a result as *"here is what this class of effect looked like when someone actually measured it, and at what magnitude"* — the shape and sign usually transfer, the coefficients do not.
+
+The generalizable content extracted from these runs lives in `methodology.md`, `data-quality.md`, and `sparsity-and-eras.md`. This file is the evidence behind those claims, plus the record of what was measured and later found wrong.
 
 Dated results. Append; don't rewrite history. Mark superseded claims rather than deleting them — the record of what was wrong is part of the value.
 
@@ -162,6 +166,17 @@ Full detail in [`sparsity-and-eras.md`](sparsity-and-eras.md). Headline results:
 - **The condition ladder inverts; the grade ladder does not.** IQ spread 1.50–1.95 for LP/MP/HP vs 3.49–4.25 for PSA 9/10 and CGC 9+. Graded legs stay a directional signal (PSA 10 move → raw, IC +0.230), never a price level.
 
 Caveat: these are **level** reliabilities. The 0.70 figure elsewhere is *momentum* reliability, which has not been re-measured under pooling. Factors are single-window medians in one regime — re-estimate on refresh, and on a slice disjoint from what you evaluate.
+
+---
+
+## 2026-08-02 — `scripts/profile.sql` first run
+
+Wrote and executed the five profiling queries end-to-end. Two results worth recording:
+
+- **The profiler reproduces the published split-half reliabilities exactly** (0.960 / 0.897 / 0.969 / 0.973 / 0.977 by era), which validates it as the canonical entry point for a new tape.
+- **The writer-regression canary immediately found a second breach of `id_confidence`.** Since **2026-07-02** the `alt_xyz` writer emits numeric scores as strings — `'0.85'` (3,287 rows), `'1.0'` (929), `'0.9'` (1) — all with `tcg_card_id` populated. `alt_xyz` is recorded in the venue table as 0% resolved; it is in fact fully mapped under an encoding the canonical filter rejects. Two unrelated writers breached the same column within five weeks and neither errored. Added to `data-quality.md` §2 and reported on lake-of-rage#1580.
+
+Also two DuckDB reserved words found the hard way: `rows` and `days` fail as column aliases.
 
 ---
 
