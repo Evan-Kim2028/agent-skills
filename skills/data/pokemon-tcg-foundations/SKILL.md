@@ -46,11 +46,13 @@ WHERE game = 'pokemon'
 
 ## Seven things that will burn you
 
-**1. Use `grade_label`, not `condition`.** Two condition encodings exist. `grade_label='raw_nm'` returns **2.36× more eBay rows** than `condition='NM'` (443k vs 187k on SV/ME) at a **median price ratio of 1.000**. Since ~30% of measured momentum is sampling noise, this is the single largest free improvement available. Never fold in `raw_unknown` — it medians $9.90 against $5.99 for `raw_nm`.
+**1. There is no canonical grade column — use `grade_label`.** Condition lives in two contradicting columns with 678 distinct values between them. `grade_label='raw_nm'` returns **2.36× more eBay rows** than `condition='NM'` (443k vs 187k on SV/ME) at a **median price ratio of 1.000**. Since ~30% of measured momentum is sampling noise, this is the single largest free improvement available. Never fold in `raw_unknown` — it medians $9.90 against $5.99. Filed upstream as [lake-of-rage#1580](https://github.com/Evan-Kim2028/lake-of-rage/issues/1580).
 
-**2. TCGplayer is missing 37 days (2026-03-03 → 2026-04-21).** At pd 5 it contributes 48 sales against eBay's 48,836. **No cross-venue factor exists before pd 6.** eBay has zero missing days.
+**2. A live writer regression is hiding 360,669 rows.** Since **2026-06-29** a `cardindex` path writes `id_confidence='cardindex_card_id'` (and `grade_label='NM'`), which the canonical filter rejects. Those rows are *fully identified* — same window, TCGplayer `raw_nm` is 100% resolved and bare `NM` is 0.0%. It is growing. **Anything after pd 9 is under-counted by a widening margin.**
 
-**3. Drop the newest period, always.** eBay volume falls 66% in the final period from ingest lag alone. A signal built on the last bar reads the lag as a demand collapse.
+**3. Drop the newest period, always.** eBay volume falls 66% in the final period — part ingest lag, part rule 2 (which alone strips 43% of pd 12's eBay rows). Either way, a signal built on the last bar reads it as a demand collapse.
+
+**3b. TCGplayer starts at pd 6 — that is expected, not an outage.** Its history doesn't reach as far back as eBay's, and 37 days are absent (2026-03-03 → 2026-04-21). At pd 5 it contributes 48 sales against eBay's 48,836, so **no cross-venue factor exists before pd 6.** Don't read it as a market event.
 
 **4. Most "venues" are not secondary markets.** renaiss is 98.8% primary/buyback; courtyard is mostly burn/transfer; beezie has **zero** secondary sales. Genuine secondary volume across all unresolved venues is ~148k rows, not the ~900k their raw counts suggest.
 

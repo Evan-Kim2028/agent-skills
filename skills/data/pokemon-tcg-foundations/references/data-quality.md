@@ -23,13 +23,27 @@ That matters more here than it sounds. Split-half reliability on this dataset is
 
 **Never fold in `raw_unknown`.** It is not "probably NM" — on eBay it medians **$9.90 against $5.99 for `raw_nm`**. It is a different, more expensive population (unparsed higher-end listings), and 522k eBay rows sit in it.
 
-`grade_label` vocabulary: `raw_nm`, `raw_lp`, `raw_mp`, `raw_hp`, `raw_dmg`, `raw_unknown`, plus a *second* convention of bare `NM` / `LP` on a minority of rows. Handle both. `condition` is NULL on 69.0% of eBay rows and 100% of renaiss/courtyard/beezie.
+`grade_label` vocabulary: `raw_nm`, `raw_lp`, `raw_mp`, `raw_hp`, `raw_dmg`, `raw_unknown`, the graded ladder (`PSA 10`, `CGC 9.5`, `BGS 9`, …), plus a *second* convention of bare `NM` / `LP` (see §2b). Handle all three.
+
+**Neither column dominates the other, and they contradict.** Whole table: `condition` is NULL on 62.6% of rows with 13 distinct values; `grade_label` is NULL on 16.6% with **678** distinct values.
+
+- 1,032,050 rows have `grade_label='raw_nm'` and `condition` NULL.
+- 45,926 rows have `condition='NM'` and `grade_label` NULL.
+- 109,314 rows have `condition='NM'` but a `grade_label` that is neither `raw_nm` nor `NM` — **108,162 of them are `raw_unknown`**, i.e. one column knows the condition and the other discarded it.
+
+**893 rows carry impossible grades** — `PSA 172`, `CGC 2006`, `TAG 226`, `BGS 123` — cert or card numbers caught by the grade parser. Trivial by row count but **409 of the 678 distinct values**, which is why the vocabulary cannot be enumerated. Filter graded legs to `1 ≤ grade ≤ 10`.
+
+`condition` also carries untranslated source-locale strings from mercari_jp (`目立った傷や汚れなし`, 2,186 rows, and five others).
+
+All of the above is filed upstream as **lake-of-rage#1580** — there should be a single canonical grade column with a closed vocabulary validated at write time. Until that lands, `grade_label` plus the guards above is the best available answer.
 
 ---
 
-## 2. TCGplayer has a 7-week hole, and it lands inside the panel
+## 2. TCGplayer coverage starts at pd 6, not pd 0
 
-TCGplayer covers 2026-02-16 → 2026-08-01 but has only **130 distinct days across a 167-day span — 37 missing days, 2026-03-03 through 2026-04-21.** A further 23 days sit below a quarter of median volume; the 5th-percentile day has **2 sales**. eBay has **zero** missing days over the same window.
+**This is expected, not a defect.** TCGplayer's history in this table simply does not extend as far back as eBay's, and there is a coverage gap early on: only **130 distinct days across the 167-day span** from 2026-02-16, with **37 absent days, 2026-03-03 through 2026-04-21**, plus 23 days below a quarter of median volume (the 5th-percentile day has 2 sales). eBay has zero absent days over the same window.
+
+Do not file it as an outage or read it as a market event — it is the shape of the data. The only thing it changes is where the panel can start.
 
 Footprint on the 14-day panel (`pd = floor((date − 2026-02-01)/14)`):
 
@@ -46,11 +60,35 @@ Footprint on the 14-day panel (`pd = floor((date − 2026-02-01)/14)`):
 
 **Any cross-venue factor is undefined before pd 6.** At pd 5 TCGplayer contributes 48 sales against eBay's 48,836. Earlier venue-gap readings were computed on a degenerate sample and should not be trusted.
 
-## 3. The newest period is always under-ingested
+## 3. The newest period is under-ingested *and* corrupted
 
-At pd 12 eBay volume falls to 36,455 from 105,871 — a 66% collapse with no market event behind it. It is ingest lag. **Always drop `max(pd)`** before computing anything; a signal built on the newest bar will read the lag as a demand collapse.
+At pd 12 eBay volume falls to 36,455 from 105,871 — a 66% collapse with no market event behind it. Two causes, not one:
 
-`scripts/panel.sql` bakes in `pd BETWEEN 6 AND 11` for both reasons.
+- **Ingest lag.** The most recent bar is still filling.
+- **The `cardindex` writer regression (§2b).** It alone strips 57,790 eBay rows at pd 12 — **43% of what should be available** — by writing an `id_confidence` value the standard filter rejects.
+
+**Always drop `max(pd)`.** A signal built on the newest bar reads both effects as a demand collapse. `scripts/panel.sql` bakes in `pd BETWEEN 6 AND 11`.
+
+---
+
+## 2b. A live writer regression is hiding 360k rows (filed: lake-of-rage#1580)
+
+**Since 2026-06-29**, a `cardindex` writer path emits its own vocabulary for two columns at once: `grade_label='NM'`/`'LP'` instead of `raw_nm`/`raw_lp`, and **`id_confidence='cardindex_card_id'` instead of `'high'`.**
+
+Identical date window (2026-06-29 → 2026-07-30), so recency cannot explain it:
+
+| Venue | Encoding | Rows | % resolved |
+|---|---|---|---|
+| tcgplayer | `raw_nm`/`raw_lp` | 694,516 | **100.0%** |
+| tcgplayer | `NM`/`LP` | 224,389 | **0.0%** |
+| ebay | `raw_nm`/`raw_lp` | 262,522 | 73.9% |
+| ebay | `NM`/`LP` | 132,674 | **0.0%** |
+
+**Those rows are fully identified** — `tcg_card_id` is populated on 100% of them. Only the confidence tier is misspelled, so the canonical `id_confidence IN ('high','title_verified')` filter silently discards all **360,669**.
+
+It is growing, not migrating: the `raw_*` path holds steady at ~38–40k rows/day while the bare path climbed from 3,883 (2026-06-29) to 14,273 (2026-07-06). Two writers running side by side.
+
+**Until it is fixed, treat any period after pd 9 as under-counted by a growing margin.** If you need those rows before the upstream fix lands, the recovery filter is `id_confidence IN ('high','title_verified','cardindex_card_id')` together with `grade_label IN ('raw_nm','NM')` — but validate prices before trusting it, since that path has had no correctness audit.
 
 ---
 
