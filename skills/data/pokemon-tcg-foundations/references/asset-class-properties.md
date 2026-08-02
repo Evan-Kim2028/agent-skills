@@ -20,26 +20,28 @@ Prices arrive when someone happens to transact. There is no close, no fixed grid
 
 A card appears in your panel *because* someone wanted it. This is selection on the dependent variable, and it is not subtle.
 
-> **Ref impl.** Does this period's return predict whether the card trades **at all** next period? Quintiles of 14-day return, ≥4 sales per cell:
+> **Ref impl** (`scripts/profile.sql` profiles 6a/6b). Does this period's return predict whether the card trades **at all** next period? Quintiles of 14-day return, ≥4 sales per cell:
 >
 > | Return quintile | Range | Trading next period |
 > |---|---|---|
-> | 1 (worst) | −662% … −30% | 93.6% |
-> | 2 | −30% … −5% | 94.9% |
-> | 3 | −5% … +2.9% | **95.4%** |
-> | 4 | +2.9% … +16% | 94.7% |
-> | 5 (best) | +16% … +510% | **89.3%** |
+> | 1 (worst) | −662% … −29% | 93.3% |
+> | 2 | −29% … −4.3% | 94.7% |
+> | 3 | −4.3% … +3.1% | **95.1%** |
+> | 4 | +3.1% … +16.5% | 94.4% |
+> | 5 (best) | +16.5% … +510% | **88.7%** |
 >
 > **Inverted U — big movers in both directions disappear, and winners disappear most.** A card that just spiked is 6 points less likely to trade again than a flat one.
 >
-> Dropout also rises steeply with price, at nearly identical sales counts per cell:
+> Dropout also rises monotonically with price:
 >
-> | Price band | Cells | Avg sales/cell | Trading next period |
-> |---|---|---|---|
-> | <$2 | 48,301 | 14.7 | 93.0% |
-> | $2–10 | 25,327 | 19.4 | 90.5% |
-> | $10–50 | 13,058 | 20.6 | 87.7% |
-> | $50+ | 5,256 | 19.0 | **81.5%** |
+> | Price band | Cells | Trading next period |
+> |---|---|---|
+> | <$2 | 34,766 | 95.7% |
+> | $2–10 | 15,691 | 93.0% |
+> | $10–50 | 8,139 | 87.9% |
+> | $50+ | 3,179 | **81.7%** |
+>
+> **Measure this on the transitions that *can* survive.** The final period in any window has no successor inside the window, so its survival is mechanically zero; including it depressed every bucket here by ~17 points and made the tape look far leakier than it is.
 
 **Two consequences, both serious.**
 
@@ -74,17 +76,19 @@ An interquartile range of −20% to +11% over two weeks is not a description of 
 - **Evaluate against the reliability ceiling, not against zero.** At reliability 0.70 the maximum achievable correlation with true momentum is √0.70 ≈ 0.84. An IC of 0.25 against a 0.84 ceiling is a very different result from an IC of 0.25 against 1.0.
 - Fat tails here are **mostly a data property, not a market property.** Do not build a tail-risk story on kurtosis 9 without first checking whether the tails are single-cell artifacts.
 
-## 5. Your weighting choice can flip the sign of the answer
+## 5. Your weighting choice can flip the sign — and the flip is usually lookahead
 
-> **Ref impl**, same universe, same window, three defensible aggregations:
+> **Ref impl** (profile 8), same universe, same 14-day window, 61,775 transitions:
 >
-> | Equal-weight mean | Dollar-weight mean | Median |
-> |---|---|---|
-> | **−7.65%** | **+3.18%** | 0.00% |
+> | Equal-weight | Dollar-weight (**start** price) | Median | Dollar-weight (**end** price) |
+> |---|---|---|---|
+> | −7.75% | −8.28% | 0.00% | **+11.41%** |
 
-**The market went down, up, or nowhere depending on a choice most people make without noticing.** Equal-weighting is dominated by the enormous population of cheap, thinly-traded cards; dollar-weighting reflects where money actually sits; the median says most cards did not move.
+Equal-weighting is dominated by the enormous population of cheap, thinly-traded cards; dollar-weighting reflects where money actually sits; the median says most cards did not move. Those three are all defensible and here they broadly agree.
 
-**None of these is wrong.** They answer different questions — "the typical card," "the typical dollar," "the typical outcome." **State which one you chose and why**, and if a headline result depends on the weighting, that is the finding.
+**The fourth column is not defensible, and it is the easiest mistake in the table to make.** Weighting by the *ending* price hands the weight to whatever went up. It is lookahead, and on this tape it inverts a −8% market into +11%. A published version of this file previously carried that +3.18% as a legitimate weighting disagreement; it was this bug.
+
+**So: state your weighting, and confirm the weight is known at the start of the measurement window.** If a headline result depends on the weighting, check for lookahead first — only once that is ruled out is the divergence a finding.
 
 ## 6. Prices span ~6 orders of magnitude
 
@@ -96,7 +100,7 @@ An interquartile range of −20% to +11% over two weeks is not a description of 
 
 Cards within a set move together, and sets are dominated by a handful of cards.
 
-> **Ref impl:** ~34% of forward variance is set-level. And per set, the **top 3 cards hold a median 37.7% of dollar volume** (range 10.8% – 96.3%, 155 sets).
+> **Ref impl:** ~34% of forward variance is set-level. And per set, the **top 3 cards hold a median 51.1% of dollar volume** (range 14.3% – 100%, 211 sets — profile 9).
 
 **A set index is frequently a three-card index.** Combined with `IR = IC × √breadth`, this means a panel of 25,000 card-periods does not give you anything like 25,000 independent bets — breadth is closer to the number of sets, and even that overstates it when one chase card drives the set.
 

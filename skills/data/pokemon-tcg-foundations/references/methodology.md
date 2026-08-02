@@ -197,6 +197,53 @@ WHERE d NOT IN (SELECT sale_date FROM sales WHERE venue = '<venue>');
 
 ---
 
+## 13. Selection on the outcome (the panel decides who gets measured)
+
+**What happens.** A card is in your panel because it traded. Whether it trades *again* is not independent of what its price just did — so a forward-return model is fit on a subsample selected on the very thing it predicts.
+
+**The diagnostic.** Regress presence, not price. Bucket by this period's return and by price level, then measure the rate at which cells reappear next period:
+
+```sql
+SELECT ntile(5) OVER (ORDER BY r) q, avg(survives)
+FROM (SELECT ln(a.p/b.p) r,
+             CASE WHEN c.card_id IS NOT NULL AND c.n >= <min> THEN 1 ELSE 0 END survives
+      FROM cell a JOIN cell b ON a.card_id=b.card_id AND a.pd=b.pd+1
+      LEFT JOIN cell c ON a.card_id=c.card_id AND c.pd=a.pd+1
+      WHERE a.n>=<min> AND b.n>=<min>) GROUP BY 1;
+```
+
+**If survival varies across the buckets, your backtest is dropping observations non-randomly.** Model the hazard rather than filtering it: `P(trades again) × E[return | trades]` is honest where a single regression is not. At minimum, report dropout by signal decile alongside the IC.
+
+**Do not read a card ceasing to trade as a price decline.** It is equally consistent with supply withdrawal after a run. The tape cannot distinguish these — that is an identification problem, not a gap to fill with an assumption.
+
+**One measurement trap inside the diagnostic:** the last period in your window has no successor *in the window*, so its survival is mechanically zero. Restrict to transitions that could have survived, or you will subtract a constant from every bucket and conclude the tape is far leakier than it is.
+
+> **Ref impl** (`scripts/profile.sql` 6a/6b). Survival by return quintile: 93.3% / 94.7% / **95.1%** / 94.4% / **88.7%** — an inverted U where big movers in both directions vanish and winners vanish most. Survival also falls monotonically with price: 95.7% (<$2) → 93.0% → 87.9% → **81.7% ($50+)**. **The panel sheds exactly the expensive cards that carry tradeable dollar spread.**
+
+---
+
+## 14. Weighting is an economic choice, not a formatting one
+
+**What happens.** Equal-weight, dollar-weight and median aggregations of the *same* universe over the *same* window answer three different questions — "the typical card," "the typical dollar," "the typical outcome" — and they can disagree about the direction of the market.
+
+**The fix.** State the weighting with every aggregate result, and compute at least two. Equal-weighting is dominated by the huge population of cheap, thin cards, which is also where measurement error is worst (trap 7). Dollar-weighting tracks where capital actually sits but is exposed to chase-card concentration (trap 8).
+
+**Then check the weight itself for lookahead.** A dollar weight must come from the price at the *start* of the return window. Weighting by the ending price gives the winners their weight after the fact and will manufacture a positive result out of a falling market. **This is the most common way the "weighting flipped the sign" observation turns out to be a bug rather than a finding** — rule it out before reporting the divergence.
+
+> **Ref impl** (profile 8), 61,775 transitions, 14 days: equal-weight **−7.75%**, dollar-weight on the start price **−8.28%**, median **0.00%** — and end-price-weighted **+11.41%**, which is the lookahead version and is wrong.
+
+---
+
+## 15. Evaluating a long-only market with a long-short statistic
+
+**What happens.** There is no borrow, no derivatives and no index product for cards. The decile-spread number that every factor study reports is therefore **not monetizable** — only the long leg is.
+
+**The fix.** Report long-leg-only performance alongside any spread. A factor whose strength is concentrated in the short side is still valuable, but as an **avoid-list** — do not buy, and for a dealer, do not restock (`personas-and-decisions.md`). Presenting its decile spread as achievable return overstates the result.
+
+> **Ref impl:** the composite's decile 1 is −37.8% while decile 10 is +5.0%. Most of the spread is the short side, which no one in this market can trade.
+
+---
+
 ## Standing sample caveats
 
 State the equivalents of these on any result from a card tape:

@@ -48,7 +48,7 @@ Expect some subset, and expect several to be stale or empty. **Check, don't assu
 
 ## What to profile first
 
-Five queries, before any analysis. `scripts/profile.sql` runs them.
+Nine queries, before any analysis. `scripts/profile.sql` runs them all. Profiles 1–5 tell you whether the tape is usable; profiles 6–9 tell you which model classes it can support (`asset-class-properties.md`).
 
 ### 1. Venue usability
 
@@ -103,6 +103,24 @@ If this is below ~50% for any era you care about, a naive panel is not viable th
 Split each card-period's sales into halves by a hash of the sale key, estimate independently, correlate across cells, and apply Spearman-Brown (`2r/(1+r)`).
 
 This number bounds every result you will ever get. If reliability is 0.70, then 30% of a measured momentum figure is sampling noise and your correlation with *true* momentum cannot exceed √0.70 ≈ 0.84. **Establish it before choosing a model class** — it is usually the reason a fancier estimator doesn't help.
+
+### 6. Observation endogeneity
+
+Regress *presence*, not price. Bucket card-periods by this period's return and by price level, then measure how often the cell reappears next period.
+
+If either curve is not flat, your panel is selected on the outcome and a plain forward-return regression is fit on a biased subsample (`methodology.md` trap 13). **Exclude the final period** — it has no successor in the window, so its survival is mechanically zero.
+
+### 7. Universe churn
+
+What fraction of the cards present at the end of the window did not exist at the start? That is the share of the market a history-requiring model cannot score. In this asset class it is normally double digits per quarter, which is the case for hierarchical models over per-card ones.
+
+### 8. Weighting divergence
+
+Compute equal-weight, dollar-weight and median over the same universe and window. Report which you chose. Confirm the dollar weight uses the price at the **start** of the return window — using the end price is lookahead and reliably flips the sign.
+
+### 9. Chase concentration
+
+Per set, the top 3 cards' share of dollar volume. This is the second breadth collapse: cards move with their set, and the set moves with a handful of cards. It is why `IR = IC × √breadth` should use something near the set count, not the row count.
 
 ---
 

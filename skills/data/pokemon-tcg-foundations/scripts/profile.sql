@@ -146,3 +146,86 @@ SELECT era, count(*) cells,
        round(2*corr(ln(a), ln(b))/(1+corr(ln(a), ln(b))),3) reliability
 FROM half WHERE na >= 4 AND nb >= 4 AND a > 0 AND b > 0
 GROUP BY 1 ORDER BY 1;;
+
+-- ===========================================================================
+-- 6-9: ASSET-CLASS DIAGNOSTICS (references/asset-class-properties.md).
+-- These do not describe defects in the tape; they describe properties of the
+-- market that break standard modeling assumptions. Run them before you commit
+-- to a model class - each one has changed a modeling decision in practice.
+-- ===========================================================================
+
+CREATE OR REPLACE TABLE px AS
+SELECT tcg_card_id, pd, median(price_usd) p, count(*) n
+FROM se WHERE grade_label = 'raw_nm' GROUP BY 1,2;;
+
+-- one row per card-period transition, carrying the STARTING price p0, the
+-- realized return, and whether the card is still observable one period later.
+CREATE OR REPLACE TABLE ret AS
+SELECT a.tcg_card_id, a.pd, b.p p0, ln(a.p/b.p) r,
+       CASE WHEN c.tcg_card_id IS NOT NULL THEN 1 ELSE 0 END survives
+FROM px a
+JOIN px b ON a.tcg_card_id = b.tcg_card_id AND a.pd = b.pd + 1 AND b.n >= 4
+LEFT JOIN px c ON a.tcg_card_id = c.tcg_card_id AND c.pd = a.pd + 1 AND c.n >= 4
+WHERE a.n >= 4 AND a.p > 0 AND b.p > 0
+  -- the LAST period has no successor IN WINDOW, so survival there is
+  -- mechanically 0. Including it depresses every bucket by a constant and
+  -- makes the tape look far leakier than it is. Drop it.
+  AND a.pd < 11;;
+
+-- 6a. OBSERVATION ENDOGENEITY, BY RETURN. Does what the price just did predict
+--     whether the card is measured AT ALL next period? If this is not flat,
+--     your backtest drops observations non-randomly and you are selecting on
+--     the dependent variable. Model the hazard, do not filter it away.
+SELECT q, round(100*min(r),1) lo_pct, round(100*max(r),1) hi_pct,
+       count(*) cells, round(100.0*avg(survives),1) pct_trading_next
+FROM (SELECT *, ntile(5) OVER (ORDER BY r) q FROM ret) GROUP BY 1 ORDER BY 1;;
+
+-- 6b. OBSERVATION ENDOGENEITY, BY PRICE. Hold sales-per-cell roughly constant
+--     and watch dropout rise with price: the panel sheds exactly the expensive
+--     cards that carry tradeable dollar spread.
+SELECT CASE WHEN p0 < 2 THEN '1_lt2' WHEN p0 < 10 THEN '2_2to10'
+            WHEN p0 < 50 THEN '3_10to50' ELSE '4_50plus' END band,
+       count(*) cells, round(100.0*avg(survives),1) pct_trading_next
+FROM ret GROUP BY 1 ORDER BY 1;;
+
+-- 7. UNIVERSE CHURN. How much of the ending universe never existed at the
+--    start? That fraction is the share of the market a history-requiring model
+--    cannot score. Cold start is the normal case here, not an edge case.
+WITH f AS (SELECT DISTINCT tcg_card_id FROM px WHERE pd = 6  AND n >= 4),
+     l AS (SELECT DISTINCT tcg_card_id FROM px WHERE pd = 11 AND n >= 4)
+SELECT (SELECT count(*) FROM f) start_cards,
+       (SELECT count(*) FROM l) end_cards,
+       round(100.0*(SELECT count(*) FROM f JOIN l USING (tcg_card_id))
+             /(SELECT count(*) FROM f),1) pct_start_surviving,
+       round(100.0*(SELECT count(*) FROM l WHERE tcg_card_id NOT IN
+             (SELECT tcg_card_id FROM f))/(SELECT count(*) FROM l),1) pct_end_new;;
+
+-- 8. WEIGHTING DIVERGENCE. Same universe, same window, three defensible
+--    aggregations. If they disagree in SIGN, that divergence is the finding
+--    and no single headline number is honest. Always state the weighting.
+SELECT count(*) n,
+       round(100*avg(r),2) equal_wt_pct,
+       round(100*sum(r*p0)/sum(p0),2) dollar_wt_pct,
+       round(100*median(r),2) median_pct,
+       -- WRONG ON PURPOSE: weighting by the ENDING price is lookahead. It
+       -- hands the winners the weight and can flip the sign of the headline.
+       -- Shown here because it is an easy mistake to make silently.
+       round(100*sum(r*p0*exp(r))/sum(p0*exp(r)),2) endwt_lookahead_pct
+FROM ret;;
+
+-- 9. CHASE CONCENTRATION. A set index is frequently a three-card index. With
+--    IR = IC * sqrt(breadth), this is the second breadth collapse: not only do
+--    cards move with their set, the set moves with a handful of cards.
+CREATE OR REPLACE TABLE dv AS
+SELECT set_id, tcg_card_id, sum(price_usd) v FROM se GROUP BY 1,2;;
+
+-- (Comment kept above the final statement: q.sh executes the trailing fragment
+--  after the last doubled semicolon, and a comment-only fragment errors.)
+WITH rk AS (SELECT set_id, v,
+                   row_number() OVER (PARTITION BY set_id ORDER BY v DESC) k,
+                   sum(v) OVER (PARTITION BY set_id) tot FROM dv),
+     sh AS (SELECT set_id, sum(v) FILTER (WHERE k <= 3)/max(tot) AS share
+            FROM rk GROUP BY 1)
+SELECT count(*) n_sets, round(100*median(share),1) median_top3_pct,
+       round(100*min(share),1) min_pct, round(100*max(share),1) max_pct
+FROM sh;;
