@@ -25,6 +25,7 @@ open **one** specialist (default below).
 | Generic data-short craft philosophy | **data-reels** | Density / ship-gate polish only — **not** distribution rank |
 | Social virality research (Gold/Silver/Bronze, multi-platform) | **marketing-going-viral** | Format research outside Silph mono template |
 | Share psychology (STEPPS) | **marketing-contagious** | Designing send triggers only |
+| Virality/retention mechanics for concept design + why-it-travels judgments (optional live recon appendix) | **instagram-virality-insights** | Distilled mechanics + evidence for new concepts or judging why a reel travels/stalls |
 
 ### Default path (`/instagram` with no extra args)
 
@@ -39,7 +40,8 @@ open **one** specialist (default below).
 ## Live account law (Silph Scope, 2026-07)
 
 **Observed:** Ascended Heroes / Mega Gengar myth-bust ≈ 1.6k views, ~10 DM shares.  
-Clean comparison / concentration / number-upside Reels: **~70–80% skip**, die in test pool.
+Clean comparison / concentration / number-upside Reels: **~70–80% skip**, die in test pool.  
+**2026-08-12:** Audio-transcript audit of the 21 July shipped reels found 12 with belief-confrontation *wording* that still died at ~150–215 views. Lesson: confrontational VO wording alone does not clear the skip gate — frame-0 must be visually confrontational (rejection stamp / red chip / dual-line belief attack legible muted) with the ~3s cover hold. Classify hooks by frame-0 VISUAL + wording together, never wording alone.
 
 Until skip rate on new posts is consistently under ~40–45%:
 
@@ -49,6 +51,12 @@ Until skip rate on new posts is consistently under ~40–45%:
 4. Prefer **visual rejection** (WRONG / DIDN'T CRASH / red penalty chip) over calm +green badges.
 5. **Portable complete rule** at the end (no dangling “because—”).
 6. Innovate *inside* confrontation energy — do not clone Gengar frame-for-frame; do not revert to soft data layouts as the open.
+
+### CTA law: send beats poll
+
+Poll-style CTAs ("WHICH ONE IS IN YOUR BINDER?") drive comments — the weakest reach lever (#6). Every growth-bet Reel must carry **one explicit, recipient-named DM-send ask** — mandatory, but it lives in the **CAPTION** (e.g. "Send this to the friend who still pays chase-card prices"), optionally mirrored in a pinned comment. It must never be spoken VO or on-screen text in the final beat, and must never break the seamless-loop close: scope lint **RULE C** (2026-08-10 format lock) forbids spoken CTA phrases, and the underlying evidence (Youshaei hook-body-send-ask, Mosseri sends-per-reach) is a caption pattern, not a VO pattern (corrected 2026-08-13). **Evidence:** EP23–EP29 (Aug 2026) all shipped poll-only, 0 send asks; the account's only traveling Reel (Gengar) earned 11 DM shares. A poll may coexist with the send-ask but never replace it.
+
+- **2026-08-13 render audit:** EP23–28 rendered 36–64s (long_form budgets). Duration is a ship-gate: 12–25s for growth bets; >30s data reels are the measured losing band.
 
 ---
 
@@ -98,6 +106,8 @@ Run after any published Reel with Insights (or user-reported rates). Output **on
 ### Inputs to collect
 
 Skip rate · share/sends (count or rate) · save rate · likes · avg % watched or retention notes · reposts/comments if shown · template used (myth-bust / concentration / H2H / other).
+
+**Note:** skip rate and retention curve are visible only in the mobile app Insights ("What impacts your views"); web/desktop Insights shows views/interactions/shares/saves but **not** skip or watch-time. Collect skip via the app before running the tree; without it, use the account's view-band heuristic (test-pool band ~150–220 views on this account ≈ failed skip gate).
 
 ### Decision tree (first matching row wins)
 
@@ -154,3 +164,5 @@ rewrite-hook | add-share-trigger | add-save-payload | cut-mid | tighten-or-split
 - [ ] First-3s / skip risk named explicitly  
 - [ ] Metrics map order respected (skip before mid-craft)  
 - [ ] If post-publish: one primary action from the diagnosis tree  
+- [ ] Send-ask present in the caption, recipient-named, never spoken VO (poll never replaces it)  
+- [ ] VO.md committed for the shipped episode  

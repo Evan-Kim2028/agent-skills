@@ -34,6 +34,18 @@ All output must work **faceless** with **AI voiceover** — no on-camera talent;
 
 **Until skip is consistently &lt;~40–45%:** treat first 1.5–3s as the only ship-gate that matters. Do not ship “beautiful concentration” as the growth bet.
 
+### Hard ship-gate checklist
+
+A Reel does not ship unless **ALL** pass:
+
+- [ ] Frame 0: named-belief attack legible **MUTED** (visual rejection element — stamp/red chip — not calm data)
+- [ ] Cover hold ≥ ~3.0s (hookLife ≥3000ms, sting after hold)
+- [ ] One explicit DM-send ask, recipient-named, in the CAPTION (e.g. "Send this to the friend who still pays chase-card prices") — optionally mirrored in a pinned comment. Never spoken VO, never on-screen text in the final beat (scope lint RULE C, 2026-08-10 format lock, forbids spoken CTA phrases; 2026-08-13 correction). Poll ≠ send-ask.
+- [ ] Closing rule is a **COMPLETE sentence** (no dangling “because—” / “which is why” loop bridges; IG does not seam loops — evidence: 4+ July 2026 reels shipped with broken closers)
+- [ ] `VO.md` committed in the episode dir matching the rendered audio (evidence: July 2026 batch shipped 21 reels with no text scripts; postmortem required Whisper forensics)
+- [ ] Duration 12–25s (data reels >30s sit in the measured losing band — CardLadder/GemRate died at 31–34s; EP24–28 rendered at 53–64s on 90–120-word budgets before the 2026-08-13 audit caught it). Word budget 40–60; long_form only for a proven-retention series, never a growth bet.
+- [ ] Cover styling: the frame-0 stat chip must be the red/negative/rejection element, not a calm green +% (EP26 "38 CARDS. 38 WENT UP." green +58% = the documented dying pattern; Gengar's red −28% = the winner).
+
 ### Hook cover hold (hard pace law)
 
 **Frame 0 must stay on screen ~3.0 seconds** to establish the claim. Flashing the cover for ~1–1.5s then cutting is a ship failure.
@@ -126,7 +138,7 @@ Length: **12–25s** preferred. ~21s OK for myth-bust cascade. **Length never fi
 - Overturn a misconception or show a counterintuitive divergence (price↓ volume↑, concentration, wrong #1, incomplete “crash” narratives).
 - Information gap in the first 3s → resolve with data.
 - One portable rule by the end (saves + shares).
-- Explicit share triggers (“send this to anyone who thinks the set crashed”).
+- Explicit share triggers: one recipient-named DM-send ask per Reel, mandatory but living in the CAPTION (e.g. "send this to anyone who thinks the set crashed"), optionally echoed in a pinned comment — never spoken VO or on-screen text, and never breaking the seamless-loop close (RULE C / 2026-08-10 format lock; corrected 2026-08-13). Poll CTAs do not count as share triggers.
 - Visual density: new text, stamp, number, or card reveal about every **3–5s** (faceless + silent).
 - Proprietary / freshly analyzed SilphCo data only — no pure opinion dumps.
 - AI VO clear, mobile-paced, synced to on-screen text. No long pauses without visual change.
@@ -158,6 +170,14 @@ Example rules: “Never read price without volume.” / “Buy the card, not the
 **Head-to-Head Gap (~14–18s)** — Perceived leader vs actual performance. “Rank the gap, not the logo.”
 
 **Trend Divergence** — Price and sales opposite directions same window → chart → rule.
+
+### Growth lanes beyond myth-bust (2026-08 recon)
+
+| Lane | Mechanic | When to use |
+|------|----------|-------------|
+| **Time-boxed urgency** | "N boxes at 30-day lows — windows close" | Fresh price-dashboard data with a closing window (evidence: 56.6K-follower account, 135K-view price-dashboard reel, 3 days old, urgency frame) |
+| **Stakes / accountability** | Open a tracked $ position on camera, resolve it in a later episode | Series format where you can commit to a resolving payoff (evidence: 693-follower account, every reel 2–7x v/f on resolving wagers) |
+| **Weekly rank-churn race** | Most-traded leaderboard, winner revealed at the end | Voiceless-native data with a natural ranking/reveal structure |
 
 ---
 
@@ -252,6 +272,8 @@ A myth-bust Reel scored Hook 9, Tension 9, Share 8, Save 9, Complete 5, Visual 4
 
 After publish, run the **instagram hub post-publish diagnosis playbook** (single primary action). Do not freeform “improve everything.”
 
+**Note:** skip rate and retention curve are visible only in the mobile app Insights ("What impacts your views"); web/desktop Insights shows views/interactions/shares/saves but **not** skip or watch-time.
+
 Quick map (first match wins — full table on hub):
 
 | Pattern | Primary action |
@@ -283,6 +305,10 @@ Prefer structures that repeatedly clear **50%+ completion** and strong send rate
 - Predicting Complete=5 on a myth-bust that already proved low skip + strong sends  
 - Mid-reel brand stings that blank the frame while VO continues  
 - Crowing concentration “cleaner” as auto-#1 when the ask is max distribution
+- Poll-only CTAs on growth bets (comments are the weakest reach lever)
+- Confrontational VO wording over a calm data visual (frame-0 must reject visually; 12/21 July reels proved wording alone fails)
+- long_form word budgets (90–120w → 53–64s renders) on growth bets
+- green/positive stat chip as the frame-0 element
 
 ---
 

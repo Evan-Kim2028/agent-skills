@@ -96,7 +96,8 @@ for pair in \
   "marketing/contagious:marketing-contagious" \
   "marketing/going-viral:marketing-going-viral" \
   "instagram/high-retention-insight-reels-instagram:high-retention-insight-reels-instagram" \
-  "instagram/instagram:instagram"
+  "instagram/instagram:instagram" \
+  "instagram/instagram-virality-insights:instagram-virality-insights"
 do install_skill "${pair%%:*}" "${pair##*:}"; done
 
 # philosophy layer for data shorts (optional pair with high-retention-insight-reels-instagram)
