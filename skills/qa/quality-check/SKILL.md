@@ -3,9 +3,10 @@ name: quality-check
 description: >
   QA routing hub for verification — TDD, diagnose, browser/visual proof,
   web-quality, doubt-driven review, check-work, PR review, ship checklists,
-  data-semantic-quality. Use when the QA path is unclear, when shipping or
+  data-semantic-quality, metric-gated closeout. Use when the QA path is unclear, when shipping or
   fixing consumer-facing regressions (search, filters, sticky chrome, URL/
-  debounce), or on "QA", "verify", "prove it", "e2e", "flaky", "don't ship bugs".
+  debounce), or on "QA", "verify", "prove it", "e2e", "flaky", "don't ship bugs",
+  "issue closed but the number didn't move".
   Prefer specialists directly when already clear (only tdd, only browser-verify).
   Prefer frontend-design when the work is still building/redesigning product UI
   (hand off here for proof). Do not use for pure product design exploration,
@@ -65,6 +66,9 @@ One **default** name per row. Aliases only if that name is not installed.
 | File bugs conversationally | **qa** | not a fix path |
 | Auth / secrets / threat model | **security-and-hardening** | security-sensitive |
 | Row-truth / quality flags | **data-semantic-quality** | pipelines |
+| Estimate vs later realized truth | **data-product-eval** | data product release |
+| Identity attach / unresolved keys | **data-identity-resolution** | growing NULLs |
+| Issue/PR closed but live metric unchanged | **this hub** (principle 8) then the data specialist that owns the number | residual |
 | UI still being built/redesigned (not proof yet) | **frontend-design** | then return here to prove |
 | A11y checklist during ship (not full redesign) | **web-quality** | after build |
 | Unclear multi-step QA | **start here** | pipeline A or B |
@@ -96,6 +100,15 @@ Do **not** claim done after unit green alone on consumer typing/sticky surfaces.
 1. **tdd** while building  
 2. **frontend-design** if UI  
 3. **check-work** → **review** → **shipping-and-launch** if production  
+4. If the change claims a live data/product number moved: principle 8 (metric-gated closeout)  
+
+### E — Residual / metric-gated closeout
+
+1. Name the live metric *before* the change (query prod, not a doc)  
+2. Ship the code/data change  
+3. Re-measure the same metric from the same path  
+4. If it did not move: the ticket is not closed — residual, not a new feature  
+5. Estimate/coverage metrics → **data-product-eval**; identity rates → **data-identity-resolution**  
 
 ### D — Human QA session (file only)
 
@@ -148,7 +161,17 @@ Tag escaped bugs; add one automated check that would have blocked the class.
 | Debounce / URL / local sync | race matrix + 30s browser type |
 | Sticky / gesture / density | **browser-verify** multi-viewport |
 | Auth / money / PII | **security-and-hardening** + **review** |
-| Data truth | **data-semantic-quality** + golden pack |
+| Data truth (row flags) | **data-semantic-quality** + golden pack |
+| Published estimate / mark | **data-product-eval** freeze + before/after |
+| Identity resolution rate | **data-identity-resolution** + unresolved-rate |
+
+### 8. Merge is not the metric
+
+CI green and a merged PR are not evidence a live number moved. Before claiming
+done on a data-product or residual ticket: write the metric, the query/path, the
+before value, and the after value. If after ≈ before, you shipped a residual.
+
+**Test:** can you show the same production query before and after? If you only have a merge commit, you did not close it.
 
 ## If specialist missing
 
@@ -173,6 +196,7 @@ Do not invent a fake skill name. Run the fallback, then note the gap.
 - **check-work** alone as proof of no visual flicker  
 - Loading >3 specialists for one task  
 - Snapshot/assert weaken to silence failures  
+- Closing a data ticket because CI passed while the live metric is unchanged  
 
 ## When *not* to use this hub
 
@@ -206,3 +230,4 @@ Attribution / install: [`references/companion-install.md`](references/companion-
 - [ ] Regression: defect class tagged  
 - [ ] Repo lint/typecheck/tests green as required  
 - [ ] Merge-bound: **check-work** or **review** done  
+- [ ] If a live metric was the success criterion: before/after captured from the same path  

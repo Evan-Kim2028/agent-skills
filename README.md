@@ -62,7 +62,9 @@ for pair in \
   "data/duckdb:data-duckdb" \
   "data/pipeline-operations:data-pipeline-operations" \
   "data/table-lifecycle:data-table-lifecycle" \
-  "data/semantic-quality:data-semantic-quality"
+  "data/semantic-quality:data-semantic-quality" \
+  "data/identity-resolution:data-identity-resolution" \
+  "data/product-eval:data-product-eval"
 do install_skill "${pair%%:*}" "${pair##*:}"; done
 
 # --- product / frontend specialists ---
@@ -125,7 +127,7 @@ Re-run install after `git pull` if you use **copies** (they do not auto-update).
 
 | Pack | Skills (all under `skills/`) |
 |------|------------------------------|
-| **data** | hub + lakehouse, api, duckdb, pipeline-ops, table-lifecycle, semantic-quality |
+| **data** | hub + lakehouse, api, duckdb, pipeline-ops, table-lifecycle, semantic-quality, identity-resolution, product-eval |
 | **frontend** | **product-design** + **frontend-design** hubs + design-system, craft, web-quality, react-performance, mobile-product-ux, **mobile-blog-chart-visual**, **mobile-app-echarts-visual**, mockup-implement, **ui-explore**, **browser-verify** (+ thin aliases) |
 | **marketing** | hub + offers, storybrand, cashvertising, contagious, going-viral |
 | **writing** | **writing** hub + **writing-prose** + **writing-docs** + **writing-technical** + **writer-style** (vendored [solanabr/writer-style-skill](https://github.com/solanabr/writer-style-skill) MIT engine; **default pack `evan`** from [evan_writings](https://github.com/Evan-Kim2028/evan_writings); kaue pack retained) |
@@ -160,7 +162,7 @@ You do **not** need those optionals for data / marketing / core FE craft.
 
 ### data →
 
-`data-apache-lakehouse` · `data-api` · `data-duckdb` · `data-pipeline-operations` · `data-table-lifecycle` · `data-semantic-quality`
+`data-apache-lakehouse` · `data-api` · `data-duckdb` · `data-pipeline-operations` · `data-table-lifecycle` · `data-semantic-quality` · `data-identity-resolution` · `data-product-eval`
 
 ### product-design →
 
@@ -180,7 +182,7 @@ same craft specialists + **`react-performance`** · full implement pipeline · h
 
 ### quality-check →
 
-`tdd` · `diagnose` · `browser-verify` · `web-quality` · `check-work` · `review` · … (see hub) · `data-semantic-quality` · hand off **frontend-design** for build phase
+`tdd` · `diagnose` · `browser-verify` · `web-quality` · `check-work` · `review` · … (see hub) · `data-semantic-quality` · `data-product-eval` · metric-gated closeout · hand off **frontend-design** for build phase
 
 ### flutter →
 

@@ -42,6 +42,8 @@ Optional but useful on the same machine:
 | Skill | Source | Credit |
 |-------|--------|--------|
 | **data-semantic-quality** | Evan-Kim2028/agent-skills `skills/data/semantic-quality/` | Evan-Kim2028/agent-skills |
+| **data-identity-resolution** | Evan-Kim2028/agent-skills `skills/data/identity-resolution/` | Evan-Kim2028/agent-skills |
+| **data-product-eval** | Evan-Kim2028/agent-skills `skills/data/product-eval/` | Evan-Kim2028/agent-skills |
 | **review** | mattpocock/skills | Matt Pocock |
 | **qa** (issue filing) | mattpocock/skills | Matt Pocock |
 
@@ -67,6 +69,8 @@ Everything the hub’s routing table may name.
 | react-performance | `skills/frontend/react-performance/` |
 | data | `skills/data/data/` |
 | data-semantic-quality | `skills/data/semantic-quality/` |
+| data-identity-resolution | `skills/data/identity-resolution/` |
+| data-product-eval | `skills/data/product-eval/` |
 | marketing | `skills/marketing/marketing/` |
 | visual-verify (alias) | `skills/frontend/visual-verify/` |
 | html-design (alias) | `skills/design/html-design/` |
@@ -173,7 +177,9 @@ for pair in \
   "frontend/visual-verify:visual-verify" \
   "frontend/web-quality:web-quality" \
   "frontend/frontend-design:frontend-design" \
-  "data/semantic-quality:data-semantic-quality"
+  "data/semantic-quality:data-semantic-quality" \
+  "data/identity-resolution:data-identity-resolution" \
+  "data/product-eval:data-product-eval"
 do
   src="${pair%%:*}"; name="${pair##*:}"
   for root in "${HOME}/.grok/skills" "${HOME}/.claude/skills"; do

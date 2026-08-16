@@ -78,7 +78,9 @@ for pair in \
   "frontend/ui-explore:ui-explore" \
   "frontend/web-quality:web-quality" \
   "frontend/frontend-design:frontend-design" \
-  "data/semantic-quality:data-semantic-quality"
+  "data/semantic-quality:data-semantic-quality" \
+  "data/identity-resolution:data-identity-resolution" \
+  "data/product-eval:data-product-eval"
 do
   src="${pair%%:*}"
   name="${pair##*:}"

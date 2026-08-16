@@ -1,19 +1,15 @@
 ---
 name: data-semantic-quality
 description: >
-  Portable methodology for semantic (row-truth) data quality in pipelines —
-  write-time quality attributes, single-sourced scoring, entity-scoped rule
-  evaluation, provenance trust ladders, cohort-relative fences, golden entity
-  packs with dual error budgets, and layered enforcement. Use when designing
-  or debugging quality flags, outlier or anomaly rules, entity-resolution
-  confidence gates, classification trust ladders, producer–consumer quality
-  contracts, split-brain between stored flags and API/UI filters, or golden
-  pack regression for correctness. Don't use for schema/type/null-fraction
-  fences alone (data hub / data-apache-lakehouse), multi-pipeline memory
-  admission or OOM (data-pipeline-operations), table retirement
-  (data-table-lifecycle), DuckDB engine tuning (data-duckdb), or domain-specific
-  business thresholds and product rule books (keep those in the product repo's
-  own skills — not this pack). Prefer the data hub when the right data skill is unclear or the task spans ingest→store→serve.
+  Portable methodology for semantic (row-truth) data quality — write-time
+  quality attributes, trust ladders, cohort fences, golden entity packs with
+  dual error budgets. Use when designing quality flags, outlier rules,
+  confidence gates, split-brain lake vs API filters, or golden-pack regression.
+  Don't use for schema fences (data hub / data-apache-lakehouse), admission or
+  OOM (data-pipeline-operations), table-lifecycle, DuckDB tuning, identity
+  attach (data-identity-resolution), estimate scoring (data-product-eval), or
+  domain thresholds (product repo). Prefer the data hub when the specialist
+  isn't obvious.
 
 ---
 
@@ -42,6 +38,8 @@ marketplace or catalog rule books. Domain rule encyclopedias stay in the product
 | Multi-pipeline admission, MemoryMax, timer stacking | **data-pipeline-operations** |
 | Drop/deprecate tables, maintenance coverage lists | **data-table-lifecycle** |
 | Rate limits, pushdown, pagination, cache keys | **data-api** (honors attributes; does not invent rules) |
+| Attach / remap / unresolved-null identity workflow | **data-identity-resolution** (this skill owns the ladder rules only) |
+| Score a published estimate vs later realized facts | **data-product-eval** |
 | Concrete domain thresholds or product-specific junk taxonomies | **product-repo skill**, not this pack |
 
 ## Non-negotiables
@@ -105,7 +103,8 @@ ones? If yes, the fence should be relative (or dual: absolute floor *and* cohort
 
 Every classification dimension (identity, category, state) uses ordered evidence: stronger
 sources override weaker ones; strong-vs-weak mismatch **quarantines** rather than guessing.
-Weak signals never win by running first.
+Weak signals never win by running first. The attach/remap *procedure* is
+**data-identity-resolution**; this skill owns the ladder rules only.
 
 **Test:** invent a row where weak evidence and strong evidence disagree. Is the row quarantined
 or soft-failed, or does the weak path still win?
@@ -178,4 +177,6 @@ Quality rule change:
 - **Rule scope, stratification, trust ladder, relative fences:** [`references/rule-scoping.md`](references/rule-scoping.md)
 - Shared pipeline principles → **data** hub
 - Serving honor attributes + publish-coupled sidecars → **data-api**
+- Attach / remap / unresolved-rate procedure → **data-identity-resolution**
+- Estimate vs later truth, freeze, release gates → **data-product-eval**
 - WAP / branch validation for risky publishes → **data-apache-lakehouse**

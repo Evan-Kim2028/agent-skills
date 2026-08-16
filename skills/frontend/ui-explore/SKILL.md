@@ -45,6 +45,7 @@ State the assumption at the top of the artifact.
 3. **No production polish** (no full test suite, no gold-plating).  
 4. **Surface state** after every action / variant switch.  
 5. **Delete or absorb** when the question is answered; capture the verdict.  
+6. **Live data when the surface already has a backend.** Bind to the real API or a recorded snapshot of it so density is honest. Empty fixtures hide the product. Do not rewrite production chrome to explore — **product-design** principle 9. If web / mobile-web / native share the surface, the variant must be judgable on all of them (or say which surface is out of scope).  
 
 ## Shape 1 — Standalone HTML A/B (product deltas)
 

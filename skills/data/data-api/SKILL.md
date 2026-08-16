@@ -121,3 +121,5 @@ Open one read-only DuckDB connection per worker with a `memory_limit`, not one p
 - **Serving data over HTTP** — pushdown, keyset pagination, cache invalidation, quality-attribute honor, publish-coupled sidecars, bounded/thread-safe caches, executor lifecycle, factory routers, connection management: [`references/serving.md`](references/serving.md)
 - **Shared resilience & idempotency** (hub): [`../data/references/resilience-and-idempotency.md`](../data/references/resilience-and-idempotency.md)
 - **Semantic quality rules** (define attributes, not serve them): **data-semantic-quality**
+- **Identity keys** (consume stored assignment; do not re-parse text): **data-identity-resolution**
+- **Estimate honesty labels** (serve status with the number; do not rescore): **data-product-eval**

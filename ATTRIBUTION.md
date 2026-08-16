@@ -46,7 +46,7 @@ into your install. Distilled book guidance must not quote long passages.
 
 | Skill | External lineage |
 |-------|------------------|
-| data-apache-lakehouse, data-duckdb, data-api, data-pipeline-operations, data-table-lifecycle, data-semantic-quality | Production lakehouse practice (measured cases in skill text); Iceberg/DuckDB/PyIceberg docs concepts — original synthesis, not a third-party skill copy |
+| data-apache-lakehouse, data-duckdb, data-api, data-pipeline-operations, data-table-lifecycle, data-semantic-quality, data-identity-resolution, data-product-eval | Production lakehouse practice (measured cases in skill text); Iceberg/DuckDB/PyIceberg docs concepts — original synthesis, not a third-party skill copy |
 
 ---
 

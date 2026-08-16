@@ -1,6 +1,6 @@
 ---
 name: data
-description: Hub for data-engineering pipeline work — picking a storage/ingestion/serving approach and applying the cross-cutting discipline (idempotency, incremental-not-full-recompute, schema fencing, resilience, bounded memory, layered enforcement) that every data sub-skill shares. Routes to specialists — data-apache-lakehouse (Apache Iceberg lakehouses), data-api (consuming external APIs and serving data over HTTP), data-duckdb (DuckDB as the single-node analytical engine — memory/threads, spilling, Parquet read/write), data-pipeline-operations (running multiple pipelines on shared host infrastructure — admission control, capacity budgets), data-table-lifecycle (whether a table should still exist, and how to retire it safely), and data-semantic-quality (row-truth quality attributes, trust ladders, cohort fences, golden packs — not schema-only fences). Use when a task spans ingest → store → serve, when the right specialist isn't obvious yet, or when you need the shared pipeline principles. Don't use for OLTP / relational schema design, one-off pandas or notebook analysis, generic SQL tutoring, ML model training, or BI-tool config — and when a specialist clearly fits (Iceberg → data-apache-lakehouse, API client/serving → data-api, DuckDB engine tuning → data-duckdb, multi-pipeline capacity → data-pipeline-operations, table retirement → data-table-lifecycle, semantic row quality → data-semantic-quality), skip the hub and go straight there.
+description: Hub for data-engineering pipeline work — storage/ingest/serve choice plus shared discipline (idempotency, incremental-not-full-recompute, schema fencing, resilience, bounded memory, layered enforcement). Routes to data-apache-lakehouse, data-api, data-duckdb, data-pipeline-operations, data-table-lifecycle, data-semantic-quality, data-identity-resolution, and data-product-eval. Use when a task spans ingest → store → serve, the specialist isn't obvious, or you need a live coverage audit. Don't use for OLTP schema design, one-off notebooks, generic SQL, ML training, or BI config. When a specialist clearly fits, skip this hub and load it directly.
 ---
 
 # Data engineering — routing hub
@@ -16,7 +16,10 @@ The shared entry point for building and operating data pipelines. Its job is two
 | Using **DuckDB** as the compute engine — tuning memory/threads, larger-than-memory spilling, Parquet read/write layout, connection lifecycle, EXPLAIN profiling | **data-duckdb** |
 | Running **multiple pipelines** on shared single-host infrastructure — memory admission control, concurrency caps, capacity ratchets, OOM kills that only appear when individually-fine pipelines coexist | **data-pipeline-operations** |
 | Deciding whether a **table/artifact should still exist** — consumer audits, safe drops, maintenance coverage | **data-table-lifecycle** |
-| **Semantic row truth** — quality flags, outlier/anomaly rules, entity-resolution confidence, trust ladders, golden packs, split-brain lake vs API quality | **data-semantic-quality** |
+| **Semantic row truth** — quality flags, outlier/anomaly rules, trust ladders, golden packs, split-brain lake vs API quality | **data-semantic-quality** |
+| **Attaching** messy records to a canonical entity key — fail-closed, quarantine, unresolved debt, remap | **data-identity-resolution** |
+| **Scoring published estimates** vs later realized facts — freeze, walk-forward, coverage vs error | **data-product-eval** |
+| **Coverage audit** — “how much / how fresh / how resolved” from live tables, not docs | **this hub** (playbook below), then the specialist that owns the hole |
 | Choosing *between* storage formats (Iceberg vs Delta vs plain Parquet vs embedded DuckDB), or the task spans ingest → store → serve | start here, then hand off |
 | Generic interface/contract design unrelated to data movement | `api-and-interface-design` (not a data skill) |
 | Wrapping an API as a live tool Claude calls at runtime | build an **MCP server**, not a skill |
@@ -103,6 +106,27 @@ fields, config schema — not text.
 **Test:** delete the checklist — does anything still block a violation? If no, you have documentation,
 not enforcement, and the runtime guard or CI gate layer is missing.
 
+## Coverage audit playbook
+
+Use when the ask is inventory, not a code change: how much data, how fresh, how
+usable. **Query the live warehouse / serving path.** Frozen onboarding docs and
+agent memory are not evidence.
+
+```
+Coverage audit:
+- [ ] 1. Name the consumer question (source × grain × window)
+- [ ] 2. Read live tables (or the serving sidecar + its publish token) — not README/CLAUDE.md
+- [ ] 3. Per source: landed rows, last watermark / as-of, absent vs empty vs stale
+- [ ] 4. Identity rate: assigned / landed (unresolved and quarantine are not “coverage”) — **data-identity-resolution**
+- [ ] 5. Stratify (status, cohort, age). A global % hides empty slices
+- [ ] 6. Name the consumer of each table (**data-table-lifecycle**)
+- [ ] 7. If the question is estimate honesty, stop and load **data-product-eval**
+```
+
+**Test:** can you answer “how many resolved rows landed in the last 7 days, per source, and when did each watermark move?” from published signals? If the answer came from a markdown file, the audit failed.
+
+Principle 7 (freshness is observable) is the signal. This playbook is how you *read* it.
+
 ## References
 
 - **Shared resilience & idempotency code** (retry + jitter, circuit breaker, dead-letter queue, idempotency keys): [`references/resilience-and-idempotency.md`](references/resilience-and-idempotency.md)
@@ -112,3 +136,5 @@ not enforcement, and the runtime guard or CI gate layer is missing.
 - Specialist: **data-pipeline-operations** — the multi-pipeline coexistence expression (claims-based admission control, capacity pools, the capacity ratchet loop, subprocess-scope accounting).
 - Specialist: **data-table-lifecycle** — the artifact-retirement expression (consumers-or-deprecate, drop durability, catalog-generated maintenance coverage).
 - Specialist: **data-semantic-quality** — row-truth methodology (write-time quality attributes, entity-scoped rules, trust ladders, golden packs); domain thresholds stay in the product repo.
+- Specialist: **data-identity-resolution** — attach/remap procedure (fail-closed, quarantine, unresolved-rate, restamp order).
+- Specialist: **data-product-eval** — estimate vs later realized truth (freeze, walk-forward, coverage vs error, release vs observe).

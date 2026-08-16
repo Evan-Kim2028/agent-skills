@@ -83,13 +83,14 @@ pulls them in as steps inside a full implement pipeline:
 | Animation audit vs. 12 principles | **12-principles-of-animation** | Optional install — Disney's 12 principles adapted for web, file:line findings |
 | Flutter production UX polish (dead taps, null, haptics, keyboard, motion) | **flutter-pro-ux-review** | Flutter/`pubspec.yaml` apps — complements official Flutter architecture skills |
 | Prove sticky/viewport/a11y in browser | **browser-verify** | After craft — or **quality-check** for full QA path |
+| Multi-surface lab (web + mobile-web + native) on **live** backend data | **this hub** (principle 9) then **ui-explore** | Do not rewrite prod chrome |
 | Full feature build (perf, SPA, implement pipeline) | **frontend-design** | Broader FE engineering hub |
 | Unclear multi-step *craft* | **start here** | Default for product UX |
 
 ### Multi-step craft pipeline
 
 1. **design-system** — lock tokens / kit / bans  
-2. **ui-explore** if the look is still open  
+2. **ui-explore** if the look is still open (principle 9: live data, all shipped surfaces)  
 3. **mockup-implement** once signed off  
 4. **product-ui-craft** (+ **mobile-product-ux** if touch/sticky)  
 5. **web-quality** for forms/focus/targets  
@@ -170,6 +171,17 @@ Sticky, overflow, gesture, density → **browser-verify** (or **quality-check** 
 
 **Test:** Have you opened the real viewport, or only reasoned about CSS?
 
+### 9. Three surfaces, one contract, live data
+
+If web, mobile-web, and native ship the same product surface, they share one
+data contract (same fields, same empty/error meaning). Explore on **live**
+backend data — or a recorded snapshot of it — not empty fixtures that hide
+density. **ui-explore** is throwaway; do not rewrite production chrome to “try
+a look.”
+
+**Test:** would a reviewer see real row density and the same number on every
+shipped surface? If one surface is a fixture and another is live, the lab is lying.
+
 ## Sources (attribution)
 
 Full pack table: [ATTRIBUTION.md](../../../ATTRIBUTION.md).
@@ -199,6 +211,8 @@ this hub — they fight your design system. Prefer **design-system + craft**.
 - Desktop-only for mobile-critical product flows  
 - Happy-path-only UI (no empty/error)  
 - “Looks fine in my head” without viewport proof  
+- Rewriting production chrome during an explore pass  
+- Exploring a data surface on empty fixtures while prod is dense  
 - Using **quality-check** when you still need craft decisions  
 - Using this hub for pure React perf / code-split (**frontend-design** → **react-performance**)  
 
@@ -220,3 +234,4 @@ this hub — they fight your design system. Prefer **design-system + craft**.
 - [ ] Mobile considered if the surface is touch-reachable  
 - [ ] Charts used **tufte** when quantitative  
 - [ ] Browser proof when sticky/gesture/density risk is non-trivial  
+- [ ] Multi-surface: same contract; explore used live (or recorded-live) data  

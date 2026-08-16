@@ -10,7 +10,7 @@ and keep their licenses. Full paths, tiers, and a one-shot installer:
 
 | Pack | Author | Repository | Role for quality-check |
 |------|--------|------------|------------------------|
-| **agent-skills** | [Evan-Kim2028](https://github.com/Evan-Kim2028) | [github.com/Evan-Kim2028/agent-skills](https://github.com/Evan-Kim2028/agent-skills) | Hub (`quality-check`), FE specialists (`frontend-design`, `browser-verify`, `web-quality`, …), `data-semantic-quality` |
+| **agent-skills** | [Evan-Kim2028](https://github.com/Evan-Kim2028) | [github.com/Evan-Kim2028/agent-skills](https://github.com/Evan-Kim2028/agent-skills) | Hub (`quality-check`), FE specialists (`frontend-design`, `browser-verify`, `web-quality`, …), `data-semantic-quality`, `data-identity-resolution`, `data-product-eval` |
 | **agent-skills** | [Addy Osmani](https://addyosmani.com/) | [github.com/addyosmani/agent-skills](https://github.com/addyosmani/agent-skills) | Optional companions: `doubt-driven-development`, `shipping-and-launch`, `security-and-hardening`, `code-review-and-quality`, `debugging-and-error-recovery`, `test-driven-development` (DevTools practice is now **bundled** in this pack’s `browser-verify`) |
 | **skills** | [Matt Pocock](https://www.mattpocock.com/) / AI Hero | [github.com/mattpocock/skills](https://github.com/mattpocock/skills) | `tdd`, `diagnose`, `review`, `qa`, `triage`, `to-issues`, `setup-matt-pocock-skills` |
 | **check-work** | Grok Build (xAI) | Product-bundled | Session self-verify; hub fallback if missing |
@@ -29,6 +29,8 @@ and keep their licenses. Full paths, tiers, and a one-shot installer:
 | security-and-hardening | Addy Osmani — addyosmani/agent-skills |
 | web-quality, frontend-design, ui-explore | Evan-Kim2028/agent-skills |
 | data-semantic-quality | Evan-Kim2028/agent-skills |
+| data-identity-resolution | Evan-Kim2028/agent-skills |
+| data-product-eval | Evan-Kim2028/agent-skills |
 | check-work | Grok Build bundled |
 | quality-check (this hub) | Evan-Kim2028/agent-skills — routing + interaction-race gotchas |
 

@@ -362,6 +362,25 @@ inconsistent-feeling reel:
   maintain pacing momentum. Sourced from EP03/04/05/07 review rounds, where visual hierarchy
   and card prominence directly impacted clarity and retention on data claims.
 
+## 14. Production ship-gate (portable)
+
+Philosophy above is not “ready to publish.” A reel does not ship until **all** pass.
+Instagram distribution rank is **not** this list — `/instagram` →
+**high-retention-insight-reels-instagram** (DistScore) owns that.
+
+- [ ] **Data-true hook** — every spoken or shown number traces to a source field (section 6). No leftover “roughly right.”
+- [ ] **On-screen claim = spoken claim** — text may be shorter; it may not contradict or subtitle a different sentence than the VO.
+- [ ] **No episode / series numbers** on growth shorts (platform-native; “EP12” is a podcast tell).
+- [ ] **Duration** in section 5 unless a section 1.6 format exception applies (and is named).
+- [ ] **Visual lint** — frame extract at hook + each beat, judged at small-screen scale (section 10). Eyeballing the timeline is not lint.
+- [ ] **Never a static outro** (section 11).
+- [ ] **Scope caption** on any ambiguous metric (section 12).
+- [ ] **Naked %** refused unless the underlying quantity is on screen (section 13).
+
+**Test:** would you still call it ready if the VO file were muted? If the hook fails muted, it fails.
+
+Run this gate **after** cheap render/decode checks (section 11 ship-gate ordering), **before** telling the user it is ready.
+
 ## Relationship to your project's reel playbook
 
 This skill stays generic on purpose. It does not hardcode a render pipeline, asset paths, CLI invocations, or a specific TTS voice ID. Your project's reel playbook is where those live — treat it as the executable counterpart to the principles above. When the two disagree on a *principle* (not a command), prefer this skill; when you need to know *how* to actually run something, go to the project playbook.
