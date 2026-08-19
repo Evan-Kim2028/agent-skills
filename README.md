@@ -105,10 +105,15 @@ do install_skill "${pair%%:*}" "${pair##*:}"; done
 # philosophy layer for data shorts (optional pair with high-retention-insight-reels-instagram)
 install_skill "data-reels" "data-reels"
 
+# eBay store listing (Pokémon singles / ebay-sell)
+install_skill "ebay-listing" "ebay-listing"
+
 # --- writing (Evan voice + form specialists) ---
 install_skill "writing/writing-prose" "writing-prose"
 install_skill "writing/writing-docs" "writing-docs"
 install_skill "writing/writing-technical" "writing-technical"
+install_skill "writing/elements-of-style" "elements-of-style"
+install_skill "writing/style-clarity-grace" "style-clarity-grace"
 install_skill "writing/writer-style" "writer-style"   # engine + evan pack + kaue pack (MIT engine)
 
 # --- flutter (complements official Flutter/Dart skills) ---
@@ -130,9 +135,10 @@ Re-run install after `git pull` if you use **copies** (they do not auto-update).
 | **data** | hub + lakehouse, api, duckdb, pipeline-ops, table-lifecycle, semantic-quality, identity-resolution, product-eval |
 | **frontend** | **product-design** + **frontend-design** hubs + design-system, craft, web-quality, react-performance, mobile-product-ux, **mobile-blog-chart-visual**, **mobile-app-echarts-visual**, mockup-implement, **ui-explore**, **browser-verify** (+ thin aliases) |
 | **marketing** | hub + offers, storybrand, cashvertising, contagious, going-viral |
-| **writing** | **writing** hub + **writing-prose** + **writing-docs** + **writing-technical** + **writer-style** (vendored [solanabr/writer-style-skill](https://github.com/solanabr/writer-style-skill) MIT engine; **default pack `evan`** from [evan_writings](https://github.com/Evan-Kim2028/evan_writings); kaue pack retained) |
+| **writing** | **writing** hub + **writing-prose** + **writing-docs** + **writing-technical** + **style-clarity-grace** + **elements-of-style** + **writer-style** (vendored [solanabr/writer-style-skill](https://github.com/solanabr/writer-style-skill) MIT engine; **default pack `evan`** from [evan_writings](https://github.com/Evan-Kim2028/evan_writings); kaue pack retained) |
 | **qa** | **quality-check** hub (+ install docs for optional external companions) |
 | **flutter** | **flutter** hub + **flutter-pro-ux-review** — production UX polish audit (complements official Flutter architecture/test skills) |
+| **ebay-listing** | Pokémon TCG singles on ekcope-46 via `ebay-sell` (photo dump → catalog ID → confirmed condition → gold/TCG comps → GTC post, buyer-paid USPS letter) |
 
 ### Merged specialists (use the new names)
 
@@ -178,7 +184,7 @@ same craft specialists + **`react-performance`** · full implement pipeline · h
 
 ### writing →
 
-`writer-style` (**default pack: evan**; kaue optional) · `writing-technical` (research / build-log form) · `writing-docs` (runbooks / reference) · `writing-prose` (house human, no persona) · hand off conversion frameworks to **marketing**
+`writer-style` (**default pack: evan**; kaue optional) · `writing-technical` (research / build-log form) · `writing-docs` (runbooks / reference) · `writing-prose` (house human, no persona) · `style-clarity-grace` (Williams 1990 revision) · `elements-of-style` (Strunk 1920 usage + composition) · hand off conversion frameworks to **marketing**
 
 ### quality-check →
 
@@ -198,7 +204,7 @@ skills/
   frontend/       # product-design + frontend-design hubs + specialists
   flutter/        # hub + production Flutter UX review (complements official Flutter skills)
   marketing/      # hub + specialists
-  writing/        # hub + writer-style (evan/kaue) + prose/docs/technical
+  writing/        # hub + writer-style (evan/kaue) + prose/docs/technical + style-clarity-grace + elements-of-style
   qa/             # quality-check hub
   design/         # html-design alias only
 ```
