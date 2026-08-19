@@ -100,6 +100,8 @@ drift from code are worse than missing docs.
 | Named author voice | **writer-style** |
 | Landing / offer copy | **marketing** |
 | Human deslop pass on long docs | light **writing-prose** after structure is right |
+| Turgid syntax | **style-clarity-grace** |
+| Usage / danglers / padded nouns | **elements-of-style** |
 
 ## Done criteria
 

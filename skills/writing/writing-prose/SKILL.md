@@ -7,8 +7,9 @@ description: >
   should sound like a sharp human, not generic AI, and no named voice pack is
   required. Prefer writer-style (default pack: evan) for a named voice.
   Prefer writing-technical for research/build-log form; writing-docs for pure
-  procedures. Prefer marketing for offer/story/ad frameworks. Prefer writing
-  hub when the writing path is unclear.
+  procedures; style-clarity-grace for turgid syntax; elements-of-style for
+  usage/concision mechanics. Prefer marketing for offer/story/ad frameworks.
+  Prefer writing hub when the writing path is unclear.
 ---
 
 # Writing prose — human, opinionated, coherent
@@ -121,6 +122,8 @@ Default shorter than the model wants. If a section doesn’t change the reader�
 | Named author voice (default: Evan) | **writer-style** |
 | Research / empirical / build-log form | **writing-technical** |
 | Runbook / API reference / how-to | **writing-docs** |
+| Turgid / buried actors | **style-clarity-grace** |
+| Usage / punctuation / omit needless words | **elements-of-style** |
 | Offers / StoryBrand / ads | **marketing** |
 | Product UI microcopy | **product-design** |
 | Validate voice markers / tools | **writer-style** tools (`validate_voice.py`) |

@@ -59,6 +59,8 @@ into your install. Distilled book guidance must not quote long passages.
 | **writing-prose** | House floor adapted from the same naturalness/deslop/facts-first principles for **non-persona** writing | Original synthesis; cites solanabr pack |
 | **writing-docs** | Pure procedure/reference writing — original synthesis (operator docs practice) | Original |
 | **writing-technical** | Research / build-log form aligned with the same corpus habits (numbers-first, problem→fix→lesson) | Original synthesis |
+| **style-clarity-grace** | Joseph M. Williams, *Style: Toward Clarity and Grace* (1990, University of Chicago Press; coherence chapters with Gregory G. Colomb). Distilled revision system. Do not quote the book. | Original synthesis |
+| **elements-of-style** | William Strunk Jr., *The Elements of Style* (Harcourt, 1920). Public domain. Distilled checklist + bundled 1920 text (`references/strunk-1920.md`). **Not** the 4th edition (Strunk & White, 1999/2000). | **Yes** — synthesis + PD source |
 | **writing** (hub) | Evan-Kim2028/agent-skills router; defaults long-form technical voice to **evan** pack | Original |
 
 Do not strip the MIT copyright notice from `skills/writing/writer-style/LICENSE`.

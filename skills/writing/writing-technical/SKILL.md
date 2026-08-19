@@ -95,6 +95,8 @@ House technical (this skill) or **writer-style** pack **evan** (loads `modes.md`
 | Install/runbook only | **writing-docs** |
 | Full Evan cadence + mode exemplars | **writer-style** (evan) |
 | Deslop only | **writing-prose** |
+| Turgid syntax | **style-clarity-grace** |
+| Usage / concision mechanics | **elements-of-style** |
 | Offer/landing | **marketing** |
 
 ## Done criteria
