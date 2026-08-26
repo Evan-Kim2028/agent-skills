@@ -62,6 +62,19 @@ PyIceberg has no `incrementalAppendScan` yet (Java does). A watermark column com
 
 **Test:** if the upstream table grew 10× tomorrow, would this transform's runtime grow 10×? If yes, it lacks a watermark.
 
+### A watermarked entity delta is still a windowed scan
+
+Selecting *keys* incrementally (`entities with ts > watermark`) then reading `WHERE entity_id IN (keys)` **without** a time predicate is not incremental. Iceberg will not prune `month(ts)` partitions; PyIceberg COW then rewrites every data file that contains those ids — often a whole month file to flip a few flag columns. That is the entity-scoped O(history) leak from the **data** hub.
+
+Fix on the timer path:
+
+1. Predicate **both** keys and time: `entity_id IN (...) AND ts >= now - lookback` (lookback on the **partition** column, so months drop at planning).
+2. Overwrite **only the sale_ids / rows in that window**. Do not emit 2016 rows into the COW filter because you scored a 2026 sale.
+3. `--full` / `--rebuild` is the lifetime path. Do not make it the default.
+4. Layout (sort by entity_id inside the time partition) tightens file bounds so `IN (entity)` skips files. It is not a substitute for the time predicate. Iceberg has no B-tree index.
+
+**Test:** one new row today for an entity that has 10 years of history — does `plan_files()` for the score/overwrite include 2016 partitions? If yes, the window is missing.
+
 ### Every aggregate has a declared shape
 
 Each gold/analytics aggregate is one of three shapes, and the shape is named in the module:
@@ -137,6 +150,7 @@ When you see one of these, stop and audit — the table tells you which principl
 | Smell | Likely principle violated |
 |---|---|
 | "Rebuild the snapshot from full history" | Watermark, declared aggregate shape |
+| `In(entity_id)` on a timer with no `ts` predicate | Watermark (entity-scoped leak); windowed_scan |
 | `read_parquet(full_curated_file)` in a promote step | Watermark, single source of truth |
 | Parquet file next to an Iceberg table for the same data | Single source of truth |
 | Cron more frequent than the rebuild cost it triggers | Watermark, declared aggregate shape |

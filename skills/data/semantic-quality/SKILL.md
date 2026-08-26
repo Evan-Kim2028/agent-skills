@@ -46,7 +46,7 @@ marketplace or catalog rule books. Domain rule encyclopedias stay in the product
 
 1. **No domain product nouns or concrete business thresholds** in advice generated from this skill. Patterns only (cohort fence, trust ladder, quality attribute). Thresholds and product taxonomies live in the domain repo.
 2. **Quality attributes are write-time and single-sourced.** Read sites trust stored state; they do not re-derive a parallel truth.
-3. **Rule evaluation scope matches evidence scope.** If anchors span partitions or sources, score at entity (or declared cohort) scope — not an arbitrary write chunk.
+3. **Rule evaluation scope matches evidence scope.** If anchors span partitions or sources, score at entity (or declared cohort) scope — not an arbitrary write chunk. **Entity scope is not lifetime history by default.** Declare the cohort as entity × time window for incremental scoring; lifetime is an explicit `--rebuild`. "Need the whole card for IQR" without a declared window is how a watermarked job still COWs 2016.
 4. **Golden packs require dual error budgets:** known-bad must stay bad (false-negative budget); known-good must stay good (false-positive budget).
 5. **Enforcement is layered** (hub principle 8): runtime guard > CI pack > checklist > review convention.
 
@@ -164,7 +164,8 @@ Quality rule change:
 ## Common mistakes
 
 - Absolute floor as the only junk detector on multi-scale entities.
-- Per-chunk scoring when medians/anchors need the full entity pool.
+- Per-chunk scoring when medians/anchors need the declared entity cohort.
+- Treating "entity scope" as lifetime history on an incremental timer (load 2016 because one row arrived today). Lifetime is `--rebuild`.
 - Read-time-only flags (API/rollup rescore; lake stays clean).
 - Weak title/lane signal winning over structured strong evidence.
 - Treating dimensions dashboards as a substitute for executable checks.

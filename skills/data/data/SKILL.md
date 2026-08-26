@@ -45,6 +45,9 @@ Watch for **O(history) leaks disguised as incremental** — a watermark exists s
 - A per-batch **full-history re-walk** (re-reading an entire JSONL/log from the start every run instead of from the watermark — measured: thousands of redundant walks per run).
 - A **full-column preflight scan** before the real query (scanning millions of rows to check a condition a pushdown predicate would answer for free — measured: 2.48M rows scanned hourly where a predicate made it near-free).
 - An **unbounded anti-join key collect** (materializing every key ever seen instead of scoping to the chunk's own date range when the key embeds a date).
+- An **entity-keyed lifetime reload on a watermarked delta** — the watermark correctly selects *which entities changed*, then the job does `WHERE entity_id IN (...)` with **no time predicate** and reloads that entity's entire history (measured: Iceberg COW of 2016–now month files because one card sold today). Bound the score *and* the overwrite to the partition time column (`ts >= now - lookback`). Lifetime rescore is `--rebuild` / `--full` only.
+
+**Test (entity leak):** a new fact for one entity today — does runtime grow with that entity's lifetime row count, or with the lookback window? If it grows with lifetime, the watermark is decorative.
 
 A full-rebuild trigger (schema change, resolver bump, backfill) belongs on its **own lane**, separate
 from the regular incremental run, with checkpoints that survive a retry. A rebuild whose retry logic
