@@ -39,6 +39,8 @@ v/f** band (CardLadder/GemRate).
 | chartosaur | 239K | 47–149K consistent, zero flops | Template-consistent tension, 14–20s |
 | onlyslabs.io | 15 followers | 5–162 views | **Negative control** — slab data, no stakes |
 | Silph July batch | — | 12/21 confrontation-*worded* hooks died at ~150–215 views | Wording ≠ mechanism; frame-0 visuals were calm |
+| Silph Gengar (Jul 23) | 32 fol | 1,687 views, 11 shares, 99.3% non-followers | Unresolved set fight on cover (DIDN'T CRASH); cascade proofs |
+| Silph gold-delta (Aug 26) | 32 fol | 7–145 views with send-asks + WRONG stamp | **Resolved cover** — punchline on the thumbnail |
 
 ## Retention mechanics (ranked by evidence strength)
 

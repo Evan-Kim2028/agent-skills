@@ -37,13 +37,29 @@ open **one** specialist (default below).
 5. Report: ship / hold / rewrite-hook (or other primary action) — never equal-weight craft over share
 ```
 
-## Live account law (Silph Scope, 2026-07)
+## Live account law (Silph Scope)
 
-**Observed:** Ascended Heroes / Mega Gengar myth-bust ≈ 1.6k views, ~10 DM shares.  
-Clean comparison / concentration / number-upside Reels: **~70–80% skip**, die in test pool.  
-**2026-08-12:** Audio-transcript audit of the 21 July shipped reels found 12 with belief-confrontation *wording* that still died at ~150–215 views. Lesson: confrontational VO wording alone does not clear the skip gate — frame-0 must be visually confrontational (rejection stamp / red chip / dual-line belief attack legible muted) with the ~3s cover hold. Classify hooks by frame-0 VISUAL + wording together, never wording alone.
+**Handle:** `@silphco_pokemon` (`silphco_analytics` is dead). 32 followers as of 2026-08-26. Scoring is per-video.
 
-Until skip rate on new posts is consistently under ~40–45%:
+**Traveler (Jul 23, `DbI0ETpu-Qa`):** Mega Gengar, 1,687 views, 1,214 viewers, **11 shares**, 2 saves, 99.3% non-followers, 1 follow. Local: `social_media/5_overrated_series/volumes/ascended-heroes/v2/variant-c-voiced/` (22.3s). Cover: Gengar + red −28% + “DIDN'T CRASH / YOU'RE READING IT WRONG.” Caption was a **poll**. Shares came from the argument.
+
+**Gold-delta clone (Aug 20–26):** 12–20s, WRONG stamp, send-asks already in `CAPTION.md`, views 7–145. Cover: `NAME` + `THAT $XK WAS THE TEN/TOP` + `WRONG`. Send-ask + short + WRONG did **not** leave the test pool. Next-best after Gengar: Mega Charizard Aug 13, 376 views, 2 shares, 0 follows.
+
+**2026-08-12:** 12/21 July reels had confrontational *wording* and still died at ~150–215. Wording ≠ mechanism.
+
+### Why Gengar traveled (replicate this, not the poster)
+
+| Piece | Gengar | Gold-delta clone (died) |
+|-------|--------|-------------------------|
+| Live fight | People were saying the **set crashed** | Nobody is fighting a Groudon PSA print this week |
+| Cover | Opens the fight; **does not state the sales punchline** | States the conclusion (`WAS THE TEN WRONG`) |
+| Hero | One familiar monster | One card, same poster, new name |
+| Proof | Cascade: Gengar, then Charizard + Feraligatr | No cascade — the cover was the whole movie |
+| Rule | After conflict: watch sales, not just price | Readable at t=0 |
+
+**Resolved-cover law:** if a muted scroller can read the ending in one glance, they skip. Frame 0 names a fight or a question. The counter-metric lands *after* the hold.
+
+Until skip on new posts is consistently under ~40–45% (web proxy: **leave the ~150–220 view band**):
 
 1. **Gate = first 1–3s** (skip). Nothing mid-reel matters if bounce is 60%+.
 2. **Frame-0 / cover hold ≥ ~3.0s** — do not fade the thumbnail after ~1s. Hook cover stays until ~3s (sting/main after). `hookHoldMs: 3000` + s1 `gapAfterMs` in `build_audio` / `scope` mix.
@@ -51,10 +67,13 @@ Until skip rate on new posts is consistently under ~40–45%:
 4. Prefer **visual rejection** (WRONG / DIDN'T CRASH / red penalty chip) over calm +green badges.
 5. **Portable complete rule** at the end (no dangling “because—”).
 6. Innovate *inside* confrontation energy — do not clone Gengar frame-for-frame; do not revert to soft data layouts as the open.
+7. **Do not ship another one-card “WAS THE TEN WRONG” poster** as a growth bet (Aug 2026 gold-delta batch). New topic, new loop family, or a *set/class* claim with a cascade.
 
-### CTA law: send beats poll
+### CTA law: send beats poll (does not fix skip)
 
-Poll-style CTAs ("WHICH ONE IS IN YOUR BINDER?") drive comments — the weakest reach lever (#6). Every growth-bet Reel must carry **one explicit, recipient-named DM-send ask** — mandatory, but it lives in the **CAPTION** (e.g. "Send this to the friend who still pays chase-card prices"), optionally mirrored in a pinned comment. It must never be spoken VO or on-screen text in the final beat, and must never break the seamless-loop close: scope lint **RULE C** (2026-08-10 format lock) forbids spoken CTA phrases, and the underlying evidence (Youshaei hook-body-send-ask, Mosseri sends-per-reach) is a caption pattern, not a VO pattern (corrected 2026-08-13). **Evidence:** EP23–EP29 (Aug 2026) all shipped poll-only, 0 send asks; the account's only traveling Reel (Gengar) earned 11 DM shares. A poll may coexist with the send-ask but never replace it.
+Every growth-bet Reel still needs **one recipient-named DM-send ask in the CAPTION** (never spoken VO / on-screen; scope lint RULE C). A poll may coexist; it must not replace the send-ask.
+
+**Do not treat the send-ask as the traveler.** Gengar’s 11 shares happened on a poll caption. The gold-delta batch already had send-asks and died at ~150 views — the ask never got a non-follower pool. Skip first, then share.
 
 - **2026-08-13 render audit:** EP23–28 rendered 36–64s (long_form budgets). Duration is a ship-gate: 12–25s for growth bets; >30s data reels are the measured losing band.
 

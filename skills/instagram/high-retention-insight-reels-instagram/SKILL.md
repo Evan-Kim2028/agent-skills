@@ -25,20 +25,18 @@ All output must work **faceless** with **AI voiceover** — no on-camera talent;
 
 ### Live account gate (overrides generic craft)
 
-**Your feed is currently punishing soft opens.** Clean comparisons, pure +% upside thumbs, and calm “NOT A SET / data layout” opens have posted **~70–80% skip** and died in the test pool. Gengar cleared the first gate with:
+**Your feed is currently punishing resolved covers and one-card poster clones.** Full why-Gengar / Aug 2026 gold-delta evidence lives on the **instagram hub** (resolved-cover law). Do not restate it here.
 
-- Frame 0 dual-line belief attack (“DIDN’T CRASH” + “YOU’RE READING IT WRONG”)
-- Red penalty chip (−28%) as pattern interrupt
-- Emotional charge before the data cascade
-- Portable rule after conflict
+Gengar cleared skip with an **unresolved fight** (set crash) + familiar hero + cascade proofs. The gold-delta “WAS THE TEN WRONG” covers stated the ending at t=0 and died at ~128–145 views *with* send-asks and 12–20s duration.
 
-**Until skip is consistently &lt;~40–45%:** treat first 1.5–3s as the only ship-gate that matters. Do not ship “beautiful concentration” as the growth bet.
+**Until new posts leave the ~150–220 view band:** treat first 1.5–3s as the only ship-gate. Do not ship another Gold Star ceiling poster as a growth bet.
 
 ### Hard ship-gate checklist
 
 A Reel does not ship unless **ALL** pass:
 
 - [ ] Frame 0: named-belief attack legible **MUTED** (visual rejection element — stamp/red chip — not calm data)
+- [ ] **Cover does not state the conclusion** (resolved-cover law on the instagram hub). If the thumbnail is the whole insight, it does not ship.
 - [ ] Cover hold ≥ ~3.0s (hookLife ≥3000ms, sting after hold)
 - [ ] One explicit DM-send ask, recipient-named, in the CAPTION (e.g. "Send this to the friend who still pays chase-card prices") — optionally mirrored in a pinned comment. Never spoken VO, never on-screen text in the final beat (scope lint RULE C, 2026-08-10 format lock, forbids spoken CTA phrases; 2026-08-13 correction). Poll ≠ send-ask.
 - [ ] Closing rule is a **COMPLETE sentence** (no dangling “because—” / “which is why” loop bridges; IG does not seam loops — evidence: 4+ July 2026 reels shipped with broken closers)
@@ -309,6 +307,8 @@ Prefer structures that repeatedly clear **50%+ completion** and strong send rate
 - Confrontational VO wording over a calm data visual (frame-0 must reject visually; 12/21 July reels proved wording alone fails)
 - long_form word budgets (90–120w → 53–64s renders) on growth bets
 - green/positive stat chip as the frame-0 element
+- **Resolved cover** — punchline on the thumbnail (`THAT $XK WAS THE TEN WRONG` and clones)
+- One-card poster series that repeats the same cover with a new Pokémon (Aug 2026 gold-delta batch)
 
 ---
 
