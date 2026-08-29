@@ -1,6 +1,6 @@
 ---
 name: data-pipeline-operations
-description: Use when running multiple data pipelines on one host: memory admission, systemd MemoryMax, OOM that only appears under coexistence, capacity ratchets, wait-budget vs TimeoutStartSec, timer jobs that must chunk+resume inside one start (empty-skip ≠ progress; empty-all vs timeout; catchup vs timer claim). Don't use for one pipeline's DuckDB/Iceberg memory (data-duckdb / data-apache-lakehouse) or Kubernetes. Prefer the data hub when the specialist isn't obvious.
+description: "Use when running multiple data pipelines on one host: memory admission, systemd MemoryMax, OOM that only appears under coexistence, capacity ratchets, wait-budget vs TimeoutStartSec, timer jobs that must chunk+resume inside one start (empty-skip ≠ progress; empty-all vs timeout; catchup vs timer claim). Don't use for one pipeline's DuckDB/Iceberg memory (data-duckdb / data-apache-lakehouse) or Kubernetes. Prefer the data hub when the specialist isn't obvious."
 
 ---
 
