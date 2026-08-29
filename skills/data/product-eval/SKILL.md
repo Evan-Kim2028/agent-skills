@@ -26,7 +26,7 @@ No product thresholds, no marketplace rule books. Those stay in the product repo
 - Scoring a published estimate / mark / forecast / fill against later realized facts.
 - Preparing a data-product surface for release (coverage vs error, honesty labels).
 - Adding a canary, shadow pack, or truth panel that must share policy with prod.
-- An issue or PR closed but the live error / coverage / calibration metric did not move.
+- A stored-vs-recomputed reconciliation that is RED, or an issue closed but the live error/coverage metric did not move.
 
 ## Don't use
 
@@ -122,6 +122,16 @@ owns *which* number to measure.
 
 **Test:** after “done,” can you show before/after on the named eval metric from the frozen path? If you only have CI green, you did not eval.
 
+### 10. Stored-vs-recomputed recon is the same policy, windowed
+
+A job that diffs the published table against a recompute must **import the production policy
+module** (principle 1) and bound the recompute with the same lookback the publisher uses. An
+unbounded recon is hub leak 4 on a timer, then a RED that does not tell you whether the mark is
+wrong or the recon scanned 2016. Catchup recon is a catchup unit (**data-pipeline-operations**).
+
+**Test:** change one eligibility rule. Do publish, eval freeze, *and* stored-vs-recomputed recon
+move together on the lookback window — or only one of the three, on lifetime rows?
+
 ## Workflow: add or change an eval
 
 ```
@@ -135,7 +145,8 @@ Estimate eval change:
 - [ ] 7. Carry honesty labels into the score rows
 - [ ] 8. Mark the run observe-only or release-gate (never both silently)
 - [ ] 9. After ship: before/after on the named live metric
-- [ ] 10. No domain thresholds committed into this pack
+- [ ] 10. If recon exists: same policy module, same lookback as publish
+- [ ] 11. No domain thresholds committed into this pack
 ```
 
 ## Common mistakes
@@ -147,6 +158,8 @@ Estimate eval change:
 - Golden *entity* packs only — no known-bad *values*.
 - Calling a report-only job a release gate.
 - Claiming done from a merged PR without a moved metric.
+- Stored-vs-recomputed recon on a timer with no lookback (lifetime COW, then RED).
+- A recon scorer that is not the production policy module.
 
 ## References
 

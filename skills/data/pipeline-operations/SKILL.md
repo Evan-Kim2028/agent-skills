@@ -1,6 +1,6 @@
 ---
 name: data-pipeline-operations
-description: Use when running multiple data pipelines/services on shared single-host infrastructure and reasoning about memory admission, concurrency caps, or capacity — sizing systemd MemoryMax/cgroup limits, building an admission gate that queues instead of skipping work, diagnosing OOM kills that only appear when several individually-fine pipelines coexist, or right-sizing caps from measured evidence instead of folklore. Covers subprocess/systemd-run scope accounting, wait-budget-vs-unit-timeout races, and the capacity ratchet loop (observe → cap generously → tighten on evidence). Don't use for single-pipeline internal memory tuning — that's the engine-specific skill (data-duckdb for DuckDB, data-apache-lakehouse's single-host section for PyIceberg writes) — or for Kubernetes/cluster resource management, which has different primitives than one host running several systemd-managed pipelines. Prefer the data hub when the right data skill is unclear or the task spans ingest→store→serve.
+description: Use when running multiple data pipelines on one host: memory admission, systemd MemoryMax, OOM that only appears under coexistence, capacity ratchets, wait-budget vs TimeoutStartSec, timer jobs that must chunk+resume inside one start (empty-skip ≠ progress; empty-all vs timeout; catchup vs timer claim). Don't use for one pipeline's DuckDB/Iceberg memory (data-duckdb / data-apache-lakehouse) or Kubernetes. Prefer the data hub when the specialist isn't obvious.
 
 ---
 
@@ -22,6 +22,7 @@ the **data** hub's cross-cutting principles, not a replacement for them.
 - OOM kills that don't reproduce when a pipeline runs alone — only under real scheduling.
 - Sizing `MemoryMax` / cgroup caps for a systemd unit, or deciding whether to tighten an existing cap.
 - A lock/queue wait that silently disappears — the run never errors, it's just gone.
+- A timer that SIGTERMs at `TimeoutStartSec` after hours of empty-chunk skips, or a catchup that holds an admission claim until other units hit `start-limit-hit`.
 - Any pipeline that spawns a subprocess or `systemd-run --scope` child and you're not sure what bounds its memory.
 - Reviewing timers/schedules for a host running more than a couple of pipelines.
 
@@ -89,6 +90,40 @@ against a 6G cap) on its first day.
 **Test:** run the ratchet check on this unit. Is peak/cap < 0.40 with a stable 72h RSS slope and no
 congestion signal red? Then it's a tightening candidate — otherwise leave the cap alone.
 
+### A timer start must finish; chunk and persist resume
+
+`TimeoutStartSec` is the job's contract with systemd, not a suggestion. A publish that cannot
+finish inside one start must persist chunk progress and exit 0 after N chunks (or a time budget
+strictly under the timeout), then continue on the next start. Raising the timeout to "however long
+history takes" recreates the 602-day rebuild that never finishes. Measured: a monthly gold publish
+consumed 11.5h CPU, skipped empty chunks as if they were progress, then SIGTERM 15 at the unit
+timeout with no durable resume pointer.
+
+**Test:** kill the unit at 80% of `TimeoutStartSec`. Does the next start resume from the last
+committed chunk, or restart at chunk 1? If it restarts, the job does not fit one start.
+
+### Empty skip, empty-all, and timeout are different exits
+
+- **Empty chunk, more remain:** skip, log counts, continue. Not success for the unit.
+- **Every chunk empty after a real read:** fail loud (or a named `empty_source` exit that alerts).
+  Isolation of one bad chunk must not green-wash a fully-empty publish.
+- **Timeout / SIGTERM:** not empty, not success. Do not treat "we skipped a lot" as a finished run.
+- **Absent source** (path/table missing) is not empty. Hub principle 7.
+
+**Test:** if every chunk logs `empty after parse` and the unit still hits `TimeoutStartSec`, is the
+result `timeout` with a resume pointer, or a green skip? If green, empty was used as progress.
+
+### Long jobs are a catchup lane, not a timer holding a claim
+
+A run that needs hours is a catchup/rebuild product: its own unit, its own pool (or a claim TTL
+that cannot occupy the timer pool overnight), checkpoints, no `Restart=` storm. A timer that holds
+a 10h admission claim will starve siblings until they `start-limit-hit`. Measured: a publish phase
+`start-limit-hit` while another claim stayed alive past `LAKE_BUDGET_STALE_SEC` because the pid was
+still running.
+
+**Test:** can a 10h catchup block the hourly timer pool? If yes, it is on the wrong lane or the
+claim has no TTL distinct from "pid still alive."
+
 ### Coexistence failure modes (no single pipeline shows these)
 
 Each of these passes every per-pipeline test and only appears when pipelines run together on the same
@@ -100,6 +135,8 @@ host.
 | Sum-of-caps > RAM | Per-unit `MemoryMax` caps are each individually reasonable, but the sum exceeds host RAM | Slice caps summed to 17G on a 15G-RAM host |
 | Claim-equals-pool starvation | A single claim sized to (or exceeding) an entire pool's budget blocks every other admission in that pool | A 7GiB claim equaled the entire fast-pool budget → 100% self-starvation for hours |
 | Waiter reaped by unit timeout | A queued wait silently disappears — no error beyond a bare exit code, no alert | 30-min wait under a 20-min `TimeoutStartSec`; a 2h timeout also killed a 602-day rebuild 3m46s after staging completed |
+| Job SIGTERM after empty-chunk skips | Timer looks busy, then `Result=timeout`; next start repeats chunk 1 | Monthly publish, 11.5h CPU, empty chunks skipped, no resume pointer |
+| Catchup claim starves timers | `start-limit-hit` on a regular unit while one pid holds the pool for hours | Claim age > stale-sec but "pid alive — keeping" |
 
 ## References
 
@@ -107,7 +144,9 @@ host.
   check, claim-TTL crash recovery, runtime guard refusing capless units, distinct timeout exit code),
   the `verify_ratchets` capacity-tightening pattern, and SeaweedFS coexistence notes:
   [`references/admission-and-budgets.md`](references/admission-and-budgets.md)
-- Shared cross-cutting principles (idempotency, resilience, bounded memory) → **data** hub.
+- Shared cross-cutting principles (idempotency, resilience, bounded memory, freshness vs job-success) → **data** hub.
+- O(history) leak shapes (unwindowed rebuild, frozen-basis unique) → **data** hub `references/o-history-leaks.md`.
 - Single-host PyIceberg memory discipline for one pipeline's own writes → **data-apache-lakehouse**.
 - DuckDB memory/thread budgeting for one pipeline's own queries → **data-duckdb**.
+- Sidecar rebuild as a serving pipeline → **data-api**.
 - Whether a table this pipeline writes should still exist → **data-table-lifecycle**.

@@ -75,6 +75,17 @@ Fix on the timer path:
 
 **Test:** one new row today for an entity that has 10 years of history — does `plan_files()` for the score/overwrite include 2016 partitions? If yes, the window is missing.
 
+### A `latest` / `as_of` pointer is a global tip, not a per-chunk side effect
+
+A file or table property named `latest`, `as_of`, `tip`, or `watermark` that readers use for
+`latest_as_of()` is the **global tip**. Write it once after a multi-day / multi-partition loop
+succeeds. Updating it inside the loop leaves the oldest (or last-iterated) day in the pointer.
+Backfill helpers default `update_latest=False`; the daily product pass sets `True` only after
+today's write. Per-day overwrite can be idempotent and still be tip-unsafe.
+
+**Test:** backfill N days with a pre-seeded today pointer. Is the tip still today / max day, or
+min day? If min day, the pointer was written inside the loop.
+
 ### Every aggregate has a declared shape
 
 Each gold/analytics aggregate is one of three shapes, and the shape is named in the module:
@@ -106,6 +117,20 @@ On a single host with no cluster, the "external engine" is usually a `systemd` t
 PyIceberg supports branches and tags since 0.8. Treat the `main` branch of an Iceberg table as published state; do risky work (large backfills, schema reshuffles, suspicious silver→gold rewrites) on a named branch, validate against it, then merge or discard. This is the write-audit-publish pattern expressed natively in Iceberg. A staging mirror that lives outside the catalog is a hidden interface; an Iceberg branch is a first-class one. Nessie adds multi-table atomic branch merges if you need them.
 
 **Test:** if this promotion failed audit, could you discard it by dropping a branch? If the answer involves manually rewinding writes to the live table, it shouldn't have been on the live table.
+
+### Schema evolution is an operator action
+
+Additive columns, type widenings, and partition-spec changes are not a silent writer side effect.
+Evolve on a branch (or a dedicated evolve script), then readers. PyIceberg: `delete_column`, not
+`remove_field` (the latter orphans the field in manifests). Revert-then-readd of the same name is
+a trap — field ids do not come back. Backward-compat aliases live in the reader until the old
+name is gone from every snapshot you still query. Pause CDC across the evolve. Hub principle 3:
+the fence includes **engine types** (Iceberg `timestamptz` vs DuckDB `DATE`, `List(Utf8)` vs
+`Utf8`, Iceberg field-ids vs a plain Parquet UNION).
+
+**Test:** after dropping a column, do manifests still reference the field? After a type change,
+does the next DuckDB sidecar rebuild fail at the boundary with an actionable message, or three
+stages later as ArrowInvalid?
 
 ### File size is a quality dimension
 
@@ -163,6 +188,9 @@ When you see one of these, stop and audit — the table tells you which principl
 | Table metadata size approaches data size | Maintenance is owned (snapshot expiration missing) |
 | Catalog tightly bound to backend-specific quirks in client code | Catalogs are commodities |
 | Large backfill written directly to `main` | Validation belongs on a branch |
+| `latest` pointer written inside a day loop | Tip vs watermark |
+| `timestamptz` lookback compared to a `DATE` | Schema fence (engine types) |
+| `remove_field` used to drop a column | Schema evolution operator path |
 | Parquet files systematically under 10 MB | File size is a quality dimension |
 | Equality deletes attempted from Python | PyIceberg can't write or read them — use Spark/Flink for MOR CDC, or upsert from Python |
 | High-cardinality identity partitioning (e.g., per-user partitions) | Use `bucket(col, N)` transform; identity partition explodes manifests |
@@ -201,7 +229,7 @@ The properties that keep an unattended single-writer pipeline from corrupting st
 - **OCC retry is the exactly-once primitive — implement it, don't hope.** Wrap every commit in retry-on-`CommitFailedException` with exponential backoff + jitter (≈5 attempts). Two writers racing the same table is normal; the loser retries against the new snapshot. Without this, concurrent commits surface as hard failures.
 - **Fail fast on a dead dependency; don't retry into a wall.** A circuit breaker per external dependency (catalog, object store, each upstream API) trips OPEN after N consecutive failures and short-circuits until a HALF-OPEN probe succeeds — so one outage degrades one lane instead of hanging every retry loop on the host.
 - **Failed records go to a dead-letter queue, not the void.** Serialize un-processable items to a `.dead_letters/` path with enough context to replay. A swallowed exception in an unattended loop is data loss you discover a week later.
-- **Schema is fenced at every layer boundary.** `validate_bronze` / `validate_silver` / `validate_gold` assert column presence, types, and null fractions before the write commits, with a strict mode (`QUALITY_STRICT=1`) that turns warnings into hard failures in production. The fence's job is to give a downstream consumer a clear error *at the boundary*, not a cryptic Arrow cast error three stages later.
+- **Schema is fenced at every layer boundary, including engine types.** `validate_bronze` / `validate_silver` / `validate_gold` assert column presence, Iceberg/Arrow types (not just names), and null fractions before the write commits, with a strict mode (`QUALITY_STRICT=1`) that turns warnings into hard failures in production. Cast or fail at Iceberg → DuckDB: `timestamptz` vs naive date on a lookback predicate is a fence miss, not a "sidecar is flaky." Strip Iceberg field-ids before DuckDB `UNION` of plain Parquet. The fence's job is to give a downstream consumer a clear error *at the boundary*, not a cryptic Arrow cast error three stages later.
 - **Two-commit watermarks are safe only because writes are idempotent.** When the data write and the watermark advance are separate commits, a crash between them re-processes the last window — harmless precisely because every write is an idempotent upsert/partition-overwrite. If your writes aren't idempotent, co-commit the watermark in the same transaction (see *Forward motion is a watermark*).
 
 ## PyIceberg metadata inspection (your production diagnostic toolkit)
@@ -285,9 +313,10 @@ Before writing a new transform, derived table, gold aggregate, or maintenance jo
 1. **What is the watermark column** (`event_ts`, `sequence_id`, `updated_at`, …) and where is it persisted?
 2. **What is the source of truth for the layer this writes to?** Is there a parallel mirror? Why?
 3. **What shape is this aggregate** — `append`, `point_update`, or `windowed_scan`? None of those means redesign.
-4. **What is the schema fence on the read side?** What error message does a downstream consumer see if my output is malformed?
+4. **What is the schema fence on the read side?** Column names *and* engine types (timestamptz vs date, list vs scalar). What error message does a downstream consumer see if my output is malformed?
 5. **Who maintains this table** — what is the compact/expire/orphan cadence and who runs it?
 6. **What happens to other pipelines if this one hangs for an hour?** If the answer involves a global lock, redesign.
+7. **Is there a `latest` / tip pointer?** If yes, is it written once after the loop, with `update_latest=False` on backfill?
 
 ## PyIceberg capability matrix (version-sensitive)
 
@@ -316,6 +345,8 @@ PyIceberg. Headline as of `[v0.11.1 · 2026-05]`: `expire_snapshots` is metadata
 - **Cherry-pick is single-snapshot.** A multi-commit ETL job on a branch can't be cherry-picked atomically — collapse it first, or use Nessie branch merge.
 - **Incremental diffs must bound to the promoted watermark, never `current_snapshot()`.** Nightly compaction creates new snapshots that list every rewritten file as ADDED; diffing against `current_snapshot()` re-processes everything compaction touched, every run. Bound `to_snap` to the last watermark your pipeline actually promoted, not the table's live head.
 - **A dropped table can resurrect itself.** `drop_table` is metadata-only, and any `get_or_create_table`-style helper still called on a schedule will silently recreate a "dropped" table on its next write. See **data-table-lifecycle** for the stop-writers → drop → record-prefixes → physical-cleanup sequence that makes a drop actually durable.
+- **`delete_column`, not `remove_field`.** `remove_field` orphans the field in manifests.
+- **Do not write `latest` / `version-hint` inside a multi-day loop.** Tip once after success; backfill defaults `update_latest=False`.
 - Additional production-verified gotchas (`all_files()` OOM/ArrowInvalid, `dynamic_partition_overwrite` ValueError, compaction's `operation=overwrite` stamp) live in the capability matrix's **Additional gotchas — verified 2026-07-02** section.
 
 ## References
@@ -324,6 +355,8 @@ PyIceberg. Headline as of `[v0.11.1 · 2026-05]`: `expire_snapshots` is metadata
 - PyIceberg docs: <https://py.iceberg.apache.org/>
 - PyIceberg source (read this when behavior is undocumented or you suspect a version gap): <https://github.com/apache/iceberg-python>
 - **Single-host operations** — bounded-RAM streaming writes, adaptive batch sizing, subprocess isolation, table-property watermarks, `SqlCatalog` + S3-compatible config, systemd-timer maintenance, OCC retry, circuit-breaker/DLQ, schema guards: [`references/single-host-operations.md`](references/single-host-operations.md)
+- O(history) leak catalog (entity reload, unwindowed rebuild) → **data** hub `references/o-history-leaks.md`.
+- Sidecar rebuild / Iceberg→DuckDB types → **data-api**.
 - *Apache Iceberg: The Definitive Guide* — Shiran, Hughes, Merced (O'Reilly, 2024). Source for the internals, metadata-table, branching, and rollback material in this skill. Note: written before Polaris and Lakekeeper, and predates much of PyIceberg's branching API — treat its Spark/SQL examples as concept references, not recipes.
 - Polaris: <https://polaris.apache.org/>
 - Lakekeeper: <https://lakekeeper.io/>

@@ -12,9 +12,9 @@ The shared entry point for building and operating data pipelines. Its job is two
 | Your task | Skill |
 |---|---|
 | Designing/operating an **Apache Iceberg** lakehouse (bronze/silver/gold, PyIceberg, catalog choice, compaction/expire, WAP, snapshot rollback, single-host bounded-RAM writes) | **data-apache-lakehouse** |
-| **Consuming** an external HTTP API for ingestion (rate limits, backoff, pagination, auth, response validation) **or serving** gold/analytical data over HTTP (FastAPI + DuckDB, pushdown, keyset pagination, cache invalidation) | **data-api** |
+| **Consuming** an external HTTP API for ingestion (rate limits, backoff, pagination, auth, response validation) **or serving** gold/analytical data over HTTP (FastAPI + DuckDB, pushdown, keyset pagination, cache invalidation, sidecar rebuild, serving vs lake memory, freshness SLIs) | **data-api** |
 | Using **DuckDB** as the compute engine — tuning memory/threads, larger-than-memory spilling, Parquet read/write layout, connection lifecycle, EXPLAIN profiling | **data-duckdb** |
-| Running **multiple pipelines** on shared single-host infrastructure — memory admission control, concurrency caps, capacity ratchets, OOM kills that only appear when individually-fine pipelines coexist | **data-pipeline-operations** |
+| Running **multiple pipelines** on shared single-host infrastructure — memory admission control, concurrency caps, capacity ratchets, OOM kills that only appear when individually-fine pipelines coexist, timer jobs that must fit one `TimeoutStartSec` | **data-pipeline-operations** |
 | Deciding whether a **table/artifact should still exist** — consumer audits, safe drops, maintenance coverage | **data-table-lifecycle** |
 | **Semantic row truth** — quality flags, outlier/anomaly rules, trust ladders, golden packs, split-brain lake vs API quality | **data-semantic-quality** |
 | **Attaching** messy records to a canonical entity key — fail-closed, quarantine, unresolved debt, remap | **data-identity-resolution** |
@@ -40,17 +40,12 @@ Re-running the same step — same input window, same batch — produces identica
 
 Every step persists how far it has consumed — a max timestamp, a sequence number, a pagination cursor, a snapshot id — and resumes from there. "Rebuild from history" exists only behind an explicit `--rebuild` flag. A step with no watermark gets slower in proportion to data growth, silently.
 
-Watch for **O(history) leaks disguised as incremental** — a watermark exists somewhere in the code, but a specific operation still scales with total history instead of the delta:
+Watch for **O(history) leaks disguised as incremental** — a watermark exists somewhere in the code, but a specific operation still scales with total history. Named shapes and measured cases: [`references/o-history-leaks.md`](references/o-history-leaks.md). The ones that keep shipping:
 
-- A per-batch **full-history re-walk** (re-reading an entire JSONL/log from the start every run instead of from the watermark — measured: thousands of redundant walks per run).
-- A **full-column preflight scan** before the real query (scanning millions of rows to check a condition a pushdown predicate would answer for free — measured: 2.48M rows scanned hourly where a predicate made it near-free).
-- An **unbounded anti-join key collect** (materializing every key ever seen instead of scoping to the chunk's own date range when the key embeds a date).
-- An **entity-keyed lifetime reload on a watermarked delta** — the watermark correctly selects *which entities changed*, then the job does `WHERE entity_id IN (...)` with **no time predicate** and reloads that entity's entire history (measured: Iceberg COW of 2016–now month files because one card sold today). Bound the score *and* the overwrite to the partition time column (`ts >= now - lookback`). Lifetime rescore is `--rebuild` / `--full` only.
-- An **accumulating-delta unique on a frozen basis** — the job is chunked and checkpoints, so it *looks* incremental, but each checkpoint `unique()`s every delta so far (or merges against a start-of-run snapshot that fails the PK probe, so every chunk logs "no existing"). Comments that say "peak RAM is one chunk" are not the code. Measured 2026-08-27: TCGPlayer history, 64-file chunks, `merge sink start (no existing)` on chunk 8/47, 4.6M-row unique at 7.6G RSS, 21 minutes with no further log, MemoryHigh sitting at the peak. Fix: unique *this* chunk only, upsert into *current* gold, newest snapshot wins. A docstring or `chunk=` log is not the test.
-- A **write-window / read-window split** — Iceberg overwrite is partitioned by `(source, as_of_date)` but the builder `rglob`s every jsonl under raw-root into one list, then unique()s it. Partitioned write does not make the read incremental. Measured 2026-08-27: Rare Candy catalog sitemap 404 → 0 new URLs, gold still loaded ~499 jsonl files, 5.6G over MemoryHigh=5G, no row log for 16 minutes. Daily path reads today's run_id files only; lifetime is `--all-runs` / `--rebuild`.
-- An **mtime watermark on a partial chunked ingest of older files** — after chunk 8 the gold file's mtime is *now*, so a restart treats the remaining 2483 older raw files as already consumed and skips them. File mtime vs gold mtime is not a file-list cursor. Either keep an explicit remaining-paths watermark, or `--rescan` / delete the incomplete gold before restart.
-- An **in-memory unique of a pinned snapshot** — Iceberg load is already tip-dated (even `sink_parquet`'d), then the mapper concats every batch and `unique(listing_id, observed_date)` on the whole snapshot in Polars. Measured 2026-08-27: listings-gold tcgplayer, `venue_unique` 11,051,981 rows at 14.8G RSS sitting on MemoryHigh=14G, 20+ min with no `phase_end`. Fix: unique each map batch, spill-union via DuckDB. A **second unique after the spill unique already returned** is the same leak (same day: DuckDB unique 17.8s, then `build_listings_unified` Polars-unique'd the same 11M at 678% CPU / 14.8G with no log). Skip re-unique when there is one part; otherwise spill-unique the concat. Peak RSS must follow batch size, not snapshot row count.
-- An **unwindowed sidecar rebuild of a lifetime fact table** — a daily Model-1 labels job `scan_to_polars`s all `gold.sales` including `title`. Measured 2026-08-27: 24.6M rows, 20.2G RSS, `TimeoutStartSec` SIGTERM before Iceberg write. Daily path is a lookback merge onto the last parquet; lifetime is `--full`.
+- **Entity-keyed lifetime reload** — watermark picks *which* keys changed, then `WHERE entity_id IN (...)` with no time predicate. Timer path predicates keys *and* the partition time column. Lifetime is `--rebuild` / `--full`.
+- **Chunked unique on a frozen basis** — each checkpoint `unique()`s corpus-so-far, or merges against a start-of-run snapshot that logs `no existing`. Unique *this* chunk; upsert into *current* gold.
+- **Write-window / read-window split** — overwrite is partitioned; the read still walks the whole raw tree.
+- **Unwindowed sidecar / snapshot unique** — a "daily" job scans a lifetime fact table into RAM. Daily path is a lookback merge; lifetime is `--full`.
 
 **Test (entity leak):** a new fact for one entity today — does runtime grow with that entity's lifetime row count, or with the lookback window? If it grows with lifetime, the watermark is decorative.
 
@@ -68,11 +63,11 @@ rebuild from day 1.
 
 ### 3. Fence schema at every boundary
 
-Validate columns, types, and null fractions at each layer/stage edge, and fail *loud at the boundary*. A malformed upstream payload should error at ingestion with a clear message — not surface as a cryptic cast error three stages downstream. Keep a strict mode that turns warnings into hard failures in production.
+Validate columns, **engine types**, and null fractions at each layer/stage edge, and fail *loud at the boundary*. Column names are not enough: Iceberg `timestamptz` vs DuckDB `DATE`, `List(Utf8)` vs `Utf8`, and field order are schema. A malformed upstream payload should error at ingestion with a clear message — not surface as a cryptic cast error three stages downstream. Keep a strict mode that turns warnings into hard failures in production. Iceberg/Arrow/DuckDB form: **data-apache-lakehouse**.
 
 This is **mechanical** validation. **Semantic** correctness (right entity, right attributes for the consumer use — quality flags, trust ladders, cohort fences) is a separate concern: use **data-semantic-quality**. Schema fences alone do not make rows trustworthy for product aggregates.
 
-**Test:** if an upstream adds a column or flips a type, which stage fails, and is its error message actionable? If the failure is far from the cause, the fence is missing.
+**Test:** if an upstream adds a column or flips a type (including timezone-aware vs naive, list vs scalar), which stage fails, and is its error message actionable? If the failure is far from the cause, the fence is missing.
 
 ### 4. Publish atomically; readers never see a partial write
 
@@ -96,7 +91,9 @@ Tie peak RAM to batch/page/window size, not total volume — stream record batch
 
 Every run records what it consumed and produced — a watermark, a row count, a run-log line. An unattended pipeline you can't interrogate ("when did this last update, and with how many rows?") is one you can't trust.
 
-**Test:** without reading code, can you answer "when did table X last update and how many rows landed?" from a log or a property? If not, add the signal.
+Job-success is not freshness. Distinguish **absent** (source never landed), **empty** (source ran, zero rows in window), **stale** (watermark older than the SLA), and **timeout** (unit SIGTERM — not a successful empty). Empty-chunk skip is not progress; empty-all and timeout are different exits (**data-pipeline-operations**). Serving SLIs consume these signals; they do not invent a second clock (**data-api**).
+
+**Test:** without reading code, can you answer "when did table X last update and how many rows landed?" from a log or a property? If a unit is green, can you still tell empty from stale from timeout? If not, add the signal.
 
 ### 8. Enforcement is layered: runtime guard > CI gate > checklist > review convention
 
@@ -141,12 +138,13 @@ Principle 7 (freshness is observable) is the signal. This playbook is how you *r
 
 ## References
 
+- **O(history) leak catalog** (entity reload, frozen-basis unique, read/write window split, mtime cursor, sidecar lifetime scan): [`references/o-history-leaks.md`](references/o-history-leaks.md)
 - **Shared resilience & idempotency code** (retry + jitter, circuit breaker, dead-letter queue, idempotency keys): [`references/resilience-and-idempotency.md`](references/resilience-and-idempotency.md)
 - Specialist: **data-apache-lakehouse** — the Iceberg-specific expression of these principles (OCC retry, snapshot watermarks, WAP branches, compaction).
-- Specialist: **data-api** — the API-specific expression (rate-limit buckets, pagination-cursor watermarks, response schema fencing; serving with pushdown + keyset pagination + cache invalidation).
+- Specialist: **data-api** — the API-specific expression (rate-limit buckets, pagination-cursor watermarks, response schema fencing; serving with pushdown + keyset pagination + cache invalidation; sidecar rebuild as a bounded pipeline; serving vs lake memory; freshness SLIs).
 - Specialist: **data-duckdb** — the embedded-engine expression (memory/thread budgeting, larger-than-memory spilling and its limits, Parquet read/write layout, connection-as-cache).
-- Specialist: **data-pipeline-operations** — the multi-pipeline coexistence expression (claims-based admission control, capacity pools, the capacity ratchet loop, subprocess-scope accounting).
+- Specialist: **data-pipeline-operations** — the multi-pipeline coexistence expression (claims-based admission control, capacity pools, the capacity ratchet loop, subprocess-scope accounting, job-fits-one-`TimeoutStartSec`).
 - Specialist: **data-table-lifecycle** — the artifact-retirement expression (consumers-or-deprecate, drop durability, catalog-generated maintenance coverage).
 - Specialist: **data-semantic-quality** — row-truth methodology (write-time quality attributes, entity-scoped rules, trust ladders, golden packs); domain thresholds stay in the product repo.
-- Specialist: **data-identity-resolution** — attach/remap procedure (fail-closed, quarantine, unresolved-rate, restamp order).
+- Specialist: **data-identity-resolution** — attach/remap procedure (fail-closed, quarantine, collision, unresolved-rate, restamp order).
 - Specialist: **data-product-eval** — estimate vs later realized truth (freeze, walk-forward, coverage vs error, release vs observe).

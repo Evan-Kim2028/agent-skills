@@ -1,6 +1,6 @@
 ---
 name: data-api
-description: Use when consuming external HTTP APIs for data ingestion (rate limiting, exponential backoff, pagination/cursors, auth, response schema validation, caching, idempotent landing) or when serving gold/analytical data over HTTP (FastAPI + DuckDB, pushing filters down to the engine, keyset pagination, cache invalidation on publish, factory routers over many gold tables). Also use when defining serving contracts that honor persisted quality attributes, freshness SLIs, publish-token invalidation, or publish-coupled serving sidecars (derived projections rebuilt on source snapshot — not a second quality system). Covers blockchain-indexer / marketplace / price-feed ingestion and lakehouse gold-serving APIs. Don't use for defining semantic quality rules or thresholds (that's data-semantic-quality), generic REST/GraphQL interface design unrelated to data movement (api-and-interface-design), wrapping an API as a live MCP tool, or OLTP/CRUD application backends. Prefer the data hub when the right data skill is unclear or the task spans ingest→store→serve.
+description: Use when consuming HTTP APIs for ingestion (rate limits, backoff, pagination, auth, schema fencing) or serving gold over HTTP (FastAPI + DuckDB, pushdown, keyset pagination, publish-token cache, factory routers). Also use for freshness SLIs, honor-persisted quality attributes, and publish-coupled sidecars whose rebuild is a bounded pipeline (lookback merge, Iceberg↔DuckDB types, serving memory ≠ lake HEAVY, statement timeout, default history lookback). Don't use for semantic quality rules (data-semantic-quality), generic REST design, MCP wrappers, or OLTP backends. Prefer the data hub when the specialist isn't obvious.
 
 ---
 
@@ -17,6 +17,8 @@ The operational API layer of a data pipeline, both directions: pulling data *in*
 - A pipeline that gets throttled (429s), loses its place on restart, or duplicates rows after a retry.
 - Building or extending an HTTP service that serves gold/analytical tables to a dashboard or downstream consumer.
 - A serving endpoint that's slow because it loads a table into Python and filters there, or paginates with `OFFSET`.
+- A sidecar rebuild that OOMs, unions Iceberg Parquet in-process, or silently serves a stale projection.
+- Serving latency/errors that only appear while a gold publish is on the same host.
 - Standing up many similar read endpoints over a set of gold tables.
 
 ## Part A — Consuming external APIs (ingestion)
@@ -97,6 +99,34 @@ When interactive latency cannot meet SLOs on the catalog table, a **sidecar** (s
 
 **Test:** publish source without rebuilding the sidecar (or with a stale version key). Does smoke or a version check fail, or does the API quietly serve yesterday's projection as current?
 
+The rebuild itself is a **bounded pipeline**, not a cheap export. Daily path is a lookback merge onto the last sidecar (hub leak 9). Lifetime scan of the fact table is `--full` on a catchup unit (**data-pipeline-operations**). Concretely:
+
+1. Predicate the source on the partition time column; do not `scan_to_polars` the lifetime table to sort it.
+2. Fence **engine types** at the Iceberg → DuckDB/Parquet boundary (`timestamptz` vs `DATE`, field-ids on Iceberg Parquet vs DuckDB `UNION`). Strip or cast before UNION; a type mismatch is a fence failure, not a retry loop.
+3. Isolate RSS: UNION / lookback merge in a child process with its own `MemoryMax`. Parent serving workers must not pay the rebuild.
+4. Corrupt sidecar files fail that shard and rebuild from source — they do not take down the API process. Log and skip or full-rebuild that shard.
+5. Peak RSS follows batch/lookback size, not fact-table row count.
+
+**Test:** a daily sidecar rebuild after one new source partition — does peak RSS grow with the lifetime fact table, or with the lookback? If the former, it is leak 9, not a projection.
+
+### Serving memory is a separate pool from lake HEAVY
+
+API workers, replica processes, and sidecar readers sit in a serving pool with its own `MemoryMax`. Gold publish, compact, and catchup sit in HEAVY. When serving RSS sits at 90% of its cap, product smokes fail even if every pipeline is "fine." Do not raise the serving cap to absorb a publish; isolate or shed the publish.
+
+**Test:** run a gold publish at measured peak. Do serving p95 and error rate stay inside SLO, or does the API smoke fail? If the latter, serving is on the lake's budget.
+
+### Statement timeout and default lookback on unbounded history
+
+User-facing queries carry a statement timeout. Open-ended history endpoints apply a default lookback when the caller omits a bound. One slow Iceberg fallback must not wedge a worker.
+
+**Test:** can a single `/history` with no `since` hold a worker past the timeout? If yes, the default bound or timeout is missing.
+
+### Freshness SLI is a serving contract
+
+Hub principle 7 (absent / empty / stale / timeout) must be readable from the serving path: publish token age, sidecar version vs source snapshot, watermark as-of on the response or `/health`. Job-success of a timer is not the SLI. Do not invent a second freshness clock in the API.
+
+**Test:** after a timed-out publish that skipped empty chunks, does `/health` or the envelope still claim fresh? If yes, serving is using unit green as the clock.
+
 ### Caches are bounded types; executors wait on exit
 
 A cache is a type whose constructor requires a max size — never a bare module-level `dict` that only
@@ -118,7 +148,10 @@ Open one read-only DuckDB connection per worker with a `memory_limit`, not one p
 ## References
 
 - **Consuming external APIs** — rate limiting, backoff, pagination, auth, response validation, caching, `polite_get`: [`references/client-ingestion.md`](references/client-ingestion.md)
-- **Serving data over HTTP** — pushdown, keyset pagination, cache invalidation, quality-attribute honor, publish-coupled sidecars, bounded/thread-safe caches, executor lifecycle, factory routers, connection management: [`references/serving.md`](references/serving.md)
+- **Serving data over HTTP** — pushdown, keyset pagination, cache invalidation, quality-attribute honor, publish-coupled sidecars (bounded rebuild), serving vs HEAVY memory, statement timeout, freshness SLI, bounded/thread-safe caches, executor lifecycle, factory routers, connection management: [`references/serving.md`](references/serving.md)
+- Job shape (chunk + `TimeoutStartSec`, empty vs timeout) → **data-pipeline-operations**
+- Engine types Iceberg ↔ DuckDB → **data-apache-lakehouse**
+- O(history) leak 9 (unwindowed sidecar) → **data** hub `references/o-history-leaks.md`
 - **Shared resilience & idempotency** (hub): [`../data/references/resilience-and-idempotency.md`](../data/references/resilience-and-idempotency.md)
 - **Semantic quality rules** (define attributes, not serve them): **data-semantic-quality**
 - **Identity keys** (consume stored assignment; do not re-parse text): **data-identity-resolution**
