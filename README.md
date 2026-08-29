@@ -38,7 +38,7 @@ cd agent-skills
 install_skill() {
   local src="$PWD/skills/$1"
   local name="$2"
-  for root in "$HOME/.claude/skills" "$HOME/.grok/skills"; do
+  for root in "$HOME/.claude/skills" "$HOME/.grok/skills" "$HOME/.cursor/skills" "$HOME/.commandcode/skills"; do
     mkdir -p "$root"
     rm -rf "$root/$name"
     mkdir -p "$root/$name"
@@ -124,7 +124,7 @@ install_skill "flutter/flutter-pro-ux-review" "flutter-pro-ux-review"
 Re-run install after `git pull` if you use **copies** (they do not auto-update).  
 **Symlinks** to this clone update live when the clone path stays fixed.
 
-**Nothing auto-downloads** when you open another git repo or machine — only what is already installed under `~/.claude/skills` / `~/.grok/skills` is visible to the agent.
+**Nothing auto-downloads** when you open another git repo or machine — only what is already installed under `~/.claude/skills` / `~/.grok/skills` / `~/.cursor/skills` / `~/.commandcode/skills` is visible to the matching agent.
 
 ---
 
