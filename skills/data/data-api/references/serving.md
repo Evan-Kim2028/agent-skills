@@ -188,6 +188,33 @@ publish gold facts (version V)
 If publish succeeds but sidecar rebuild fails, either fail the unit or serve degraded with an
 explicit stale signal — do not silently pin users to V-1 under a V token.
 
+**Rebuild is a bounded pipeline.** Daily path: lookback merge onto the last sidecar, predicate on
+the source partition time column, peak RSS follows the window. `--full` is a catchup unit, not the
+timer. At the Iceberg → DuckDB boundary, fence types (`timestamptz` vs `DATE`) and strip Iceberg
+field-ids before `UNION` (DuckDB will not ingest them as a plain Parquet union). Run the UNION /
+lookback merge in a child process with its own `MemoryMax` so serving workers do not pay rebuild RSS.
+A Thrift-corrupt sidecar file fails that shard and rebuilds from source; it does not crash the API.
+
+**Test:** one new source partition today. Does sidecar rebuild RSS grow with the lifetime fact
+table? If yes, the projection is leak 9 (hub `references/o-history-leaks.md`).
+
+## Serving vs lake HEAVY
+
+Put API/replica workers in a serving cgroup pool. Publish, compact, and catchup stay in HEAVY.
+Serving SLO (p95, error rate, `/health/ready`) must still pass while HEAVY is at measured peak.
+Raising serving `MemoryMax` to absorb a gold job moves the OOM into the product.
+
+## Statement timeout and default lookback
+
+Every user-facing repository sets a statement timeout. History endpoints that accept an open range
+apply a default lookback when the caller omits it (tests may use 0 for fixtures). Iceberg fallback
+on a stale sidecar must fail fast, not scan lifetime gold on the request thread.
+
+```python
+conn.execute("SET statement_timeout='30s'")
+# route: if since is None: since = date.today() - timedelta(days=DEFAULT_SINCE_DAYS)
+```
+
 ## Bounded, thread-safe caches — don't let a serving cache grow to OOM
 
 A production cache needs three properties the `_store` dict above has none of: a **bounded type**

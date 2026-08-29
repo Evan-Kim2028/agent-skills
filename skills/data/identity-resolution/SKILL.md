@@ -44,8 +44,9 @@ No product match thresholds, no catalog taxonomies. Those stay in the product re
 1. **No domain product nouns or concrete match thresholds** in advice from this skill.
 2. **Ladder rules live in `data-semantic-quality`.** Do not fork a second ladder here.
 3. **Unresolved is a first-class state**, not a blank to be filled by the next weak hint.
-4. **Remap cannot undo a stronger fence.** Restamp is ordered.
-5. **Low confidence never enters identity-assuming aggregates.**
+4. **Collision / twin is a first-class state**, not another matcher branch.
+5. **Remap cannot undo a stronger fence.** Restamp is ordered and is not the incremental timer.
+6. **Low confidence never enters identity-assuming aggregates.**
 
 ## Principles
 
@@ -76,7 +77,16 @@ Record which evidence class produced the decision.
 
 **Test:** is there a durable conflict/quarantine state a later job can count, or does the row silently pick a side?
 
-### 4. Unresolved accumulation is a metric
+### 4. Collision is a state, not a second pass of identify()
+
+Two assigned keys for one physical event (or one key stamped on two events that must stay
+distinct) is **collision**. Persist it. Count it. An ordered restamp may pick a survivor; the
+incremental matcher must not "fold" the twin away to make the rollup look unique.
+
+**Test:** inject a duplicate physical event with two structured ids. Does a collision row (or pair)
+survive publish, or does the next identify() pick a winner with no audit?
+
+### 5. Unresolved accumulation is a metric
 
 NULL / unresolved keys are measured debt: count per source per day, with a
 rate (unresolved / landed). A resolver that “works” while the null pile grows
@@ -84,7 +94,7 @@ is losing.
 
 **Test:** can you plot unresolved-landed per source for the last N days from published tables, without reading code? If the rate is up and no one is paging, the metric is missing.
 
-### 5. Remap is ordered and one-way through stronger fences
+### 6. Remap is ordered and one-way through stronger fences
 
 A restamp / re-resolve pass applies weaker evidence only where stronger evidence
 is absent. It must not clear a strong assignment or a quarantine to please a
@@ -92,7 +102,11 @@ new heuristic.
 
 **Test:** run restamp on a fixture that has a strong key *and* a tempting weak hint the other way. Does the strong key survive?
 
-### 6. Backfill is a bounded, resumable lane
+Restamp is a **separate resumable lane** from incremental attach (principle 7). It does not ride the
+hourly identify timer. Residual rows after a restamp are a keyset for the next catchup start, not a
+reason to widen the incremental window to lifetime.
+
+### 7. Backfill is a bounded, resumable lane
 
 Unresolved backfill is not the incremental attach path. It has its own watermark
 or keyset, chunk size, and idempotent write. Hub principle 2 (watermark, not
@@ -100,7 +114,7 @@ full recompute) applies — a crash must not restart the whole historical pile.
 
 **Test:** kill a backfill at 40%. Does retry resume, or re-scan from record one and rewrite already-good keys?
 
-### 7. One writer for the link
+### 8. One writer for the link
 
 The attach job (or documented reconcile) is the only writer of the canonical
 key + confidence + evidence class. APIs, UIs, and rollups consume. A serving
@@ -108,7 +122,7 @@ path that “fixes” identity at request time is a second resolver.
 
 **Test:** change the attach threshold in one place. Do all consumers move on the next publish, or does one surface still re-parse text?
 
-### 8. Coverage audit names identity rate
+### 9. Coverage audit names identity rate
 
 When someone asks “how much data do we have,” unresolved rate is part of the
 answer — row count alone lies. The **data** hub coverage-audit playbook includes
@@ -124,11 +138,11 @@ Identity attach / remap:
 - [ ] 1. Name the canonical key + what “unresolved” looks like on the row
 - [ ] 2. List evidence classes in ladder order (product repo supplies the actual signals)
 - [ ] 3. Assign only from the strongest available non-conflicting class
-- [ ] 4. Conflict → quarantine; below threshold → unresolved (not a guess)
+- [ ] 4. Conflict → quarantine; collision → collision state; below threshold → unresolved (not a guess)
 - [ ] 5. Persist key, confidence, evidence class, policy version
-- [ ] 6. Incremental path is watermarked; historical remap is a separate resumable lane
-- [ ] 7. Restamp fixture: strong assignment survives a contradictory weak hint
-- [ ] 8. Publish unresolved-rate metric per source
+- [ ] 6. Incremental path is watermarked; historical remap / restamp is a separate resumable lane
+- [ ] 7. Restamp fixture: strong assignment survives a contradictory weak hint; twins are not folded on the timer
+- [ ] 8. Publish unresolved-rate *and* collision-rate per source
 - [ ] 9. Serving / rollups honor stored keys — no request-time re-parse
 - [ ] 10. No domain thresholds committed into this pack
 ```
@@ -139,7 +153,9 @@ Identity attach / remap:
 - Weak title/lane stamp overrides a structured identifier because it ran first.
 - NULL keys treated as “not a problem until someone searches that row.”
 - Restamp job that reapplies the full matcher and clears quarantines.
+- Restamp / residual chase on the incremental timer (O(history), no collision state).
 - Historical remap on the incremental timer (O(history), no resume).
+- Folding twins in identify() so the rollup looks unique.
 - API re-parses free text because “the lake key looks wrong.”
 - Quoting source volume without the resolved rate.
 
