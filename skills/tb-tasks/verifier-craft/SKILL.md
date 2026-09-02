@@ -169,6 +169,19 @@ if len(tests) < EXPECTED_TESTS or failed or len(passed) < EXPECTED_TESTS:
     sys.exit(1)
 ```
 
+## Deterministic concurrency verification (sync-point barriers)
+
+For multi-process contention tasks, expose a documented scheduling hook in
+the environment (e.g. publishers wait on named barrier files under `$SYNC_DIR`
+at pre-check/pre-commit points, described in the contract as the ops replay
+mechanism and load-bearing — not a hidden test backdoor). The verifier then:
+(a) forces the exact discriminating interleavings deterministically (these
+are the discriminant tests — reproducible, no flake); (b) runs N-times
+natural-timing stress with real processes, all N must pass; (c) keeps
+held-out barrier schedules the agent never sees; (d) requires the oracle to
+pass everything 5 times consecutively before any trial. This resolves the
+concurrency-flake risk that otherwise breaks the oracle floor.
+
 ## 4. Making tests discriminative
 
 A verifier that only re-runs the agent-visible smoke test is gameable by

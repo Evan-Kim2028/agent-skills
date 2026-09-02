@@ -107,6 +107,18 @@ Read the transcript, don't just read the reward. Source pattern:
    after every non-trivial trial batch, not just when something looks
    wrong.
 
+## Miniature frontier probe (before full build)
+
+Before building a full task around a new wedge, build a miniature (core trap
+only, ~6 hidden tests, no side axes) and run ONE frontier attempt with a
+short cap (45 min via `--agent-timeout-multiplier`, ~$15 on Claude Code
+OAuth). Fail with the predicted miss → build the full task. Pass → read the
+trajectory and redesign or kill; do not build on an unprobed wedge. Write the
+predicted failure mode in the design doc first so the probe is falsifiable.
+Rationale: a full task costs days; the probe kills bad wedges for $15.
+Precedent: lakehouse-publish-recovery was built fully, then Opus solved it
+on the first 45-min probe.
+
 ## 3. Hardening discipline
 
 **Never harden on a single trial.** Quoted from the source postmortems:
