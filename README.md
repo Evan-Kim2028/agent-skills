@@ -127,6 +127,7 @@ for pair in \
   "tb-tasks/tb-tasks:tb-tasks" \
   "tb-tasks/task-design:tb-task-design" \
   "tb-tasks/difficulty-calibration:tb-difficulty-calibration" \
+  "tb-tasks/instruction-craft:tb-instruction-craft" \
   "tb-tasks/verifier-craft:tb-verifier-craft" \
   "tb-tasks/submission-gates:tb-submission-gates"
 do install_skill "${pair%%:*}" "${pair##*:}"; done
@@ -149,7 +150,7 @@ Re-run install after `git pull` if you use **copies** (they do not auto-update).
 | **writing** | **writing** hub + **writing-prose** + **writing-docs** + **writing-technical** + **style-clarity-grace** + **elements-of-style** + **writer-style** (vendored [solanabr/writer-style-skill](https://github.com/solanabr/writer-style-skill) MIT engine; **default pack `evan`** from [evan_writings](https://github.com/Evan-Kim2028/evan_writings); kaue pack retained) |
 | **qa** | **quality-check** hub (+ install docs for optional external companions) |
 | **flutter** | **flutter** hub + **flutter-pro-ux-review** — production UX polish audit (complements official Flutter architecture/test skills) |
-| **tb-tasks** | hub + **tb-task-design**, **tb-difficulty-calibration**, **tb-verifier-craft**, **tb-submission-gates** — authoring Terminal-Bench/Harbor benchmark tasks that stay hard for frontier agents |
+| **tb-tasks** | hub + **tb-task-design**, **tb-difficulty-calibration**, **tb-instruction-craft**, **tb-verifier-craft**, **tb-submission-gates** — authoring Terminal-Bench/Harbor benchmark tasks that stay hard for frontier agents |
 | **ebay-listing** | Pokémon TCG singles on ekcope-46 via `ebay-sell` (photo dump → catalog ID → confirmed condition → gold/TCG comps → GTC post, buyer-paid USPS letter) |
 
 ### Merged specialists (use the new names)
@@ -204,7 +205,7 @@ same craft specialists + **`react-performance`** · full implement pipeline · h
 
 ### tb-tasks →
 
-`tb-task-design` (ideation, coupling mechanisms, decoys, portfolio) · `tb-difficulty-calibration` (trial ladder, saturation canaries, harden-vs-wait) · `tb-verifier-craft` (separate verifier, binary reward, anti-cheat sandboxing) · `tb-submission-gates` (static checks, metadata, trial matrix, shipping)
+`tb-task-design` (ideation, coupling mechanisms, decoys, portfolio) · `tb-difficulty-calibration` (trial ladder, saturation canaries, harden-vs-wait) · `tb-instruction-craft` (instruction.md, contract text, spec-completeness lever) · `tb-verifier-craft` (separate verifier, binary reward, anti-cheat sandboxing) · `tb-submission-gates` (static checks, metadata, trial matrix, shipping)
 
 ### flutter →
 
