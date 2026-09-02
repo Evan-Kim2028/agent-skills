@@ -6,7 +6,7 @@ Portable agent skills for Claude Code, Grok Build, Cursor, and similar tools.
 
 ---
 
-## Start here: six hubs
+## Start here: seven hubs
 
 **Remember only these.** Say the hub name (or describe the job). The agent should load the hub first, then one specialist.
 
@@ -18,6 +18,7 @@ Portable agent skills for Claude Code, Grok Build, Cursor, and similar tools.
 | **`marketing`** | Offers / messaging / ads / viral (frameworks) |
 | **`writing`** | Human voice, Evan default pack, technical form, pure docs (tone ≠ offer design) |
 | **`quality-check`** | Prove it — TDD, e2e, review, ship, regressions |
+| **`tb-tasks`** | Author Terminal-Bench / Harbor benchmark tasks — design, difficulty, verifiers, submission |
 
 ### Craft vs build vs prove vs write
 
@@ -27,6 +28,7 @@ frontend-design  →  implement the feature in code
 marketing        →  offer / story / ads frameworks
 writing          →  sound like a human; Evan voice / technical form / pure docs
 quality-check    →  prove it before “done”
+tb-tasks         →  build benchmark tasks that stay hard for frontier agents
 ```
 
 ### Install the hubs (and their specialists)
@@ -119,6 +121,15 @@ install_skill "writing/writer-style" "writer-style"   # engine + evan pack + kau
 # --- flutter (complements official Flutter/Dart skills) ---
 install_skill "flutter/flutter" "flutter"   # hub
 install_skill "flutter/flutter-pro-ux-review" "flutter-pro-ux-review"
+
+# --- tb-tasks (Terminal-Bench / Harbor task authoring) ---
+for pair in \
+  "tb-tasks/tb-tasks:tb-tasks" \
+  "tb-tasks/task-design:tb-task-design" \
+  "tb-tasks/difficulty-calibration:tb-difficulty-calibration" \
+  "tb-tasks/verifier-craft:tb-verifier-craft" \
+  "tb-tasks/submission-gates:tb-submission-gates"
+do install_skill "${pair%%:*}" "${pair##*:}"; done
 ```
 
 Re-run install after `git pull` if you use **copies** (they do not auto-update).  
@@ -138,6 +149,7 @@ Re-run install after `git pull` if you use **copies** (they do not auto-update).
 | **writing** | **writing** hub + **writing-prose** + **writing-docs** + **writing-technical** + **style-clarity-grace** + **elements-of-style** + **writer-style** (vendored [solanabr/writer-style-skill](https://github.com/solanabr/writer-style-skill) MIT engine; **default pack `evan`** from [evan_writings](https://github.com/Evan-Kim2028/evan_writings); kaue pack retained) |
 | **qa** | **quality-check** hub (+ install docs for optional external companions) |
 | **flutter** | **flutter** hub + **flutter-pro-ux-review** — production UX polish audit (complements official Flutter architecture/test skills) |
+| **tb-tasks** | hub + **tb-task-design**, **tb-difficulty-calibration**, **tb-verifier-craft**, **tb-submission-gates** — authoring Terminal-Bench/Harbor benchmark tasks that stay hard for frontier agents |
 | **ebay-listing** | Pokémon TCG singles on ekcope-46 via `ebay-sell` (photo dump → catalog ID → confirmed condition → gold/TCG comps → GTC post, buyer-paid USPS letter) |
 
 ### Merged specialists (use the new names)
@@ -190,6 +202,10 @@ same craft specialists + **`react-performance`** · full implement pipeline · h
 
 `tdd` · `diagnose` · `browser-verify` · `web-quality` · `check-work` · `review` · … (see hub) · `data-semantic-quality` · `data-product-eval` · metric-gated closeout · hand off **frontend-design** for build phase
 
+### tb-tasks →
+
+`tb-task-design` (ideation, coupling mechanisms, decoys, portfolio) · `tb-difficulty-calibration` (trial ladder, saturation canaries, harden-vs-wait) · `tb-verifier-craft` (separate verifier, binary reward, anti-cheat sandboxing) · `tb-submission-gates` (static checks, metadata, trial matrix, shipping)
+
 ### flutter →
 
 `flutter` (hub) · `flutter-pro-ux-review` — ranked production UX findings (dead taps, a11y, null, haptics, keyboard, async honesty). Use **after** official Flutter architecture/test skills; not a substitute for them.
@@ -206,6 +222,7 @@ skills/
   marketing/      # hub + specialists
   writing/        # hub + writer-style (evan/kaue) + prose/docs/technical + style-clarity-grace + elements-of-style
   qa/             # quality-check hub
+  tb-tasks/       # hub + Terminal-Bench task-authoring specialists
   design/         # html-design alias only
 ```
 
